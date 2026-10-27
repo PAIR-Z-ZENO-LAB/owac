@@ -1,3 +1,7 @@
+2026-10-27 用户确认蒸馏技术路线走通，授权提交全部修改并创建“蒸馏成功”标签。已验收RAW因果学生→冻结后端闭环及正常光控制复刻；Low11/20教师、9/20学生和ExtremeLow双方0/20负结果保留。统筹台进入EXPLORE（下一阶段候选与工作单准备），不自动启动新训练/实验。交接见docs/plans/RAW_POST_DISTILLATION_EXPLORATION_2026-10-27.md。
+
+2026-10-27 LOWLIGHT服务器对照已完整结束：Normal教师/学生各20/20；Low教师11/20、学生9/20（退化2对、恢复0）；ExtremeLow均0/20。120场全部native0，无错误/重试/排除；60对原始数据和全部视频审计通过。当前学生含五照明训练，弱光控制保留不足，后续适配尚未授权或启动；本轮训练0。详见research/experiments/raw_stem_siglip_20261020/lowlight-server-20261027.md。
+
 2026-10-27：用户开启LOWLIGHT研究台阶段及复制入口。正常光阶段验收保持通过；当前为弱光方案与评价准备，尚未运行新实验。交接提示词见docs/prompts/RAW_DISTILLATION_LOWLIGHT.md。
 
 2026-10-27 阶段验收：用户确认STEM（消息中的STEP）、ADAPT、CONTROL通过。全视觉头24遍/84768更新完成，最后学生与教师在正常光LIBERO goal/task6历史固定20初态均20/20；本阶段已基本复刻教师功能。ADAPT按实际全视觉头token蒸馏验收，未使用动作损失，语言/动作后端冻结。弱光待开展，未启动新训练或闭环。

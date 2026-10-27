@@ -218,16 +218,19 @@ def test_accepted_strategy_and_archives_cannot_launch():
         "DISTILL"
     ]
     current = next(s for s in active["stages"] if s["id"] == active["current_stage"])
-    assert current["id"] == "LOWLIGHT"
+    assert current["id"] == "EXPLORE"
     assert current["prompt"]["available"]
     assert (
         current["prompt"]["text"]
-        == (repo / "docs/prompts/RAW_DISTILLATION_LOWLIGHT.md").read_text()
+        == (repo / "docs/prompts/RAW_POST_DISTILLATION_EXPLORE.md").read_text()
     )
     for stage in active["stages"]:
         if stage["id"] in {"STEM", "ADAPT", "CONTROL"}:
             assert stage["acceptance"] == "passed"
             assert stage["state"] == "recorded"
+    lowlight = next(stage for stage in active["stages"] if stage["id"] == "LOWLIGHT")
+    assert lowlight["state"] == "recorded"
+    assert lowlight.get("acceptance") != "passed"
     assert not active["summary_stale"]
     assert not snapshot["lineage"]["summary_stale"]
     for route_id in ("N01", "N02", "N04"):

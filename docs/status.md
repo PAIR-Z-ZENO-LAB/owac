@@ -1,3 +1,13 @@
+2026-10-27 用户确认蒸馏技术路线走通，授权提交全部修改并创建“蒸馏成功”标签。已验收RAW因果学生→冻结后端闭环及正常光控制复刻；Low11/20教师、9/20学生和ExtremeLow双方0/20负结果保留。统筹台进入EXPLORE（下一阶段候选与工作单准备），不自动启动新训练/实验。交接见docs/plans/RAW_POST_DISTILLATION_EXPLORATION_2026-10-27.md。
+
+2026-10-27 LOWLIGHT完整服务器评价：Normal教师/学生各20/20；Low教师11/20、学生9/20（退化2对、恢复0）；ExtremeLow均0/20。120场与6进程全部native0，无错误、缺场、重试或排除；60对原始数据及120原视频/60并排视频审计通过。现有学生含五照明训练，弱光控制保留不足，建议研究Normal RAW教师配对监督适配，但本轮训练0。最终所属输出/缓存约366.90GiB，380GiB约束保持。研究台与交接入口已更新，详见[完整报告](../research/experiments/raw_stem_siglip_20261020/lowlight-server-20261027.md)。
+
+2026-10-27 12:08 LOWLIGHT服务器120场配对评价已启动；首6对Normal教师/学生各6/6，首对原始NPZ配对与执行动作检查通过，完整弱光结果待完成。启动所属占用约366.8GiB（含迁移依赖），380GiB约束不变；61相关测试及make check通过，训练0。
+
+2026-10-27 LOWLIGHT新授权：服务器Normal/Low/ExtremeLow×20历史初态×教师/学生，共120场，仅评价。照明/角色隔离入口已实现并独立返工验证，56相关测试及make check通过；远端所属输出/缓存356.9GiB，依赖迁移计入380GiB上限；共享数据盘只读复用、不下载，当前尚未启动场次。见[服务器记录](../research/experiments/raw_stem_siglip_20261020/lowlight-server-20261027.md)。
+
+2026-10-27 LOWLIGHT：完成资产、作者弱光参数与本机依赖只读核对；最小120场配对方案已交付，未授权运行、弱光闭环0、训练0。现有入口Normal硬编码及教师/学生混合加载需修改；远端所属输出/缓存占用未核清，380GiB约束保持。见[方案](../research/experiments/raw_stem_siglip_20261020/lowlight-plan-20261027.md)及configs/experiments/raw_distillation_lowlight_plan_v1.json。
+
 2026-10-27：用户开启LOWLIGHT研究台阶段及复制入口。正常光阶段验收保持通过；当前为弱光方案与评价准备，尚未运行新实验。交接提示词见docs/prompts/RAW_DISTILLATION_LOWLIGHT.md。
 
 2026-10-27 阶段验收：用户确认STEM（消息中的STEP）、ADAPT、CONTROL通过。全视觉头24遍/84768更新完成，最后学生与教师在正常光LIBERO goal/task6历史固定20初态均20/20；本阶段已基本复刻教师功能。ADAPT按实际全视觉头token蒸馏验收，未使用动作损失，语言/动作后端冻结。弱光待开展，未启动新训练或闭环。

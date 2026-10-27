@@ -139,6 +139,7 @@ class LIBEROEnvAdapter:
         task_id: int = TASK_ID,
         env_factory: Any = None,
         setup_wait_steps: int = 10,
+        lighting_domain: str = "Normal",
     ) -> None:
         self.author_root = Path(author_root)
         self.libero_config = Path(libero_config)
@@ -146,6 +147,9 @@ class LIBEROEnvAdapter:
         if self.task_id != TASK_ID:
             raise TeacherControllerError("this authority is restricted to zero-based task6")
         self.setup_wait_steps = int(setup_wait_steps)
+        if lighting_domain not in ("Normal", "Low", "ExtremeLow"):
+            raise TeacherControllerError(f"unsupported lighting domain: {lighting_domain}")
+        self.lighting_domain = lighting_domain
         self._env_factory = env_factory
         self.author: Any = None
         self.task: Any = None
@@ -206,17 +210,28 @@ class LIBEROEnvAdapter:
         return self._observe(observation)
 
     def _normal_lighting(self, seed: int) -> dict[str, Any]:
+        """Same two-random-draw mapping for every requested domain."""
         from rawvla_bench.lighting import lighting_parameters_for_sample
 
+        ranges = {
+            "Normal": (-0.5, 0.5),
+            "Low": (-4.0, -2.5),
+            "ExtremeLow": (-5.5, -4.0),
+        }
+        low, high = ranges[self.lighting_domain]
         rng = np.random.default_rng(int(seed))
-        ev = float(rng.uniform(-0.5, 0.5))
+        ev = float(rng.uniform(low, high))
         sample_unit = float(rng.random())
-        result = dict(lighting_parameters_for_sample("Normal", ev, sample_unit=sample_unit))
+        result = dict(
+            lighting_parameters_for_sample(self.lighting_domain, ev, sample_unit=sample_unit)
+        )
         result.update(
             {
                 "noise_seed": int(seed) ^ 0x5A17,
-                "lighting_domain": "Normal",
-                "representation": "Normal",
+                "lighting_domain": self.lighting_domain,
+                "representation": self.lighting_domain,
+                "ev": ev,
+                "sample_unit": sample_unit,
             }
         )
         return result

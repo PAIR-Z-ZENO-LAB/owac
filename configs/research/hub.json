@@ -11,14 +11,14 @@
       "branch": "main",
       "version": "OWAC-D1.1 · RAW 教师与因果时序",
       "lifecycle": "active",
-      "status": "正常光阶段已通过 · LOWLIGHT 已开启",
-      "current_stage": "LOWLIGHT",
+      "status": "蒸馏成功 · 下一阶段探索准备",
+      "current_stage": "EXPLORE",
       "question": "直接 RAW 编码能否保住已有策略的控制能力，再利用 RAW 测量超越教师？",
-      "summary": "全视觉头蒸馏24遍／84,768更新完成；最后学生正常光task6闭环20/20，教师20/20。2026-10-27用户确认STEM、ADAPT、CONTROL阶段通过。",
-      "next": "开展弱光阶段方案与评价准备；具体实验按执行会话授权推进。",
-      "boundary": "闭环使用历史固定20初态，仅正常光LIBERO goal/task6；不外推其他任务、弱光、原生Bayer或实机。本地init0 RAW教师不是作者训练后前端权重。",
-      "primary_document": "docs/plans/RAW_STEM_SIGLIP_DISTILLATION_2026-10-20.md",
-      "evidence_document": "research/experiments/raw_stem_siglip_20261020/closed-loop-final84768-20261026.md",
+      "summary": "最后学生84768：Normal20/20、Low9/20、ExtremeLow0/20；完整本地RAW教师对应20/20、11/20、0/20。120场全部native0，Low退化2对、恢复0，弱光适配尚未训练。",
+      "next": "比较弱光诊断、Normal RAW教师配对监督及同信息时序机制候选，形成下一阶段具体工作单；尚未启动新实验。",
+      "boundary": "成功范围为RAW学生因果token链路与task6正常光控制复刻。完整三照明评价使用历史固定20初态；Low与ExtremeLow负结果保留，不外推其他任务、原生Bayer或实机。本地init0教师非作者训练后前端权重。",
+      "primary_document": "docs/plans/RAW_POST_DISTILLATION_EXPLORATION_2026-10-27.md",
+      "evidence_document": "research/experiments/raw_stem_siglip_20261020/lowlight-server-20261027.md",
       "documents": [
         "docs/plans/RAW_STEM_SIGLIP_DISTILLATION_2026-10-20.md",
         "docs/prompts/GPT61_SOL_RAW_STEM_SIGLIP_DISTILLATION.md",
@@ -46,11 +46,15 @@
         "research/experiments/raw_stem_siglip_20261020/c-full-20261021-independent-review.md",
         "research/experiments/raw_stem_siglip_20261020/C_FULL_RUNBOOK.md",
         "research/experiments/raw_stem_siglip_20261020/closed-loop-final84768-20261026.md",
-        "docs/prompts/RAW_DISTILLATION_LOWLIGHT.md"
+        "docs/prompts/RAW_DISTILLATION_LOWLIGHT.md",
+        "research/experiments/raw_stem_siglip_20261020/lowlight-plan-20261027.md",
+        "research/experiments/raw_stem_siglip_20261020/lowlight-server-20261027.md",
+        "docs/plans/RAW_POST_DISTILLATION_EXPLORATION_2026-10-27.md",
+        "docs/prompts/RAW_POST_DISTILLATION_EXPLORE.md"
       ],
       "research_focus": {
-        "title": "保留有效时序能力，优先恢复控制",
-        "description": "学生整个视觉头经RAW token蒸馏，语言／动作后端冻结；正常光单任务闭环已通过。",
+        "title": "蒸馏成功基线与下一阶段探索",
+        "description": "学生为五照明训练的整个视觉头，语言/动作后端冻结。完整120场弱光对照已完成；仅历史固定20初态task6。",
         "chain": [
           "因果 RAW 观测／历史",
           "RAW stem 与时序聚合／状态",
@@ -72,7 +76,7 @@
         ],
         "budget": "全量训练24遍／84,768更新已完成；仅保留380GiB新增磁盘上限，无GPU时间／显存／利用率门槛。",
         "data_boundary": "主教师接收 RAW，内部允许 ISP 生成 RGB；RGB 输入策略只作另列辅助对照。学生部署直接 RAW→tokens，pseudo-RAW 与真实 CFA 分报。",
-        "status": "正常光单任务控制通过 · 弱光待开展"
+        "status": "蒸馏路线已验收 · 下一阶段准备"
       },
       "stages": [
         {
@@ -138,16 +142,34 @@
         {
           "id": "LOWLIGHT",
           "title": "弱光与后续扩展",
-          "state": "current",
-          "label": "当前阶段 · 可复制交接提示词",
-          "description": "正常光阶段已通过，弱光研究入口已开启；先核对条件与配对评价方案，尚未运行新实验。",
-          "document": "docs/plans/RAW_STEM_SIGLIP_DISTILLATION_2026-10-20.md",
+          "state": "recorded",
+          "label": "对照评价已完成 · 弱光边界已记录",
+          "description": "Normal教师/学生20/20；Low11/20与9/20，学生退化2、恢复0；ExtremeLow均0/20。120场无错误/重试，120原片及60并排视频，配对审计通过；训练0。",
+          "document": "research/experiments/raw_stem_siglip_20261020/lowlight-server-20261027.md",
           "prompt_kind": "complete",
           "prompt_sources": [
             "docs/prompts/RAW_DISTILLATION_LOWLIGHT.md"
           ]
+        },
+        {
+          "id": "EXPLORE",
+          "title": "蒸馏成功后的研究探索",
+          "state": "current",
+          "label": "当前阶段 · 候选与工作单准备",
+          "description": "用户确认蒸馏路线走通并要求准备下一阶段。正常光验收与弱光负结果冻结；下一轮问题/对照/训练范围待具体制定，未启动新实验。",
+          "document": "docs/plans/RAW_POST_DISTILLATION_EXPLORATION_2026-10-27.md",
+          "prompt_kind": "complete",
+          "prompt_sources": [
+            "docs/prompts/RAW_POST_DISTILLATION_EXPLORE.md"
+          ]
         }
-      ]
+      ],
+      "milestone": {
+        "name": "蒸馏成功",
+        "tag": "蒸馏成功",
+        "accepted_at": "2026-10-27",
+        "scope": "RAW因果学生→冻结后端闭环与正常光task6控制复刻；保留LOWLIGHT负结果"
+      }
     },
     {
       "id": "N01",

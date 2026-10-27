@@ -10,12 +10,16 @@ from pathlib import Path
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", required=True)
-    parser.add_argument("--checkpoint", required=True)
+    parser.add_argument("--checkpoint", default=None)
     parser.add_argument("--catalog", required=True)
     parser.add_argument("--output", required=True)
     parser.add_argument("--device", default="cuda:0")
     parser.add_argument("--max-episodes", type=int, default=20)
     parser.add_argument("--libero-config", default=None)
+    parser.add_argument(
+        "--lighting-domain", choices=("Normal", "Low", "ExtremeLow"), default="Normal"
+    )
+    parser.add_argument("--role", choices=("teacher", "student", "both"), default="both")
     args = parser.parse_args(argv)
     from owac.simulation.raw_student_closed_loop import run
 
@@ -28,6 +32,8 @@ def main(argv: list[str] | None = None) -> int:
         device=args.device,
         max_episodes=args.max_episodes,
         libero_config=args.libero_config,
+        lighting_domain=args.lighting_domain,
+        role=args.role,
     )
     print(json.dumps({"status": "completed", **summary}, indent=2))
     return 0

@@ -224,6 +224,42 @@ class _StudentTokenController:
         return output.tokens
 
 
+VALID_LIGHTING_DOMAINS = ("Normal", "Low", "ExtremeLow")
+
+
+def role_names(role: str) -> tuple[str, ...]:
+    if role not in ("teacher", "student", "both"):
+        raise ValueError(f"invalid role: {role}")
+    return ("teacher", "student") if role == "both" else (role,)
+
+
+def build_role_models(
+    config: Mapping[str, Any], checkpoint: str | Path | None, *, device: str, role: str
+) -> tuple[Any, Any, Any, Any]:
+    """Load only the requested role; student never constructs the teacher."""
+    bridge, stats = _build_bridge({"assets": config["assets"]}, device=torch.device(device))
+    roles = role_names(role)
+    teacher = None
+    if "teacher" in roles:
+        teacher = build_vision_teacher(config, device=device)
+        for module in (teacher.frontend, teacher.vision_tower, teacher.projector):
+            module.eval()
+            for parameter in module.parameters():
+                parameter.requires_grad_(False)
+    student = None
+    if "student" in roles:
+        if checkpoint is None:
+            raise ValueError("student role requires --checkpoint")
+        student = build_all_bench_student(config, device=device)
+        payload = torch.load(Path(checkpoint), map_location="cpu", weights_only=False, mmap=True)
+        student.load_state_dict(normalize_checkpoint_state(payload), strict=True)
+        del payload
+        student.eval()
+        for parameter in student.parameters():
+            parameter.requires_grad_(False)
+    return bridge, stats, teacher, student
+
+
 def run(
     config: Mapping[str, Any],
     catalog: str | Path,
@@ -233,7 +269,12 @@ def run(
     device: str = "cuda:0",
     max_episodes: int = 20,
     libero_config: str | Path | None = None,
+    lighting_domain: str = "Normal",
+    role: str = "both",
 ) -> dict[str, Any]:
+    roles = role_names(role)
+    if lighting_domain not in VALID_LIGHTING_DOMAINS:
+        raise ValueError(f"invalid lighting domain: {lighting_domain}")
     out = Path(output)
     out.mkdir(parents=True, exist_ok=True)
     entries, states = load_test_states(catalog)
@@ -242,29 +283,11 @@ def run(
     adapter = LIBEROEnvAdapter(
         author_root=assets["author_root"],
         libero_config=libero_config or assets.get("libero_config", ""),
+        lighting_domain=lighting_domain,
     )
-    bridge, stats = _build_bridge(
-        {
-            "assets": {
-                **assets,
-                "tokenizer": assets["tokenizer"],
-                "statistics": assets["statistics"],
-            }
-        },
-        device=torch.device(device),
+    bridge, stats, teacher, student = build_role_models(
+        config, checkpoint, device=device, role=role
     )
-    teacher = build_vision_teacher(config, device=device)
-    student = build_all_bench_student(config, device=device)
-    payload = torch.load(Path(checkpoint), map_location="cpu", weights_only=False, mmap=True)
-    student.load_state_dict(normalize_checkpoint_state(payload), strict=True)
-    del payload
-    student.eval()
-    for p in student.parameters():
-        p.requires_grad_(False)
-    for module in (teacher.frontend, teacher.vision_tower, teacher.projector):
-        module.eval()
-        for p in module.parameters():
-            p.requires_grad_(False)
     instruction = INSTRUCTION
     results: list[dict[str, Any]] = []
     ledger = out / "attempts.jsonl"
@@ -273,19 +296,33 @@ def run(
         with ledger.open("a", encoding="utf-8") as stream:
             stream.write(json.dumps(dict(row)) + "\n")
 
-    teacher_tokens = _TeacherTokenController(teacher, torch.device(device))
-    student_tokens = _StudentTokenController(student, torch.device(device))
-    pairs = [(role, entry) for entry in entries for role in ("teacher", "student")]
-    for role, entry in pairs:
-        teacher_tokens.states = {camera: None for camera in ("agentview", "wrist")}
-        teacher_tokens.thetas = {camera: None for camera in ("agentview", "wrist")}
-        student_tokens.state = None
+    teacher_tokens = (
+        _TeacherTokenController(teacher, torch.device(device)) if teacher is not None else None
+    )
+    student_tokens = (
+        _StudentTokenController(student, torch.device(device)) if student is not None else None
+    )
+    pairs = [(current_role, entry) for entry in entries for current_role in roles]
+    for current_role, entry in pairs:
+        if teacher_tokens is not None:
+            teacher_tokens.states = {camera: None for camera in ("agentview", "wrist")}
+            teacher_tokens.thetas = {camera: None for camera in ("agentview", "wrist")}
+        if student_tokens is not None:
+            student_tokens.state = None
         episode_id = str(entry["id"])
         seed = int(entry["seed"])
         start = time.monotonic()
-        record({"role": role, "episode_id": episode_id, "status": "started", "seed": seed})
+        record(
+            {
+                "role": current_role,
+                "episode_id": episode_id,
+                "status": "started",
+                "seed": seed,
+                "lighting_domain": lighting_domain,
+            }
+        )
         env_obj = adapter.bind(entry, states)
-        video_path = out / f"{role}_{episode_id}.mp4"
+        video_path = out / f"{current_role}_{episode_id}.mp4"
         import imageio.v2 as imageio
 
         media = imageio.get_writer(str(video_path), fps=10, codec="libx264")
@@ -333,9 +370,11 @@ def run(
                         first_raw_burst = np.stack(
                             [np.stack([item[k] for k in ("agentview", "wrist")]) for item in ring]
                         )
-                    if role == "teacher":
+                    if current_role == "teacher":
+                        assert teacher_tokens is not None
                         tokens = teacher_tokens.tokens(ring)
                     else:
+                        assert student_tokens is not None
                         tokens = student_tokens.tokens(episode_id, 10 + steps, ring)
                     from owac.backends.rawvla_language import prepare_language_state
 
@@ -381,13 +420,15 @@ def run(
                 noise=np.asarray(noise_rows),
                 first_raw=first_raw,
                 initial_state=np.asarray(states[int(entry["array_index"])]),
+                lighting_json=np.asarray(json.dumps(lighting)),
+                lighting_domain=np.asarray([lighting_domain]),
                 episode_id=np.asarray([episode_id]),
                 seed=np.asarray([seed]),
                 success=np.asarray([success]),
                 steps=np.asarray([steps]),
             )
             result = {
-                "role": role,
+                "role": current_role,
                 "episode_id": episode_id,
                 "seed": seed,
                 "success": success,
@@ -395,37 +436,65 @@ def run(
                 "replans": replans,
                 "video": str(video_path),
                 "seconds": time.monotonic() - start,
+                "lighting_domain": lighting_domain,
+                "lighting": lighting,
             }
             results.append(result)
             record({**result, "status": "completed"})
         except Exception as exc:
-            record({"role": role, "episode_id": episode_id, "status": "error", "error": repr(exc)})
+            record(
+                {
+                    "role": current_role,
+                    "episode_id": episode_id,
+                    "status": "error",
+                    "lighting_domain": lighting_domain,
+                    "error": repr(exc),
+                }
+            )
             raise
         finally:
             media.close()
             env_obj.close()
-    summary = {}
-    for role in ("teacher", "student"):
-        rows = [r for r in results if r["role"] == role]
+    summary: dict[str, Any] = {"role": role, "lighting_domain": lighting_domain}
+    for current_role in roles:
+        rows = [r for r in results if r["role"] == current_role]
         success = sum(bool(r["success"]) for r in rows)
-        summary[role] = {
+        summary[current_role] = {
             "success": success,
             "attempted": len(rows),
             "wilson": _wilson(success, len(rows)),
         }
     teacher_map = {r["episode_id"]: r for r in results if r["role"] == "teacher"}
     student_map = {r["episode_id"]: r for r in results if r["role"] == "student"}
-    summary["paired"] = {
-        "regressions": [
-            e
-            for e in teacher_map
-            if teacher_map[e]["success"] and not student_map.get(e, {}).get("success")
-        ],
-        "recoveries": [
-            e
-            for e in student_map
-            if student_map[e]["success"] and not teacher_map.get(e, {}).get("success")
-        ],
+    common = sorted(set(teacher_map) & set(student_map))
+    paired: dict[str, Any] = {
+        "status": (
+            "not_requested"
+            if len(roles) < 2
+            else "partial"
+            if len(common) < max(len(teacher_map), len(student_map))
+            else "complete"
+        ),
+        "requested_roles": list(roles),
+        "common": len(common),
+        "missing_teacher": sorted(set(student_map) - set(teacher_map)),
+        "missing_student": sorted(set(teacher_map) - set(student_map)),
+        "regressions": [],
+        "recoveries": [],
     }
+    if common:
+        paired["regressions"] = [
+            e for e in common if teacher_map[e]["success"] and not student_map[e]["success"]
+        ]
+        paired["recoveries"] = [
+            e for e in common if student_map[e]["success"] and not teacher_map[e]["success"]
+        ]
+        paired["both_success"] = sum(
+            teacher_map[e]["success"] and student_map[e]["success"] for e in common
+        )
+        paired["both_failure"] = sum(
+            not teacher_map[e]["success"] and not student_map[e]["success"] for e in common
+        )
+    summary["paired"] = paired
     (out / "summary.json").write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
     return summary

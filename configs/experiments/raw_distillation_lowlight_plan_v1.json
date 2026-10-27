@@ -1,0 +1,130 @@
+{
+  "schema": "owac.lowlight.evaluation-proposal.v1",
+  "status": "completed_evaluation",
+  "experiment_authorized": true,
+  "task": {
+    "suite": "libero_goal",
+    "task_id": 6,
+    "name": "put_the_cream_cheese_in_the_bowl"
+  },
+  "base_config": "outputs/raw-distillation-all-bench-20261022/closed-loop-final84768/config.json",
+  "student_checkpoint": "outputs/raw-distillation-all-bench-20261022/student-final84768-eval.pt",
+  "teacher_frontend": "outputs/rawvla-teacher-20261020/teacher-validated-normal-task6-init0.pt",
+  "catalog": "outputs/rawvla-teacher-20261020/initial-states/manifest.json",
+  "episodes": [
+    "test-101100",
+    "test-101101",
+    "test-101102",
+    "test-101103",
+    "test-101104",
+    "test-101105",
+    "test-101106",
+    "test-101107",
+    "test-101108",
+    "test-101109",
+    "test-101110",
+    "test-101111",
+    "test-101112",
+    "test-101113",
+    "test-101114",
+    "test-101115",
+    "test-101116",
+    "test-101117",
+    "test-101118",
+    "test-101119"
+  ],
+  "conditions": [
+    {
+      "domain": "Normal",
+      "ev_range": [
+        -0.5,
+        0.5
+      ]
+    },
+    {
+      "domain": "Low",
+      "ev_range": [
+        -4,
+        -2.5
+      ]
+    },
+    {
+      "domain": "ExtremeLow",
+      "ev_range": [
+        -5.5,
+        -4
+      ]
+    }
+  ],
+  "proposed_rollouts": 120,
+  "roles": [
+    "teacher",
+    "student"
+  ],
+  "lighting_sampling": "per episode numpy default_rng(episode seed): u=rng.random(), sample_unit=rng.random(); ev=low+u*(high-low); same u across domains and roles",
+  "imaging": {
+    "noise_seed": "episode_seed XOR 0x5A17",
+    "exposure_ev": 0.0,
+    "sensor_saturation_ev": 0.0,
+    "shot_noise": 0.0004,
+    "read_noise": 1e-05,
+    "noise_variance": "shot_noise * normalized_raw + read_noise",
+    "representation": "RGB8 inverse pseudoRAW10 quantized to uint8 three-channel view; normalized /255",
+    "cameras": [
+      "agentview",
+      "wrist"
+    ]
+  },
+  "control": {
+    "wait_steps": 10,
+    "max_policy_steps": 300,
+    "action_horizon": 10,
+    "flow_steps": 10,
+    "replan_steps": 5,
+    "raw_history_frames": 6,
+    "sampling_noise": "reuse paired_noise(seed, episode_id, decision_step)"
+  },
+  "isolation": "independent role processes; student assets exclude teacher and normal-light inputs; reset env and all temporal states each episode",
+  "resource_policy": {
+    "new_owned_outputs_and_tokens_cache_cap_gib": 380,
+    "remote_usage": {
+      "bytes_by_root": {
+        "/root/owac/repo/outputs/raw-distillation-all-bench-20261022": 27901090395,
+        "/root/autodl-tmp/owac-all-bench-20261022": 366055590658
+      },
+      "total_bytes": 393956681053,
+      "cap_bytes": 408021893120,
+      "observed_at": "2026-10-27T12:32:51.715179+08:00",
+      "within_cap": true
+    },
+    "no_other_resource_thresholds": true
+  },
+  "results": {
+    "Normal": {
+      "teacher_success": 20,
+      "student_success": 20,
+      "per_role_total": 20
+    },
+    "Low": {
+      "teacher_success": 11,
+      "student_success": 9,
+      "per_role_total": 20,
+      "regressions": 2,
+      "recoveries": 0
+    },
+    "ExtremeLow": {
+      "teacher_success": 0,
+      "student_success": 0,
+      "per_role_total": 20
+    }
+  },
+  "implementation_gaps": [],
+  "authorization": "2026-10-27 用户授权在服务器进行LOWLIGHT双模型对照验证",
+  "execution_root": "/root/owac/repo/outputs/raw-distillation-all-bench-20261022/lowlight-20261027",
+  "training_authorized": false,
+  "remaining_research": [
+    "targeted lowlight adaptation not started",
+    "normal-RAW-teacher paired targets not generated",
+    "independent initial states and native Bayer not evaluated"
+  ]
+}

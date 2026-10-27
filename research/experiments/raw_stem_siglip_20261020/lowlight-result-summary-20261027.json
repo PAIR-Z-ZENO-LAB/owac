@@ -1,0 +1,2348 @@
+{
+  "milestone": "蒸馏成功",
+  "accepted_at": "2026-10-27",
+  "scope": "RAW student causal token path and frozen-backend control reproduction; historical20 LIBERO goal/task6; not general lowlight robustness",
+  "checkpoint": {
+    "global_step": 84768
+  },
+  "conditions": {
+    "Normal": {
+      "paired": {
+        "status": "complete",
+        "common": 20,
+        "teacher_only": [],
+        "student_only": [],
+        "regressions": [],
+        "recoveries": [],
+        "both_success": 20,
+        "both_failure": 0
+      },
+      "roles": {
+        "teacher": {
+          "summary": {
+            "success": 20,
+            "denominator": 20,
+            "completed": 20,
+            "errors": 0,
+            "missing": 0,
+            "wilson": [
+              0.8388698745050667,
+              1.0
+            ],
+            "error_ids": [],
+            "missing_ids": [],
+            "extra_audits": []
+          },
+          "trials": [
+            {
+              "episode_id": "test-101100",
+              "seed": 101100,
+              "success": true,
+              "steps": 102,
+              "lighting": {
+                "lighting_ev": 0.34276765538453957,
+                "lighting_scale": 1.2681871425883278,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119035,
+                "lighting_domain": "Normal",
+                "representation": "Normal",
+                "ev": 0.34276765538453957,
+                "sample_unit": 0.10660566199803534
+              }
+            },
+            {
+              "episode_id": "test-101101",
+              "seed": 101101,
+              "success": true,
+              "steps": 87,
+              "lighting": {
+                "lighting_ev": 0.029699124967178414,
+                "lighting_scale": 1.0207992151354668,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119034,
+                "lighting_domain": "Normal",
+                "representation": "Normal",
+                "ev": 0.029699124967178414,
+                "sample_unit": 0.4371475498864775
+              }
+            },
+            {
+              "episode_id": "test-101102",
+              "seed": 101102,
+              "success": true,
+              "steps": 87,
+              "lighting": {
+                "lighting_ev": 0.4510572524586497,
+                "lighting_scale": 1.3670417010681226,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119033,
+                "lighting_domain": "Normal",
+                "representation": "Normal",
+                "ev": 0.4510572524586497,
+                "sample_unit": 0.07662708004227181
+              }
+            },
+            {
+              "episode_id": "test-101103",
+              "seed": 101103,
+              "success": true,
+              "steps": 90,
+              "lighting": {
+                "lighting_ev": 0.4546126362231182,
+                "lighting_scale": 1.3704147990530857,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119032,
+                "lighting_domain": "Normal",
+                "representation": "Normal",
+                "ev": 0.4546126362231182,
+                "sample_unit": 0.3802820293485233
+              }
+            },
+            {
+              "episode_id": "test-101104",
+              "seed": 101104,
+              "success": true,
+              "steps": 104,
+              "lighting": {
+                "lighting_ev": 0.29061019533842003,
+                "lighting_scale": 1.2231575091040006,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119015,
+                "lighting_domain": "Normal",
+                "representation": "Normal",
+                "ev": 0.29061019533842003,
+                "sample_unit": 0.30067767119509003
+              }
+            },
+            {
+              "episode_id": "test-101105",
+              "seed": 101105,
+              "success": true,
+              "steps": 92,
+              "lighting": {
+                "lighting_ev": 0.35258110523909936,
+                "lighting_scale": 1.2768429667050563,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119014,
+                "lighting_domain": "Normal",
+                "representation": "Normal",
+                "ev": 0.35258110523909936,
+                "sample_unit": 0.9143018269334747
+              }
+            },
+            {
+              "episode_id": "test-101106",
+              "seed": 101106,
+              "success": true,
+              "steps": 87,
+              "lighting": {
+                "lighting_ev": 0.2884357935260822,
+                "lighting_scale": 1.221315378535768,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119013,
+                "lighting_domain": "Normal",
+                "representation": "Normal",
+                "ev": 0.2884357935260822,
+                "sample_unit": 0.9961760990835293
+              }
+            },
+            {
+              "episode_id": "test-101107",
+              "seed": 101107,
+              "success": true,
+              "steps": 88,
+              "lighting": {
+                "lighting_ev": -0.34330325802495243,
+                "lighting_scale": 0.7882344678286078,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119012,
+                "lighting_domain": "Normal",
+                "representation": "Normal",
+                "ev": -0.34330325802495243,
+                "sample_unit": 0.8562774965249896
+              }
+            },
+            {
+              "episode_id": "test-101108",
+              "seed": 101108,
+              "success": true,
+              "steps": 89,
+              "lighting": {
+                "lighting_ev": -0.31595343319170655,
+                "lighting_scale": 0.8033199256194746,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119011,
+                "lighting_domain": "Normal",
+                "representation": "Normal",
+                "ev": -0.31595343319170655,
+                "sample_unit": 0.6622216457693029
+              }
+            },
+            {
+              "episode_id": "test-101109",
+              "seed": 101109,
+              "success": true,
+              "steps": 98,
+              "lighting": {
+                "lighting_ev": 0.3846595319334247,
+                "lighting_scale": 1.3055516477479876,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119010,
+                "lighting_domain": "Normal",
+                "representation": "Normal",
+                "ev": 0.3846595319334247,
+                "sample_unit": 0.378842980983066
+              }
+            },
+            {
+              "episode_id": "test-101110",
+              "seed": 101110,
+              "success": true,
+              "steps": 88,
+              "lighting": {
+                "lighting_ev": -0.4023880760658516,
+                "lighting_scale": 0.7566048470729665,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119009,
+                "lighting_domain": "Normal",
+                "representation": "Normal",
+                "ev": -0.4023880760658516,
+                "sample_unit": 0.5958529700582695
+              }
+            },
+            {
+              "episode_id": "test-101111",
+              "seed": 101111,
+              "success": true,
+              "steps": 92,
+              "lighting": {
+                "lighting_ev": -0.41603395801350107,
+                "lighting_scale": 0.7494821594330466,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119008,
+                "lighting_domain": "Normal",
+                "representation": "Normal",
+                "ev": -0.41603395801350107,
+                "sample_unit": 0.9895788049636962
+              }
+            },
+            {
+              "episode_id": "test-101112",
+              "seed": 101112,
+              "success": true,
+              "steps": 89,
+              "lighting": {
+                "lighting_ev": 0.338735099852735,
+                "lighting_scale": 1.264647313083148,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119023,
+                "lighting_domain": "Normal",
+                "representation": "Normal",
+                "ev": 0.338735099852735,
+                "sample_unit": 0.20963817669778306
+              }
+            },
+            {
+              "episode_id": "test-101113",
+              "seed": 101113,
+              "success": true,
+              "steps": 91,
+              "lighting": {
+                "lighting_ev": -0.4663417611363281,
+                "lighting_scale": 0.7237976049088606,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119022,
+                "lighting_domain": "Normal",
+                "representation": "Normal",
+                "ev": -0.4663417611363281,
+                "sample_unit": 0.5787818364207992
+              }
+            },
+            {
+              "episode_id": "test-101114",
+              "seed": 101114,
+              "success": true,
+              "steps": 121,
+              "lighting": {
+                "lighting_ev": -0.19729805752849194,
+                "lighting_scale": 0.872182496227278,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119021,
+                "lighting_domain": "Normal",
+                "representation": "Normal",
+                "ev": -0.19729805752849194,
+                "sample_unit": 0.08436039573318965
+              }
+            },
+            {
+              "episode_id": "test-101115",
+              "seed": 101115,
+              "success": true,
+              "steps": 101,
+              "lighting": {
+                "lighting_ev": 0.3850567195528709,
+                "lighting_scale": 1.3059111279732647,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119020,
+                "lighting_domain": "Normal",
+                "representation": "Normal",
+                "ev": 0.3850567195528709,
+                "sample_unit": 0.6083359358073863
+              }
+            },
+            {
+              "episode_id": "test-101116",
+              "seed": 101116,
+              "success": true,
+              "steps": 91,
+              "lighting": {
+                "lighting_ev": -0.31926967062738354,
+                "lighting_scale": 0.8014755024458202,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119019,
+                "lighting_domain": "Normal",
+                "representation": "Normal",
+                "ev": -0.31926967062738354,
+                "sample_unit": 0.6102513175358019
+              }
+            },
+            {
+              "episode_id": "test-101117",
+              "seed": 101117,
+              "success": true,
+              "steps": 99,
+              "lighting": {
+                "lighting_ev": -0.4499862179798778,
+                "lighting_scale": 0.7320498411884026,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119018,
+                "lighting_domain": "Normal",
+                "representation": "Normal",
+                "ev": -0.4499862179798778,
+                "sample_unit": 0.07934806845817488
+              }
+            },
+            {
+              "episode_id": "test-101118",
+              "seed": 101118,
+              "success": true,
+              "steps": 89,
+              "lighting": {
+                "lighting_ev": -0.43958665549677,
+                "lighting_scale": 0.7373458342908759,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119017,
+                "lighting_domain": "Normal",
+                "representation": "Normal",
+                "ev": -0.43958665549677,
+                "sample_unit": 0.08673875847346069
+              }
+            },
+            {
+              "episode_id": "test-101119",
+              "seed": 101119,
+              "success": true,
+              "steps": 94,
+              "lighting": {
+                "lighting_ev": 0.43707144627464867,
+                "lighting_scale": 1.3538533239778263,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119016,
+                "lighting_domain": "Normal",
+                "representation": "Normal",
+                "ev": 0.43707144627464867,
+                "sample_unit": 0.16458727970348408
+              }
+            }
+          ]
+        },
+        "student": {
+          "summary": {
+            "success": 20,
+            "denominator": 20,
+            "completed": 20,
+            "errors": 0,
+            "missing": 0,
+            "wilson": [
+              0.8388698745050667,
+              1.0
+            ],
+            "error_ids": [],
+            "missing_ids": [],
+            "extra_audits": []
+          },
+          "trials": [
+            {
+              "episode_id": "test-101100",
+              "seed": 101100,
+              "success": true,
+              "steps": 95,
+              "lighting": {
+                "lighting_ev": 0.34276765538453957,
+                "lighting_scale": 1.2681871425883278,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119035,
+                "lighting_domain": "Normal",
+                "representation": "Normal",
+                "ev": 0.34276765538453957,
+                "sample_unit": 0.10660566199803534
+              }
+            },
+            {
+              "episode_id": "test-101101",
+              "seed": 101101,
+              "success": true,
+              "steps": 87,
+              "lighting": {
+                "lighting_ev": 0.029699124967178414,
+                "lighting_scale": 1.0207992151354668,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119034,
+                "lighting_domain": "Normal",
+                "representation": "Normal",
+                "ev": 0.029699124967178414,
+                "sample_unit": 0.4371475498864775
+              }
+            },
+            {
+              "episode_id": "test-101102",
+              "seed": 101102,
+              "success": true,
+              "steps": 93,
+              "lighting": {
+                "lighting_ev": 0.4510572524586497,
+                "lighting_scale": 1.3670417010681226,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119033,
+                "lighting_domain": "Normal",
+                "representation": "Normal",
+                "ev": 0.4510572524586497,
+                "sample_unit": 0.07662708004227181
+              }
+            },
+            {
+              "episode_id": "test-101103",
+              "seed": 101103,
+              "success": true,
+              "steps": 86,
+              "lighting": {
+                "lighting_ev": 0.4546126362231182,
+                "lighting_scale": 1.3704147990530857,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119032,
+                "lighting_domain": "Normal",
+                "representation": "Normal",
+                "ev": 0.4546126362231182,
+                "sample_unit": 0.3802820293485233
+              }
+            },
+            {
+              "episode_id": "test-101104",
+              "seed": 101104,
+              "success": true,
+              "steps": 96,
+              "lighting": {
+                "lighting_ev": 0.29061019533842003,
+                "lighting_scale": 1.2231575091040006,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119015,
+                "lighting_domain": "Normal",
+                "representation": "Normal",
+                "ev": 0.29061019533842003,
+                "sample_unit": 0.30067767119509003
+              }
+            },
+            {
+              "episode_id": "test-101105",
+              "seed": 101105,
+              "success": true,
+              "steps": 87,
+              "lighting": {
+                "lighting_ev": 0.35258110523909936,
+                "lighting_scale": 1.2768429667050563,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119014,
+                "lighting_domain": "Normal",
+                "representation": "Normal",
+                "ev": 0.35258110523909936,
+                "sample_unit": 0.9143018269334747
+              }
+            },
+            {
+              "episode_id": "test-101106",
+              "seed": 101106,
+              "success": true,
+              "steps": 95,
+              "lighting": {
+                "lighting_ev": 0.2884357935260822,
+                "lighting_scale": 1.221315378535768,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119013,
+                "lighting_domain": "Normal",
+                "representation": "Normal",
+                "ev": 0.2884357935260822,
+                "sample_unit": 0.9961760990835293
+              }
+            },
+            {
+              "episode_id": "test-101107",
+              "seed": 101107,
+              "success": true,
+              "steps": 96,
+              "lighting": {
+                "lighting_ev": -0.34330325802495243,
+                "lighting_scale": 0.7882344678286078,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119012,
+                "lighting_domain": "Normal",
+                "representation": "Normal",
+                "ev": -0.34330325802495243,
+                "sample_unit": 0.8562774965249896
+              }
+            },
+            {
+              "episode_id": "test-101108",
+              "seed": 101108,
+              "success": true,
+              "steps": 106,
+              "lighting": {
+                "lighting_ev": -0.31595343319170655,
+                "lighting_scale": 0.8033199256194746,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119011,
+                "lighting_domain": "Normal",
+                "representation": "Normal",
+                "ev": -0.31595343319170655,
+                "sample_unit": 0.6622216457693029
+              }
+            },
+            {
+              "episode_id": "test-101109",
+              "seed": 101109,
+              "success": true,
+              "steps": 92,
+              "lighting": {
+                "lighting_ev": 0.3846595319334247,
+                "lighting_scale": 1.3055516477479876,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119010,
+                "lighting_domain": "Normal",
+                "representation": "Normal",
+                "ev": 0.3846595319334247,
+                "sample_unit": 0.378842980983066
+              }
+            },
+            {
+              "episode_id": "test-101110",
+              "seed": 101110,
+              "success": true,
+              "steps": 91,
+              "lighting": {
+                "lighting_ev": -0.4023880760658516,
+                "lighting_scale": 0.7566048470729665,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119009,
+                "lighting_domain": "Normal",
+                "representation": "Normal",
+                "ev": -0.4023880760658516,
+                "sample_unit": 0.5958529700582695
+              }
+            },
+            {
+              "episode_id": "test-101111",
+              "seed": 101111,
+              "success": true,
+              "steps": 98,
+              "lighting": {
+                "lighting_ev": -0.41603395801350107,
+                "lighting_scale": 0.7494821594330466,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119008,
+                "lighting_domain": "Normal",
+                "representation": "Normal",
+                "ev": -0.41603395801350107,
+                "sample_unit": 0.9895788049636962
+              }
+            },
+            {
+              "episode_id": "test-101112",
+              "seed": 101112,
+              "success": true,
+              "steps": 92,
+              "lighting": {
+                "lighting_ev": 0.338735099852735,
+                "lighting_scale": 1.264647313083148,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119023,
+                "lighting_domain": "Normal",
+                "representation": "Normal",
+                "ev": 0.338735099852735,
+                "sample_unit": 0.20963817669778306
+              }
+            },
+            {
+              "episode_id": "test-101113",
+              "seed": 101113,
+              "success": true,
+              "steps": 98,
+              "lighting": {
+                "lighting_ev": -0.4663417611363281,
+                "lighting_scale": 0.7237976049088606,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119022,
+                "lighting_domain": "Normal",
+                "representation": "Normal",
+                "ev": -0.4663417611363281,
+                "sample_unit": 0.5787818364207992
+              }
+            },
+            {
+              "episode_id": "test-101114",
+              "seed": 101114,
+              "success": true,
+              "steps": 102,
+              "lighting": {
+                "lighting_ev": -0.19729805752849194,
+                "lighting_scale": 0.872182496227278,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119021,
+                "lighting_domain": "Normal",
+                "representation": "Normal",
+                "ev": -0.19729805752849194,
+                "sample_unit": 0.08436039573318965
+              }
+            },
+            {
+              "episode_id": "test-101115",
+              "seed": 101115,
+              "success": true,
+              "steps": 98,
+              "lighting": {
+                "lighting_ev": 0.3850567195528709,
+                "lighting_scale": 1.3059111279732647,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119020,
+                "lighting_domain": "Normal",
+                "representation": "Normal",
+                "ev": 0.3850567195528709,
+                "sample_unit": 0.6083359358073863
+              }
+            },
+            {
+              "episode_id": "test-101116",
+              "seed": 101116,
+              "success": true,
+              "steps": 93,
+              "lighting": {
+                "lighting_ev": -0.31926967062738354,
+                "lighting_scale": 0.8014755024458202,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119019,
+                "lighting_domain": "Normal",
+                "representation": "Normal",
+                "ev": -0.31926967062738354,
+                "sample_unit": 0.6102513175358019
+              }
+            },
+            {
+              "episode_id": "test-101117",
+              "seed": 101117,
+              "success": true,
+              "steps": 93,
+              "lighting": {
+                "lighting_ev": -0.4499862179798778,
+                "lighting_scale": 0.7320498411884026,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119018,
+                "lighting_domain": "Normal",
+                "representation": "Normal",
+                "ev": -0.4499862179798778,
+                "sample_unit": 0.07934806845817488
+              }
+            },
+            {
+              "episode_id": "test-101118",
+              "seed": 101118,
+              "success": true,
+              "steps": 92,
+              "lighting": {
+                "lighting_ev": -0.43958665549677,
+                "lighting_scale": 0.7373458342908759,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119017,
+                "lighting_domain": "Normal",
+                "representation": "Normal",
+                "ev": -0.43958665549677,
+                "sample_unit": 0.08673875847346069
+              }
+            },
+            {
+              "episode_id": "test-101119",
+              "seed": 101119,
+              "success": true,
+              "steps": 91,
+              "lighting": {
+                "lighting_ev": 0.43707144627464867,
+                "lighting_scale": 1.3538533239778263,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119016,
+                "lighting_domain": "Normal",
+                "representation": "Normal",
+                "ev": 0.43707144627464867,
+                "sample_unit": 0.16458727970348408
+              }
+            }
+          ]
+        }
+      }
+    },
+    "Low": {
+      "paired": {
+        "status": "complete",
+        "common": 20,
+        "teacher_only": [],
+        "student_only": [],
+        "regressions": [
+          "test-101101",
+          "test-101106"
+        ],
+        "recoveries": [],
+        "both_success": 9,
+        "both_failure": 9
+      },
+      "roles": {
+        "teacher": {
+          "summary": {
+            "success": 11,
+            "denominator": 20,
+            "completed": 20,
+            "errors": 0,
+            "missing": 0,
+            "wilson": [
+              0.3420820083075997,
+              0.7418049791429071
+            ],
+            "error_ids": [],
+            "missing_ids": [],
+            "extra_audits": []
+          },
+          "trials": [
+            {
+              "episode_id": "test-101100",
+              "seed": 101100,
+              "success": true,
+              "steps": 92,
+              "lighting": {
+                "lighting_ev": -2.7358485169231908,
+                "lighting_scale": 0.15011618981824118,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119035,
+                "lighting_domain": "Low",
+                "representation": "Low",
+                "ev": -2.7358485169231908,
+                "sample_unit": 0.10660566199803534
+              }
+            },
+            {
+              "episode_id": "test-101101",
+              "seed": 101101,
+              "success": true,
+              "steps": 165,
+              "lighting": {
+                "lighting_ev": -3.2054513125492323,
+                "lighting_scale": 0.10840841761509394,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119034,
+                "lighting_domain": "Low",
+                "representation": "Low",
+                "ev": -3.2054513125492323,
+                "sample_unit": 0.4371475498864775
+              }
+            },
+            {
+              "episode_id": "test-101102",
+              "seed": 101102,
+              "success": true,
+              "steps": 95,
+              "lighting": {
+                "lighting_ev": -2.5734141213120254,
+                "lighting_scale": 0.1680061416846142,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119033,
+                "lighting_domain": "Low",
+                "representation": "Low",
+                "ev": -2.5734141213120254,
+                "sample_unit": 0.07662708004227181
+              }
+            },
+            {
+              "episode_id": "test-101103",
+              "seed": 101103,
+              "success": true,
+              "steps": 115,
+              "lighting": {
+                "lighting_ev": -2.5680810456653225,
+                "lighting_scale": 0.16862834356368742,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119032,
+                "lighting_domain": "Low",
+                "representation": "Low",
+                "ev": -2.5680810456653225,
+                "sample_unit": 0.3802820293485233
+              }
+            },
+            {
+              "episode_id": "test-101104",
+              "seed": 101104,
+              "success": true,
+              "steps": 115,
+              "lighting": {
+                "lighting_ev": -2.81408470699237,
+                "lighting_scale": 0.14219230450128004,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119015,
+                "lighting_domain": "Low",
+                "representation": "Low",
+                "ev": -2.81408470699237,
+                "sample_unit": 0.30067767119509003
+              }
+            },
+            {
+              "episode_id": "test-101105",
+              "seed": 101105,
+              "success": true,
+              "steps": 111,
+              "lighting": {
+                "lighting_ev": -2.721128342141351,
+                "lighting_scale": 0.15165570314062207,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119014,
+                "lighting_domain": "Low",
+                "representation": "Low",
+                "ev": -2.721128342141351,
+                "sample_unit": 0.9143018269334747
+              }
+            },
+            {
+              "episode_id": "test-101106",
+              "seed": 101106,
+              "success": true,
+              "steps": 112,
+              "lighting": {
+                "lighting_ev": -2.8173463097108766,
+                "lighting_scale": 0.14187120340619702,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119013,
+                "lighting_domain": "Low",
+                "representation": "Low",
+                "ev": -2.8173463097108766,
+                "sample_unit": 0.9961760990835293
+              }
+            },
+            {
+              "episode_id": "test-101107",
+              "seed": 101107,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -3.7649548870374288,
+                "lighting_scale": 0.07355897122356242,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119012,
+                "lighting_domain": "Low",
+                "representation": "Low",
+                "ev": -3.7649548870374288,
+                "sample_unit": 0.8562774965249896
+              }
+            },
+            {
+              "episode_id": "test-101108",
+              "seed": 101108,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -3.72393014978756,
+                "lighting_scale": 0.07568073185268208,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119011,
+                "lighting_domain": "Low",
+                "representation": "Low",
+                "ev": -3.72393014978756,
+                "sample_unit": 0.6622216457693029
+              }
+            },
+            {
+              "episode_id": "test-101109",
+              "seed": 101109,
+              "success": true,
+              "steps": 99,
+              "lighting": {
+                "lighting_ev": -2.673010702099863,
+                "lighting_scale": 0.15679911240455618,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119010,
+                "lighting_domain": "Low",
+                "representation": "Low",
+                "ev": -2.673010702099863,
+                "sample_unit": 0.378842980983066
+              }
+            },
+            {
+              "episode_id": "test-101110",
+              "seed": 101110,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -3.8535821140987774,
+                "lighting_scale": 0.0691761189745355,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119009,
+                "lighting_domain": "Low",
+                "representation": "Low",
+                "ev": -3.8535821140987774,
+                "sample_unit": 0.5958529700582695
+              }
+            },
+            {
+              "episode_id": "test-101111",
+              "seed": 101111,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -3.8740509370202516,
+                "lighting_scale": 0.06820158429018289,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119008,
+                "lighting_domain": "Low",
+                "representation": "Low",
+                "ev": -3.8740509370202516,
+                "sample_unit": 0.9895788049636962
+              }
+            },
+            {
+              "episode_id": "test-101112",
+              "seed": 101112,
+              "success": true,
+              "steps": 100,
+              "lighting": {
+                "lighting_ev": -2.7418973502208974,
+                "lighting_scale": 0.14948811050771998,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119023,
+                "lighting_domain": "Low",
+                "representation": "Low",
+                "ev": -2.7418973502208974,
+                "sample_unit": 0.20963817669778306
+              }
+            },
+            {
+              "episode_id": "test-101113",
+              "seed": 101113,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -3.949512641704492,
+                "lighting_scale": 0.0647259191766857,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119022,
+                "lighting_domain": "Low",
+                "representation": "Low",
+                "ev": -3.949512641704492,
+                "sample_unit": 0.5787818364207992
+              }
+            },
+            {
+              "episode_id": "test-101114",
+              "seed": 101114,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -3.545947086292738,
+                "lighting_scale": 0.08561770138958302,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119021,
+                "lighting_domain": "Low",
+                "representation": "Low",
+                "ev": -3.545947086292738,
+                "sample_unit": 0.08436039573318965
+              }
+            },
+            {
+              "episode_id": "test-101115",
+              "seed": 101115,
+              "success": true,
+              "steps": 113,
+              "lighting": {
+                "lighting_ev": -2.6724149206706937,
+                "lighting_scale": 0.1568638781994287,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119020,
+                "lighting_domain": "Low",
+                "representation": "Low",
+                "ev": -2.6724149206706937,
+                "sample_unit": 0.6083359358073863
+              }
+            },
+            {
+              "episode_id": "test-101116",
+              "seed": 101116,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -3.7289045059410753,
+                "lighting_scale": 0.07542023699125015,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119019,
+                "lighting_domain": "Low",
+                "representation": "Low",
+                "ev": -3.7289045059410753,
+                "sample_unit": 0.6102513175358019
+              }
+            },
+            {
+              "episode_id": "test-101117",
+              "seed": 101117,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -3.9249793269698166,
+                "lighting_scale": 0.06583600813437508,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119018,
+                "lighting_domain": "Low",
+                "representation": "Low",
+                "ev": -3.9249793269698166,
+                "sample_unit": 0.07934806845817488
+              }
+            },
+            {
+              "episode_id": "test-101118",
+              "seed": 101118,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -3.909379983245155,
+                "lighting_scale": 0.06655173172122188,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119017,
+                "lighting_domain": "Low",
+                "representation": "Low",
+                "ev": -3.909379983245155,
+                "sample_unit": 0.08673875847346069
+              }
+            },
+            {
+              "episode_id": "test-101119",
+              "seed": 101119,
+              "success": true,
+              "steps": 110,
+              "lighting": {
+                "lighting_ev": -2.594392830588027,
+                "lighting_scale": 0.1655807850968566,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119016,
+                "lighting_domain": "Low",
+                "representation": "Low",
+                "ev": -2.594392830588027,
+                "sample_unit": 0.16458727970348408
+              }
+            }
+          ]
+        },
+        "student": {
+          "summary": {
+            "success": 9,
+            "denominator": 20,
+            "completed": 20,
+            "errors": 0,
+            "missing": 0,
+            "wilson": [
+              0.25819502085709295,
+              0.6579179916924003
+            ],
+            "error_ids": [],
+            "missing_ids": [],
+            "extra_audits": []
+          },
+          "trials": [
+            {
+              "episode_id": "test-101100",
+              "seed": 101100,
+              "success": true,
+              "steps": 110,
+              "lighting": {
+                "lighting_ev": -2.7358485169231908,
+                "lighting_scale": 0.15011618981824118,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119035,
+                "lighting_domain": "Low",
+                "representation": "Low",
+                "ev": -2.7358485169231908,
+                "sample_unit": 0.10660566199803534
+              }
+            },
+            {
+              "episode_id": "test-101101",
+              "seed": 101101,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -3.2054513125492323,
+                "lighting_scale": 0.10840841761509394,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119034,
+                "lighting_domain": "Low",
+                "representation": "Low",
+                "ev": -3.2054513125492323,
+                "sample_unit": 0.4371475498864775
+              }
+            },
+            {
+              "episode_id": "test-101102",
+              "seed": 101102,
+              "success": true,
+              "steps": 103,
+              "lighting": {
+                "lighting_ev": -2.5734141213120254,
+                "lighting_scale": 0.1680061416846142,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119033,
+                "lighting_domain": "Low",
+                "representation": "Low",
+                "ev": -2.5734141213120254,
+                "sample_unit": 0.07662708004227181
+              }
+            },
+            {
+              "episode_id": "test-101103",
+              "seed": 101103,
+              "success": true,
+              "steps": 121,
+              "lighting": {
+                "lighting_ev": -2.5680810456653225,
+                "lighting_scale": 0.16862834356368742,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119032,
+                "lighting_domain": "Low",
+                "representation": "Low",
+                "ev": -2.5680810456653225,
+                "sample_unit": 0.3802820293485233
+              }
+            },
+            {
+              "episode_id": "test-101104",
+              "seed": 101104,
+              "success": true,
+              "steps": 114,
+              "lighting": {
+                "lighting_ev": -2.81408470699237,
+                "lighting_scale": 0.14219230450128004,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119015,
+                "lighting_domain": "Low",
+                "representation": "Low",
+                "ev": -2.81408470699237,
+                "sample_unit": 0.30067767119509003
+              }
+            },
+            {
+              "episode_id": "test-101105",
+              "seed": 101105,
+              "success": true,
+              "steps": 110,
+              "lighting": {
+                "lighting_ev": -2.721128342141351,
+                "lighting_scale": 0.15165570314062207,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119014,
+                "lighting_domain": "Low",
+                "representation": "Low",
+                "ev": -2.721128342141351,
+                "sample_unit": 0.9143018269334747
+              }
+            },
+            {
+              "episode_id": "test-101106",
+              "seed": 101106,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -2.8173463097108766,
+                "lighting_scale": 0.14187120340619702,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119013,
+                "lighting_domain": "Low",
+                "representation": "Low",
+                "ev": -2.8173463097108766,
+                "sample_unit": 0.9961760990835293
+              }
+            },
+            {
+              "episode_id": "test-101107",
+              "seed": 101107,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -3.7649548870374288,
+                "lighting_scale": 0.07355897122356242,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119012,
+                "lighting_domain": "Low",
+                "representation": "Low",
+                "ev": -3.7649548870374288,
+                "sample_unit": 0.8562774965249896
+              }
+            },
+            {
+              "episode_id": "test-101108",
+              "seed": 101108,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -3.72393014978756,
+                "lighting_scale": 0.07568073185268208,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119011,
+                "lighting_domain": "Low",
+                "representation": "Low",
+                "ev": -3.72393014978756,
+                "sample_unit": 0.6622216457693029
+              }
+            },
+            {
+              "episode_id": "test-101109",
+              "seed": 101109,
+              "success": true,
+              "steps": 102,
+              "lighting": {
+                "lighting_ev": -2.673010702099863,
+                "lighting_scale": 0.15679911240455618,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119010,
+                "lighting_domain": "Low",
+                "representation": "Low",
+                "ev": -2.673010702099863,
+                "sample_unit": 0.378842980983066
+              }
+            },
+            {
+              "episode_id": "test-101110",
+              "seed": 101110,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -3.8535821140987774,
+                "lighting_scale": 0.0691761189745355,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119009,
+                "lighting_domain": "Low",
+                "representation": "Low",
+                "ev": -3.8535821140987774,
+                "sample_unit": 0.5958529700582695
+              }
+            },
+            {
+              "episode_id": "test-101111",
+              "seed": 101111,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -3.8740509370202516,
+                "lighting_scale": 0.06820158429018289,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119008,
+                "lighting_domain": "Low",
+                "representation": "Low",
+                "ev": -3.8740509370202516,
+                "sample_unit": 0.9895788049636962
+              }
+            },
+            {
+              "episode_id": "test-101112",
+              "seed": 101112,
+              "success": true,
+              "steps": 114,
+              "lighting": {
+                "lighting_ev": -2.7418973502208974,
+                "lighting_scale": 0.14948811050771998,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119023,
+                "lighting_domain": "Low",
+                "representation": "Low",
+                "ev": -2.7418973502208974,
+                "sample_unit": 0.20963817669778306
+              }
+            },
+            {
+              "episode_id": "test-101113",
+              "seed": 101113,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -3.949512641704492,
+                "lighting_scale": 0.0647259191766857,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119022,
+                "lighting_domain": "Low",
+                "representation": "Low",
+                "ev": -3.949512641704492,
+                "sample_unit": 0.5787818364207992
+              }
+            },
+            {
+              "episode_id": "test-101114",
+              "seed": 101114,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -3.545947086292738,
+                "lighting_scale": 0.08561770138958302,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119021,
+                "lighting_domain": "Low",
+                "representation": "Low",
+                "ev": -3.545947086292738,
+                "sample_unit": 0.08436039573318965
+              }
+            },
+            {
+              "episode_id": "test-101115",
+              "seed": 101115,
+              "success": true,
+              "steps": 123,
+              "lighting": {
+                "lighting_ev": -2.6724149206706937,
+                "lighting_scale": 0.1568638781994287,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119020,
+                "lighting_domain": "Low",
+                "representation": "Low",
+                "ev": -2.6724149206706937,
+                "sample_unit": 0.6083359358073863
+              }
+            },
+            {
+              "episode_id": "test-101116",
+              "seed": 101116,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -3.7289045059410753,
+                "lighting_scale": 0.07542023699125015,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119019,
+                "lighting_domain": "Low",
+                "representation": "Low",
+                "ev": -3.7289045059410753,
+                "sample_unit": 0.6102513175358019
+              }
+            },
+            {
+              "episode_id": "test-101117",
+              "seed": 101117,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -3.9249793269698166,
+                "lighting_scale": 0.06583600813437508,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119018,
+                "lighting_domain": "Low",
+                "representation": "Low",
+                "ev": -3.9249793269698166,
+                "sample_unit": 0.07934806845817488
+              }
+            },
+            {
+              "episode_id": "test-101118",
+              "seed": 101118,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -3.909379983245155,
+                "lighting_scale": 0.06655173172122188,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119017,
+                "lighting_domain": "Low",
+                "representation": "Low",
+                "ev": -3.909379983245155,
+                "sample_unit": 0.08673875847346069
+              }
+            },
+            {
+              "episode_id": "test-101119",
+              "seed": 101119,
+              "success": true,
+              "steps": 114,
+              "lighting": {
+                "lighting_ev": -2.594392830588027,
+                "lighting_scale": 0.1655807850968566,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119016,
+                "lighting_domain": "Low",
+                "representation": "Low",
+                "ev": -2.594392830588027,
+                "sample_unit": 0.16458727970348408
+              }
+            }
+          ]
+        }
+      }
+    },
+    "ExtremeLow": {
+      "paired": {
+        "status": "complete",
+        "common": 20,
+        "teacher_only": [],
+        "student_only": [],
+        "regressions": [],
+        "recoveries": [],
+        "both_success": 0,
+        "both_failure": 20
+      },
+      "roles": {
+        "teacher": {
+          "summary": {
+            "success": 0,
+            "denominator": 20,
+            "completed": 20,
+            "errors": 0,
+            "missing": 0,
+            "wilson": [
+              0.0,
+              0.16113012549493322
+            ],
+            "error_ids": [],
+            "missing_ids": [],
+            "extra_audits": []
+          },
+          "trials": [
+            {
+              "episode_id": "test-101100",
+              "seed": 101100,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -4.235848516923191,
+                "lighting_scale": 0.05307408789318263,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119035,
+                "lighting_domain": "ExtremeLow",
+                "representation": "ExtremeLow",
+                "ev": -4.235848516923191,
+                "sample_unit": 0.10660566199803534
+              }
+            },
+            {
+              "episode_id": "test-101101",
+              "seed": 101101,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -4.705451312549233,
+                "lighting_scale": 0.038328163616668035,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119034,
+                "lighting_domain": "ExtremeLow",
+                "representation": "ExtremeLow",
+                "ev": -4.705451312549233,
+                "sample_unit": 0.4371475498864775
+              }
+            },
+            {
+              "episode_id": "test-101102",
+              "seed": 101102,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -4.073414121312025,
+                "lighting_scale": 0.05939914103308932,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119033,
+                "lighting_domain": "ExtremeLow",
+                "representation": "ExtremeLow",
+                "ev": -4.073414121312025,
+                "sample_unit": 0.07662708004227181
+              }
+            },
+            {
+              "episode_id": "test-101103",
+              "seed": 101103,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -4.0680810456653225,
+                "lighting_scale": 0.059619122617069135,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119032,
+                "lighting_domain": "ExtremeLow",
+                "representation": "ExtremeLow",
+                "ev": -4.0680810456653225,
+                "sample_unit": 0.3802820293485233
+              }
+            },
+            {
+              "episode_id": "test-101104",
+              "seed": 101104,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -4.31408470699237,
+                "lighting_scale": 0.05027257137269878,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119015,
+                "lighting_domain": "ExtremeLow",
+                "representation": "ExtremeLow",
+                "ev": -4.31408470699237,
+                "sample_unit": 0.30067767119509003
+              }
+            },
+            {
+              "episode_id": "test-101105",
+              "seed": 101105,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -4.221128342141351,
+                "lighting_scale": 0.05361838804817393,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119014,
+                "lighting_domain": "ExtremeLow",
+                "representation": "ExtremeLow",
+                "ev": -4.221128342141351,
+                "sample_unit": 0.9143018269334747
+              }
+            },
+            {
+              "episode_id": "test-101106",
+              "seed": 101106,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -4.317346309710876,
+                "lighting_scale": 0.05015904499180899,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119013,
+                "lighting_domain": "ExtremeLow",
+                "representation": "ExtremeLow",
+                "ev": -4.317346309710876,
+                "sample_unit": 0.9961760990835293
+              }
+            },
+            {
+              "episode_id": "test-101107",
+              "seed": 101107,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -5.264954887037429,
+                "lighting_scale": 0.026007023684643547,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119012,
+                "lighting_domain": "ExtremeLow",
+                "representation": "ExtremeLow",
+                "ev": -5.264954887037429,
+                "sample_unit": 0.8562774965249896
+              }
+            },
+            {
+              "episode_id": "test-101108",
+              "seed": 101108,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -5.223930149787559,
+                "lighting_scale": 0.02675717934909613,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119011,
+                "lighting_domain": "ExtremeLow",
+                "representation": "ExtremeLow",
+                "ev": -5.223930149787559,
+                "sample_unit": 0.6622216457693029
+              }
+            },
+            {
+              "episode_id": "test-101109",
+              "seed": 101109,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -4.173010702099862,
+                "lighting_scale": 0.0554368578326467,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119010,
+                "lighting_domain": "ExtremeLow",
+                "representation": "ExtremeLow",
+                "ev": -4.173010702099862,
+                "sample_unit": 0.378842980983066
+              }
+            },
+            {
+              "episode_id": "test-101110",
+              "seed": 101110,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -5.353582114098778,
+                "lighting_scale": 0.02445745141153072,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119009,
+                "lighting_domain": "ExtremeLow",
+                "representation": "ExtremeLow",
+                "ev": -5.353582114098778,
+                "sample_unit": 0.5958529700582695
+              }
+            },
+            {
+              "episode_id": "test-101111",
+              "seed": 101111,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -5.374050937020252,
+                "lighting_scale": 0.024112901369627106,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119008,
+                "lighting_domain": "ExtremeLow",
+                "representation": "ExtremeLow",
+                "ev": -5.374050937020252,
+                "sample_unit": 0.9895788049636962
+              }
+            },
+            {
+              "episode_id": "test-101112",
+              "seed": 101112,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -4.241897350220897,
+                "lighting_scale": 0.05285202832338639,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119023,
+                "lighting_domain": "ExtremeLow",
+                "representation": "ExtremeLow",
+                "ev": -4.241897350220897,
+                "sample_unit": 0.20963817669778306
+              }
+            },
+            {
+              "episode_id": "test-101113",
+              "seed": 101113,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -5.449512641704493,
+                "lighting_scale": 0.022884068184183422,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119022,
+                "lighting_domain": "ExtremeLow",
+                "representation": "ExtremeLow",
+                "ev": -5.449512641704493,
+                "sample_unit": 0.5787818364207992
+              }
+            },
+            {
+              "episode_id": "test-101114",
+              "seed": 101114,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -5.045947086292738,
+                "lighting_scale": 0.03027042862108952,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119021,
+                "lighting_domain": "ExtremeLow",
+                "representation": "ExtremeLow",
+                "ev": -5.045947086292738,
+                "sample_unit": 0.08436039573318965
+              }
+            },
+            {
+              "episode_id": "test-101115",
+              "seed": 101115,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -4.172414920670693,
+                "lighting_scale": 0.05545975599901836,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119020,
+                "lighting_domain": "ExtremeLow",
+                "representation": "ExtremeLow",
+                "ev": -4.172414920670693,
+                "sample_unit": 0.6083359358073863
+              }
+            },
+            {
+              "episode_id": "test-101116",
+              "seed": 101116,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -5.228904505941076,
+                "lighting_scale": 0.026665080507604733,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119019,
+                "lighting_domain": "ExtremeLow",
+                "representation": "ExtremeLow",
+                "ev": -5.228904505941076,
+                "sample_unit": 0.6102513175358019
+              }
+            },
+            {
+              "episode_id": "test-101117",
+              "seed": 101117,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -5.424979326969817,
+                "lighting_scale": 0.023276543899034656,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119018,
+                "lighting_domain": "ExtremeLow",
+                "representation": "ExtremeLow",
+                "ev": -5.424979326969817,
+                "sample_unit": 0.07934806845817488
+              }
+            },
+            {
+              "episode_id": "test-101118",
+              "seed": 101118,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -5.409379983245155,
+                "lighting_scale": 0.023529590399891925,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119017,
+                "lighting_domain": "ExtremeLow",
+                "representation": "ExtremeLow",
+                "ev": -5.409379983245155,
+                "sample_unit": 0.08673875847346069
+              }
+            },
+            {
+              "episode_id": "test-101119",
+              "seed": 101119,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -4.094392830588027,
+                "lighting_scale": 0.05854164798808986,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119016,
+                "lighting_domain": "ExtremeLow",
+                "representation": "ExtremeLow",
+                "ev": -4.094392830588027,
+                "sample_unit": 0.16458727970348408
+              }
+            }
+          ]
+        },
+        "student": {
+          "summary": {
+            "success": 0,
+            "denominator": 20,
+            "completed": 20,
+            "errors": 0,
+            "missing": 0,
+            "wilson": [
+              0.0,
+              0.16113012549493322
+            ],
+            "error_ids": [],
+            "missing_ids": [],
+            "extra_audits": []
+          },
+          "trials": [
+            {
+              "episode_id": "test-101100",
+              "seed": 101100,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -4.235848516923191,
+                "lighting_scale": 0.05307408789318263,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119035,
+                "lighting_domain": "ExtremeLow",
+                "representation": "ExtremeLow",
+                "ev": -4.235848516923191,
+                "sample_unit": 0.10660566199803534
+              }
+            },
+            {
+              "episode_id": "test-101101",
+              "seed": 101101,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -4.705451312549233,
+                "lighting_scale": 0.038328163616668035,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119034,
+                "lighting_domain": "ExtremeLow",
+                "representation": "ExtremeLow",
+                "ev": -4.705451312549233,
+                "sample_unit": 0.4371475498864775
+              }
+            },
+            {
+              "episode_id": "test-101102",
+              "seed": 101102,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -4.073414121312025,
+                "lighting_scale": 0.05939914103308932,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119033,
+                "lighting_domain": "ExtremeLow",
+                "representation": "ExtremeLow",
+                "ev": -4.073414121312025,
+                "sample_unit": 0.07662708004227181
+              }
+            },
+            {
+              "episode_id": "test-101103",
+              "seed": 101103,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -4.0680810456653225,
+                "lighting_scale": 0.059619122617069135,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119032,
+                "lighting_domain": "ExtremeLow",
+                "representation": "ExtremeLow",
+                "ev": -4.0680810456653225,
+                "sample_unit": 0.3802820293485233
+              }
+            },
+            {
+              "episode_id": "test-101104",
+              "seed": 101104,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -4.31408470699237,
+                "lighting_scale": 0.05027257137269878,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119015,
+                "lighting_domain": "ExtremeLow",
+                "representation": "ExtremeLow",
+                "ev": -4.31408470699237,
+                "sample_unit": 0.30067767119509003
+              }
+            },
+            {
+              "episode_id": "test-101105",
+              "seed": 101105,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -4.221128342141351,
+                "lighting_scale": 0.05361838804817393,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119014,
+                "lighting_domain": "ExtremeLow",
+                "representation": "ExtremeLow",
+                "ev": -4.221128342141351,
+                "sample_unit": 0.9143018269334747
+              }
+            },
+            {
+              "episode_id": "test-101106",
+              "seed": 101106,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -4.317346309710876,
+                "lighting_scale": 0.05015904499180899,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119013,
+                "lighting_domain": "ExtremeLow",
+                "representation": "ExtremeLow",
+                "ev": -4.317346309710876,
+                "sample_unit": 0.9961760990835293
+              }
+            },
+            {
+              "episode_id": "test-101107",
+              "seed": 101107,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -5.264954887037429,
+                "lighting_scale": 0.026007023684643547,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119012,
+                "lighting_domain": "ExtremeLow",
+                "representation": "ExtremeLow",
+                "ev": -5.264954887037429,
+                "sample_unit": 0.8562774965249896
+              }
+            },
+            {
+              "episode_id": "test-101108",
+              "seed": 101108,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -5.223930149787559,
+                "lighting_scale": 0.02675717934909613,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119011,
+                "lighting_domain": "ExtremeLow",
+                "representation": "ExtremeLow",
+                "ev": -5.223930149787559,
+                "sample_unit": 0.6622216457693029
+              }
+            },
+            {
+              "episode_id": "test-101109",
+              "seed": 101109,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -4.173010702099862,
+                "lighting_scale": 0.0554368578326467,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119010,
+                "lighting_domain": "ExtremeLow",
+                "representation": "ExtremeLow",
+                "ev": -4.173010702099862,
+                "sample_unit": 0.378842980983066
+              }
+            },
+            {
+              "episode_id": "test-101110",
+              "seed": 101110,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -5.353582114098778,
+                "lighting_scale": 0.02445745141153072,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119009,
+                "lighting_domain": "ExtremeLow",
+                "representation": "ExtremeLow",
+                "ev": -5.353582114098778,
+                "sample_unit": 0.5958529700582695
+              }
+            },
+            {
+              "episode_id": "test-101111",
+              "seed": 101111,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -5.374050937020252,
+                "lighting_scale": 0.024112901369627106,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119008,
+                "lighting_domain": "ExtremeLow",
+                "representation": "ExtremeLow",
+                "ev": -5.374050937020252,
+                "sample_unit": 0.9895788049636962
+              }
+            },
+            {
+              "episode_id": "test-101112",
+              "seed": 101112,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -4.241897350220897,
+                "lighting_scale": 0.05285202832338639,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119023,
+                "lighting_domain": "ExtremeLow",
+                "representation": "ExtremeLow",
+                "ev": -4.241897350220897,
+                "sample_unit": 0.20963817669778306
+              }
+            },
+            {
+              "episode_id": "test-101113",
+              "seed": 101113,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -5.449512641704493,
+                "lighting_scale": 0.022884068184183422,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119022,
+                "lighting_domain": "ExtremeLow",
+                "representation": "ExtremeLow",
+                "ev": -5.449512641704493,
+                "sample_unit": 0.5787818364207992
+              }
+            },
+            {
+              "episode_id": "test-101114",
+              "seed": 101114,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -5.045947086292738,
+                "lighting_scale": 0.03027042862108952,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119021,
+                "lighting_domain": "ExtremeLow",
+                "representation": "ExtremeLow",
+                "ev": -5.045947086292738,
+                "sample_unit": 0.08436039573318965
+              }
+            },
+            {
+              "episode_id": "test-101115",
+              "seed": 101115,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -4.172414920670693,
+                "lighting_scale": 0.05545975599901836,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119020,
+                "lighting_domain": "ExtremeLow",
+                "representation": "ExtremeLow",
+                "ev": -4.172414920670693,
+                "sample_unit": 0.6083359358073863
+              }
+            },
+            {
+              "episode_id": "test-101116",
+              "seed": 101116,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -5.228904505941076,
+                "lighting_scale": 0.026665080507604733,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119019,
+                "lighting_domain": "ExtremeLow",
+                "representation": "ExtremeLow",
+                "ev": -5.228904505941076,
+                "sample_unit": 0.6102513175358019
+              }
+            },
+            {
+              "episode_id": "test-101117",
+              "seed": 101117,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -5.424979326969817,
+                "lighting_scale": 0.023276543899034656,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119018,
+                "lighting_domain": "ExtremeLow",
+                "representation": "ExtremeLow",
+                "ev": -5.424979326969817,
+                "sample_unit": 0.07934806845817488
+              }
+            },
+            {
+              "episode_id": "test-101118",
+              "seed": 101118,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -5.409379983245155,
+                "lighting_scale": 0.023529590399891925,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119017,
+                "lighting_domain": "ExtremeLow",
+                "representation": "ExtremeLow",
+                "ev": -5.409379983245155,
+                "sample_unit": 0.08673875847346069
+              }
+            },
+            {
+              "episode_id": "test-101119",
+              "seed": 101119,
+              "success": false,
+              "steps": 300,
+              "lighting": {
+                "lighting_ev": -4.094392830588027,
+                "lighting_scale": 0.05854164798808986,
+                "lighting_rig": "common_agentview_key",
+                "agentview_table_flood": 0.0,
+                "sensor_saturation_ev": 0.0,
+                "noise_seed": 119016,
+                "lighting_domain": "ExtremeLow",
+                "representation": "ExtremeLow",
+                "ev": -4.094392830588027,
+                "sample_unit": 0.16458727970348408
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "native_exit_codes": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "wall_seconds": 1306.1111390040023,
+  "audit": {
+    "all_pass": true,
+    "independent_checks": 315
+  },
+  "storage": {
+    "bytes_by_root": {
+      "/root/owac/repo/outputs/raw-distillation-all-bench-20261022": 27901090395,
+      "/root/autodl-tmp/owac-all-bench-20261022": 366055590658
+    },
+    "total_bytes": 393956681053,
+    "cap_bytes": 408021893120,
+    "observed_at": "2026-10-27T12:32:51.715179+08:00",
+    "within_cap": true
+  },
+  "artifact_root": "outputs/raw-distillation-all-bench-20261022/lowlight-20261027",
+  "training_updates_this_evaluation": 0
+}
