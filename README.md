@@ -1,3 +1,5 @@
+2026-10-29 J3：用户授权保留DINO蒸馏并独立重建RAW自监督。新分支lzh/raw-self-supervised；旧框架保全086b77e与lzh/dino-distillation-preserved。无外部视觉权重、RGB目标或动作；辐射响应编码＋DINO/iBOT，双卡global192、100k计划已启动，SwanLab记录token/query。工程恢复通过不等于表征成功。见 research/experiments/j3_raw_ssl_20261029.md。
+
 2026-10-27 用户确认蒸馏技术路线走通，授权提交全部修改并创建“蒸馏成功”标签。已验收RAW因果学生→冻结后端闭环及正常光控制复刻；Low11/20教师、9/20学生和ExtremeLow双方0/20负结果保留。统筹台进入EXPLORE（下一阶段候选与工作单准备），不自动启动新训练/实验。交接见docs/plans/RAW_POST_DISTILLATION_EXPLORATION_2026-10-27.md。
 
 2026-10-27 LOWLIGHT服务器对照已完整结束：Normal教师/学生各20/20；Low教师11/20、学生9/20（退化2对、恢复0）；ExtremeLow均0/20。120场全部native0，无错误/重试/排除；60对原始数据和全部视频审计通过。当前学生含五照明训练，弱光控制保留不足，后续适配尚未授权或启动；本轮训练0。详见research/experiments/raw_stem_siglip_20261020/lowlight-server-20261027.md。
