@@ -1,0 +1,97 @@
+{
+  "project": "Jeong/OWAC",
+  "name_format": "阶段｜目标｜数据/照明｜训练范围或尝试｜规模或恢复点｜YYYYMMDD",
+  "runs": [
+    {
+      "id": "owac-j3-raw-ssl-20261029",
+      "name": "J3｜RAW自主表征｜RawVLA五照明｜随机初始化与辐射响应编码｜100k｜20261029",
+      "group": "J-raw-self-supervised",
+      "job_type": "dino-ibot-raw-only",
+      "description": "随机初始化；RAW辐射响应＋DINO/iBOT；无外部视觉教师/动作；token/query仅评估。"
+    },
+    {
+      "id": "owac-j1-raw-jepa-100k-20261028",
+      "name": "J1｜视觉自监督｜LIBERO五照明｜RAW-JEPA｜100k｜20261028",
+      "group": "J-raw-visual-pretraining",
+      "job_type": "masked-feature-prediction",
+      "description": "公开pi05视觉初始化；EMA目标仅来自本run；无RAW教师/历史学生/动作专家；100k更新。"
+    },
+    {
+      "id": "owac-r1-action-100k-20261027",
+      "name": "R1｜动作监督｜LIBERO五照明｜全视觉头｜100k｜20261027",
+      "group": "R-action-adaptation",
+      "job_type": "flow-matching",
+      "tags": [
+        "stage:R1",
+        "objective:action-fm",
+        "data:libero",
+        "lighting:five",
+        "scope:full-visual",
+        "target:100k"
+      ],
+      "description": "真实示范动作原生flow-matching；原预训练视觉初始化并重置stem/gate；语言/动作后端冻结。原LIBERO源拆分1421/177/173，目标100000优化器更新。"
+    },
+    {
+      "id": "owac-all-bench-20261022-resume250",
+      "name": "ADAPT｜Token蒸馏｜全量五照明｜全视觉头｜250步续训｜20261022",
+      "group": "RAW-token-distillation",
+      "job_type": "token-distillation",
+      "tags": [
+        "stage:ADAPT",
+        "objective:token-distill",
+        "data:all-bench",
+        "lighting:five",
+        "scope:full-visual",
+        "attempt:resume250"
+      ],
+      "description": "全量LIBERO+RoboTwin五照明，源拆分1923/240/240。从250步完整状态恢复并沿用本run续训；原始指标和历史阶段记录保留。"
+    },
+    {
+      "id": "owac-all-bench-20261022-attempt2",
+      "name": "ADAPT｜Token蒸馏｜全量五照明｜尝试02-句柄故障｜20261022",
+      "group": "RAW-token-distillation",
+      "job_type": "token-distillation",
+      "tags": [
+        "stage:ADAPT",
+        "objective:token-distill",
+        "data:all-bench",
+        "lighting:five",
+        "scope:full-visual",
+        "attempt:02",
+        "failure:file-handles"
+      ],
+      "description": "第二次全量训练尝试；目标mmap句柄未回收导致OSError24。历史失败曲线保留，后续从250步另run恢复。"
+    },
+    {
+      "id": "owac-all-bench-20261022",
+      "name": "ADAPT｜Token蒸馏｜全量五照明｜尝试01-OOM｜20261022",
+      "group": "RAW-token-distillation",
+      "job_type": "token-distillation",
+      "tags": [
+        "stage:ADAPT",
+        "objective:token-distill",
+        "data:all-bench",
+        "lighting:five",
+        "scope:full-visual",
+        "attempt:01",
+        "failure:host-oom"
+      ],
+      "description": "首次全量训练尝试，容器主机内存OOM；保留失败记录，后续尝试另列。"
+    },
+    {
+      "id": "owac-fullvisual-shared-stage",
+      "name": "ADAPT｜Token蒸馏｜task6正常光｜全视觉头｜3116步｜20261022",
+      "group": "RAW-token-distillation",
+      "job_type": "token-distillation",
+      "tags": [
+        "stage:ADAPT",
+        "objective:token-distill",
+        "data:libero-task6",
+        "lighting:normal",
+        "scope:full-visual",
+        "updates:3116"
+      ],
+      "description": "共享盘task6正常光8/2/2源拆分，完整全视觉头3116次阶段更新。global batch16；历史实验及曲线保留。"
+    }
+  ]
+}
