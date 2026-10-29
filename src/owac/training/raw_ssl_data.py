@@ -1,6 +1,7 @@
 """Deterministic source-balanced RAW views, with worker-local read-only mappings."""
 
 import math
+import os
 import random
 from collections import OrderedDict
 
@@ -29,6 +30,42 @@ def crop(x, size, scale, rng):
     return x * math.exp(rng.uniform(-0.15, 0.15))
 
 
+class FrameReader:
+    """Read a single stored NPY frame without mmap readahead of the episode."""
+
+    def __init__(self, path, camera):
+        array = read_npz_member(path, camera + ".npy")
+        self.array = None
+        self.fd = None
+        if isinstance(array, np.memmap) and array.flags.c_contiguous:
+            self.shape, self.dtype = array.shape[1:], array.dtype
+            self.offset = array.offset
+            self.frame_bytes = math.prod(self.shape) * self.dtype.itemsize
+            self.fd = os.open(path, os.O_RDONLY)
+            os.posix_fadvise(self.fd, 0, 0, os.POSIX_FADV_RANDOM)
+            array._mmap.close()
+        else:
+            # Existing compressed archives need NumPy decompression.
+            self.array = array
+
+    def frame(self, index):
+        if self.array is not None:
+            return np.array(self.array[index], copy=True)
+        offset = self.offset + index * self.frame_bytes
+        data = os.pread(self.fd, self.frame_bytes, offset)
+        array = np.frombuffer(data, dtype=self.dtype).reshape(self.shape).copy()
+        page = os.sysconf("SC_PAGE_SIZE")
+        start = offset // page * page
+        end = (offset + self.frame_bytes + page - 1) // page * page
+        os.posix_fadvise(self.fd, start, end - start, os.POSIX_FADV_DONTNEED)
+        return array
+
+    def close(self):
+        if self.fd is not None:
+            os.close(self.fd)
+            self.fd = None
+
+
 class RawViews(Dataset):
     def __init__(self, sources, cfg):
         self.sources = sources
@@ -42,13 +79,18 @@ class RawViews(Dataset):
     def frame(self, source, endpoint, camera):
         key = (str(source.path), camera)
         if key not in self.cache:
-            self.cache[key] = read_npz_member(source.path, camera + ".npy")
+            self.cache[key] = FrameReader(source.path, camera)
             if len(self.cache) > 12:
-                self.cache.popitem(last=False)
+                self.cache.popitem(last=False)[1].close()
         self.cache.move_to_end(key)
-        array = np.array(self.cache[key][endpoint], copy=True)
+        array = self.cache[key].frame(endpoint)
         x = torch.from_numpy(array).permute(2, 0, 1).float()
         return x / 255 if source.domain == "libero" else x
+
+    def close(self):
+        for reader in self.cache.values():
+            reader.close()
+        self.cache.clear()
 
     def __len__(self):
         return self.cfg["training"]["updates"] * self.cfg["training"]["batch"]

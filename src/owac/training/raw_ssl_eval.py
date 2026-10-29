@@ -33,6 +33,7 @@ def evaluate(encoder, sources, cfg, output, step, device):
             _, patch = encoder(raw.to(device))
         images.append(raw[0].cpu())
         tokens.append(patch[0].float().cpu())
+    reader.close()
     features = torch.stack(tokens)
     flat = features.flatten(0, 1)
     # One PCA fit shared by ALL fixed validation images at this checkpoint.

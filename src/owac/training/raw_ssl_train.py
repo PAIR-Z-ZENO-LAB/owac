@@ -107,7 +107,8 @@ def main():
         num_workers=train["workers"],
         pin_memory=True,
         persistent_workers=True,
-        prefetch_factor=2,
+        prefetch_factor=train["prefetch_factor"],
+        generator=torch.Generator().manual_seed(cfg["seed"] + rank),
     )
     tracker = None
     if rank == 0 and not args.no_tracking:
@@ -244,6 +245,27 @@ def main():
                     "gpu/allocated_gib": torch.cuda.max_memory_allocated() / 2**30,
                 }
             )
+            if rank == 0:
+                stat = dict(
+                    line.split()
+                    for line in Path("/sys/fs/cgroup/memory.stat").read_text().splitlines()
+                )
+                events = dict(
+                    line.split()
+                    for line in Path("/sys/fs/cgroup/memory.events").read_text().splitlines()
+                )
+                values.update(
+                    {
+                        "host/anonymous_gib": int(stat["anon"]) / 2**30,
+                        "host/shared_memory_gib": int(stat["shmem"]) / 2**30,
+                        "host/file_cache_gib": (int(stat["file"]) - int(stat["shmem"])) / 2**30,
+                        "host/memory_current_gib": int(
+                            Path("/sys/fs/cgroup/memory.current").read_text()
+                        )
+                        / 2**30,
+                        "host/oom_kills": int(events["oom_kill"]),
+                    }
+                )
             report(step, values)
             timer = time.monotonic()
         if step % train["log_every"] == 0:
