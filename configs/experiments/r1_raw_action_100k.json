@@ -1,0 +1,107 @@
+{
+  "assets": {
+    "starvla_root": "/root/owac/repo/outputs/raw-distillation-20261020-sol/starvla-pinned-source",
+    "checkpoint": "/root/owac/repo/outputs/checkpoints/raw-distillation/pi05_libero_starvla/bfloat16/model.safetensors",
+    "tokenizer": "/root/owac/repo/outputs/checkpoints/raw-distillation/paligemma_tokenizer.model",
+    "statistics": "/root/owac/repo/outputs/checkpoints/raw-distillation/pi05_libero_jax/assets/physical-intelligence/libero/norm_stats.json"
+  },
+  "student": {
+    "stem_hidden": 64,
+    "stem_seed": 101,
+    "input_mode": "rawvla_rgb3",
+    "inherited_vision": "actual_pi05_vision_positions_siglip_projector",
+    "extra_projection": false,
+    "gate": "channelwise_sigmoid",
+    "raw_burst_frames": 6,
+    "endpoint_stride": 5,
+    "recurrent_endpoints": 6,
+    "camera_order": [
+      "agentview",
+      "wrist"
+    ],
+    "native_image_keys": [
+      "base_0_rgb",
+      "left_wrist_0_rgb",
+      "right_wrist_0_rgb"
+    ],
+    "inactive_native_image_key": "right_wrist_0_rgb",
+    "raw_resize": "bilinear_align_corners_false_256_to_224_full_fov",
+    "physical_position_backmap": "224_patch14_center_to_256_patch16",
+    "trainable_scope": "full_visual_head",
+    "trainable_parameters": 428579952,
+    "gate_init": "zero",
+    "vision_architecture": {
+      "hidden_size": 1152,
+      "intermediate_size": 4304,
+      "num_hidden_layers": 27,
+      "num_attention_heads": 16,
+      "image_size": 224,
+      "patch_size": 14,
+      "projection_dim": 2048,
+      "num_channels": 3
+    },
+    "evidence_level": "standalone_visual_subset",
+    "forward_semantics": {
+      "attention_implementation": "eager",
+      "hidden_act": "gelu_pytorch_tanh",
+      "layer_norm_eps": 1e-06,
+      "image_size": 224,
+      "patch_size": 14,
+      "grid": [
+        16,
+        16
+      ],
+      "num_positions": 256,
+      "encoder_layers": 27,
+      "projector_in": 1152,
+      "projector_out": 2048,
+      "projected_token_order": "camera_major_then_patch_row_major",
+      "projected_token_scale": "linear_projector_only_no_extra_normalization",
+      "position_table_shared_across_cameras": true
+    }
+  },
+  "data": {
+    "inventory": "/root/owac/repo/outputs/raw-distillation-all-bench-20261022/inventory.json",
+    "shared_root": "/root/autodl-pub/datasets/rawvla",
+    "expected_groups": 2403,
+    "split_counts": {
+      "train": 1421,
+      "validation": 177,
+      "test": 173
+    },
+    "seed": 101,
+    "test_targets_generated": false,
+    "domains": [
+      "libero"
+    ],
+    "selection": "User confirmed LIBERO only; source partitions unchanged"
+  },
+  "schema": "owac.raw-action-adaptation.r1.v1",
+  "training": {
+    "seed": 101,
+    "updates": 100000,
+    "effective_batch": 16,
+    "micro_batch_per_rank": 2,
+    "optimizer": "AdamW",
+    "learning_rate": 1e-05,
+    "weight_decay": 0.01,
+    "warmup_updates": 100,
+    "gradient_clip": 1.0,
+    "working_cache_sources": 16,
+    "validation_interval_updates": 500,
+    "checkpoint_interval_updates": 250,
+    "objective": "native_flow_matching_real_demonstrations",
+    "language_action_backend": "frozen",
+    "activation_checkpointing": "vision_blocks_and_native_shared_backend_layers",
+    "precision": "FP32 visual weights/Adam; BF16 forward; native backend precision"
+  },
+  "storage": {
+    "existing_owned_bytes": 393956681358,
+    "cap_bytes": 408021893120,
+    "measured_roots": [
+      "/root/owac/repo/outputs/raw-distillation-all-bench-20261022",
+      "/root/autodl-tmp/owac-all-bench-20261022"
+    ],
+    "checkpoint_retention": "one latest full state via atomic replacement; final visual weights at 100000"
+  }
+}

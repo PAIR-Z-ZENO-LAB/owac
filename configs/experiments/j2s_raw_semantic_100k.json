@@ -1,0 +1,105 @@
+{
+  "schema": "owac.raw-semantic.j2s.v1",
+  "assets": {
+    "starvla_root": "/root/owac/repo/outputs/raw-distillation-20261020-sol/starvla-pinned-source",
+    "checkpoint": "/root/owac/repo/outputs/checkpoints/raw-distillation/pi05_libero_starvla/bfloat16/model.safetensors",
+    "public_origin": "OpenPI pi05_libero converted to StarVLA; load vision and projector tensors only"
+  },
+  "student": {
+    "stem_hidden": 64,
+    "stem_seed": 101,
+    "vision_architecture": {
+      "hidden_size": 1152,
+      "intermediate_size": 4304,
+      "num_hidden_layers": 27,
+      "num_attention_heads": 16,
+      "image_size": 224,
+      "patch_size": 14,
+      "projection_dim": 2048,
+      "num_channels": 3
+    },
+    "temporal": "six consecutive causal frames; channel gate initialized zero; state reset per window",
+    "projector": "public weights retained frozen outside the objective"
+  },
+  "data": {
+    "inventory": "/root/owac/repo/outputs/raw-distillation-all-bench-20261022/inventory.json",
+    "domains": [
+      "libero"
+    ],
+    "source_split": {
+      "train": 1421,
+      "validation": 177,
+      "test": 173
+    },
+    "endpoint_stride": 5,
+    "minimum_endpoint": 5,
+    "input": "six causal pseudo-RAW frames, paired crop then224; RGB endpoint same crop then256",
+    "validation": "three fixed endpoints per source, both cameras, fixed masks; no test consumption",
+    "augmentation": "joint random196/224/256 crop and horizontal flip; RAW all six frames and RGB same geometry"
+  },
+  "training": {
+    "seed": 101,
+    "updates": 100000,
+    "effective_batch": 32,
+    "micro_batch_per_rank": 8,
+    "stem_lr": 0.0001,
+    "predictor_lr": 0.0001,
+    "backbone_lr": 1e-05,
+    "warmup_updates": 2000,
+    "final_lr_ratio": 0.1,
+    "weight_decay": 0.04,
+    "betas": [
+      0.9,
+      0.95
+    ],
+    "gradient_clip": 1.0,
+    "ema_start": 0.996,
+    "ema_end": 1.0,
+    "validation_interval": 500,
+    "checkpoint_interval": 1000,
+    "log_interval": 10,
+    "working_cache_sources": 16,
+    "objective": "dense_cosine + 2gram + pooled_cosine; frozen DINOv3-L RGB target",
+    "precision": "FP32 online/EMA/Adam states; BF16 autocast",
+    "head_lr": 0.0001,
+    "cpu_threads": 8,
+    "augmentation_group_windows": 2
+  },
+  "storage": {
+    "existing_owned_bytes": 71444477092,
+    "cap_bytes": 408021893120,
+    "checkpoint": "atomic full latest state plus RAW-only encoder; preserve historical checkpoints",
+    "atomic_checkpoints": true
+  },
+  "tracking": {
+    "project": "OWAC",
+    "run_id": "owac-j2s-raw-semantic-100k-20261029",
+    "name": "J2S\uff5cRAW\u7a20\u5bc6\u8bed\u4e49\uff5cLIBERO\u4e94\u7167\u660e\uff5c\u5b8c\u6574\u7f16\u7801\u5668\u4e0eDINOv3\u76d1\u7763\uff5c100k\uff5c20261029",
+    "group": "J-raw-visual-pretraining",
+    "job_type": "dense-semantic-distillation",
+    "tags": [
+      "stage:J2S",
+      "data:libero",
+      "lighting:five",
+      "objective:dino-semantic",
+      "target:100k"
+    ]
+  },
+  "initial_encoder": "/root/owac/repo/outputs/j1-raw-jepa-20261028/encoder.pt",
+  "semantic": {
+    "width": 1024,
+    "depths": [
+      9,
+      18,
+      27
+    ],
+    "teacher": "/root/autodl-pub/checkpoints/perception/dinov3-vitl16",
+    "teacher_input": "paired default-light RGB endpoint;256x256;16x16patches",
+    "deployment": "RAW-only encoder; teacher absent",
+    "initialization": "J1 step82000 entire encoder; log branch/content gate zero; trainable multidepth fusion plus1024D semantic readout"
+  },
+  "loss": {
+    "gram_weight": 2.0,
+    "global_weight": 1.0
+  }
+}

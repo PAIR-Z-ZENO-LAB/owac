@@ -1,0 +1,107 @@
+{
+  "schema": "owac.raw-dense-refinement.j2.v1",
+  "assets": {
+    "starvla_root": "/root/owac/repo/outputs/raw-distillation-20261020-sol/starvla-pinned-source",
+    "checkpoint": "/root/owac/repo/outputs/checkpoints/raw-distillation/pi05_libero_starvla/bfloat16/model.safetensors",
+    "public_origin": "OpenPI pi05_libero converted to StarVLA; load vision and projector tensors only"
+  },
+  "student": {
+    "stem_hidden": 64,
+    "stem_seed": 101,
+    "vision_architecture": {
+      "hidden_size": 1152,
+      "intermediate_size": 4304,
+      "num_hidden_layers": 27,
+      "num_attention_heads": 16,
+      "image_size": 224,
+      "patch_size": 14,
+      "projection_dim": 2048,
+      "num_channels": 3
+    },
+    "temporal": "six consecutive causal frames; channel gate initialized zero; state reset per window",
+    "projector": "public weights retained frozen outside the objective",
+    "refinement_layer": 9
+  },
+  "predictor": {
+    "width": 384,
+    "depth": 4,
+    "heads": 6,
+    "grid": 16
+  },
+  "mask": {
+    "blocks": 4,
+    "scale": [
+      0.15,
+      0.2
+    ],
+    "shared_across_frames": true
+  },
+  "data": {
+    "inventory": "/root/owac/repo/outputs/raw-distillation-all-bench-20261022/inventory.json",
+    "domains": [
+      "libero"
+    ],
+    "source_split": {
+      "train": 1421,
+      "validation": 177,
+      "test": 173
+    },
+    "endpoint_stride": 5,
+    "minimum_endpoint": 5,
+    "input": "existing RGB3 pseudo-RAW uint8 /255; full-FOV bilinear256to224; two cameras",
+    "validation": "three fixed endpoints per source, both cameras, fixed masks; no test consumption"
+  },
+  "training": {
+    "seed": 101,
+    "updates": 100000,
+    "effective_batch": 32,
+    "micro_batch_per_rank": 2,
+    "stem_lr": 0.0001,
+    "predictor_lr": 0.0001,
+    "backbone_lr": 1e-05,
+    "warmup_updates": 2000,
+    "final_lr_ratio": 0.1,
+    "weight_decay": 0.04,
+    "betas": [
+      0.9,
+      0.95
+    ],
+    "gradient_clip": 1.0,
+    "ema_start": 0.996,
+    "ema_end": 1.0,
+    "validation_interval": 500,
+    "checkpoint_interval": 1000,
+    "log_interval": 10,
+    "working_cache_sources": 16,
+    "objective": "masked prediction + bidirectional crop correspondence + fixed block9 Gram anchoring",
+    "precision": "FP32 online/EMA/Adam states; BF16 autocast"
+  },
+  "storage": {
+    "existing_owned_bytes": 0,
+    "cap_bytes": 408021893120,
+    "checkpoint": "atomic latest+encoder; retain old experiment unchanged; baseline counted before launch",
+    "atomic_checkpoints": true
+  },
+  "tracking": {
+    "project": "OWAC",
+    "run_id": "owac-j2-dense-refinement-100k-20261029",
+    "name": "J2｜稠密表征修复｜LIBERO五照明｜九层直连与空间约束｜100k｜20261029",
+    "group": "J-raw-visual-pretraining",
+    "job_type": "dense-correspondence-gram-jepa",
+    "tags": [
+      "stage:J2",
+      "data:libero",
+      "lighting:five",
+      "objective:dense-gram-jepa",
+      "target:100k"
+    ]
+  },
+  "initial_encoder": "/root/owac/repo/outputs/j1-raw-jepa-20261028/encoder.pt",
+  "dense": {
+    "temperature": 0.1,
+    "correspondence_weight": 1.0,
+    "gram_weight": 2.0,
+    "anchor": "frozen J1 step82000 block9; no RGB teacher",
+    "crop": "native256 ->224, patch aligned random origins 0/14/28; exclude crop edge patches"
+  }
+}
