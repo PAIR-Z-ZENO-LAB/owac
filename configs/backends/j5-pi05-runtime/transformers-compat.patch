@@ -1,0 +1,19 @@
+--- a/models/gemma/modeling_gemma.py
++++ b/models/gemma/modeling_gemma.py
+@@ -42 +42,2 @@
+-from ...utils import LossKwargs, auto_docstring, can_return_tuple, logging
++from ...utils import TransformersKwargs as LossKwargs
++from ...utils import auto_docstring, can_return_tuple, logging
+--- a/models/paligemma/modeling_paligemma.py
++++ b/models/paligemma/modeling_paligemma.py
+@@ -30 +30,2 @@
+-from ...utils import LossKwargs, ModelOutput, auto_docstring, can_return_tuple, is_torchdynamo_compiling, logging
++from ...utils import TransformersKwargs as LossKwargs
++from ...utils import ModelOutput, auto_docstring, can_return_tuple, is_torchdynamo_compiling, logging
+--- a/models/siglip/check.py
++++ b/models/siglip/check.py
+@@ -4 +4 @@
+-    return transformers.__version__ == "4.53.2"
+\ No newline at end of file
++    return transformers.__version__ == "4.57.0"
+\ No newline at end of file

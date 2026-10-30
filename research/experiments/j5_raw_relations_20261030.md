@@ -52,3 +52,7 @@ SwanLab：https://swanlab.cn/@Jeong/OWAC/runs/owac-j5-raw-relations-20261030
 优化前20秒双卡平均利用率68.95%/73.30%，不能用此前100%瞬时值冒充长期利用率；吞吐约370–380源图/秒，总内存约38–40GiB、OOM0。同步优化后性能另以实际续训记录为准。
 
 恢复后实际推进至1220：381.2源图/秒、0.504秒/步、总RAM40.98GiB、allocated峰值23.05GiB/rank、OOM0。短窗吞吐与优化前接近，不能声称显著加速；恢复后另20秒nvidia-smi均值48.05%/45.8%，未证明GPU利用率提高。保留低同步实现，不以瞬时利用率或人为门槛替代效率证据；本轮未增加batch/预取。完整状态与SwanLab续接正常。
+
+## 用户确认保留并停止
+
+用户认为当前效果已足够，明确要求保存当前检查点并停止。J5在12818更新完整保存，SIGUSR1正常退出native0；两训练rank与torchrun均已结束。latest.pt含student/teacher/optimizer/step/两rank RNG/config，encoder.pt为同一步独立EMA RAW编码器；两文件CPU mmap读取确认步数一致。完整资产与退出收据另存远端attempts/user-stop-12818。保留SwanLab和所有评价图；未经用户新授权不恢复训练。本次没有完成原定30k，最终12818也没有新增视觉评估，不把此前11k或12k图当作12818结果。

@@ -3,6 +3,13 @@
   "name_format": "阶段｜目标｜数据/照明｜训练范围或尝试｜规模或恢复点｜YYYYMMDD",
   "runs": [
     {
+      "id": "owac-j5-pi05-full-20261030",
+      "name": "J5-ACT｜RAW全模型动作微调｜LIBERO五照明｜官方pi05配方｜30k｜20261030",
+      "group": "J5-action",
+      "job_type": "full-finetune",
+      "description": "J5 12818 EMA视觉编码器接入官方pi05-base；RAW、投影、语言及动作专家全部训练；官方32维flow loss与LIBERO超参，FSDP2累计batch256。"
+    },
+    {
       "id": "owac-j5-raw-relations-20261030",
       "name": "J5｜RAW区分与时序对应｜五照明｜J4续学｜30k｜20261030",
       "group": "J-raw-self-supervised",
