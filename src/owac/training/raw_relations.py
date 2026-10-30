@@ -24,7 +24,7 @@ def relation_loss(student, anchor, masks):
     visible = ~masks
     pairs = visible[:, :, None] & visible[:, None, :]
     pairs &= ~torch.eye(s.shape[1], dtype=torch.bool, device=s.device)[None]
-    return error[pairs].mean()
+    return (error * pairs).sum() / pairs.sum()
 
 
 def diversity_loss(tokens, masks):
@@ -37,9 +37,11 @@ def diversity_loss(tokens, masks):
     x = F.normalize(tokens.float(), dim=-1).reshape(-1, grid, grid, tokens.shape[-1])
     x = x[:, ::4, ::4].flatten(1, 2)
     sampled_mask = masks.reshape(-1, grid, grid)[:, ::4, ::4].flatten(1, 2)
-    x = x[~sampled_mask] * math.sqrt(tokens.shape[-1])
-    x = x - x.mean(0)
-    covariance = x.T @ x / (len(x) - 1)
+    x = x.flatten(0, 1) * math.sqrt(tokens.shape[-1])
+    weights = (~sampled_mask).flatten().float()[:, None]
+    count = weights.sum()
+    x = (x - (x * weights).sum(0) / count) * weights
+    covariance = x.T @ x / (count - 1)
     variance = F.relu(1 - (covariance.diagonal() + 1e-4).sqrt()).mean()
     off = covariance - torch.diag_embed(covariance.diagonal())
     return variance, off.square().sum() / tokens.shape[-1]
@@ -73,7 +75,7 @@ def temporal_loss(student, target, confidence, masks):
     s = centered_tokens(student, masks)
     error = 1 - (s * target.detach()).sum(-1)
     # Ambiguous matches contribute less, rather than being normalized back to full weight.
-    return (error * confidence.detach())[~masks].mean()
+    return (error * confidence.detach() * (~masks)).sum() / (~masks).sum()
 
 
 def render_comparison(features, images, references, sources, cfg, directory):

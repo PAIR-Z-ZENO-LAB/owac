@@ -242,12 +242,15 @@ def main():
             target = teacher(global_views)
             target_patch = teacher.patch_head(target["patches"][masks])
         if anchor is not None:
-            normal = views[4].to(device).repeat(2)
+            normal_cpu = views[4].nonzero().flatten()
+            normal = torch.cat((normal_cpu, normal_cpu + batch)).to(device)
             past = views[3].to(device, non_blocking=True)
             with torch.no_grad(), torch.autocast("cuda", dtype=torch.bfloat16):
                 _, previous = teacher.encoder(past)
                 # Only well-exposed RAW supplies the frozen spatial relation reference.
-                anchor_features = anchor(global_views[normal])[1] if views[4].any() else None
+                anchor_features = (
+                    anchor(global_views.index_select(0, normal))[1] if normal_cpu.numel() else None
+                )
             temporal_target, confidence, displacement = temporal_targets(
                 target["patches"][:batch],
                 previous,
@@ -267,7 +270,11 @@ def main():
             if anchor is not None:
                 settings = cfg["relations"]
                 spatial = (
-                    relation_loss(result["patches"][normal], anchor_features, masks[normal])
+                    relation_loss(
+                        result["patches"].index_select(0, normal),
+                        anchor_features,
+                        masks.index_select(0, normal),
+                    )
                     if anchor_features is not None
                     else result["patches"].sum() * 0
                 )

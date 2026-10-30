@@ -26,7 +26,7 @@ def lower_exposure(raw, stops, noise, generator):
 def dense_consistency(student, target, masks):
     """Align actual output tokens on visible patches; the EMA target has no gradient."""
     similarity = F.cosine_similarity(student.float(), target.detach().float(), dim=-1)
-    return (1 - similarity)[~masks].mean()
+    return ((1 - similarity) * (~masks)).sum() / (~masks).sum()
 
 
 @torch.no_grad()
