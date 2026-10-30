@@ -3,6 +3,13 @@
   "name_format": "阶段｜目标｜数据/照明｜训练范围或尝试｜规模或恢复点｜YYYYMMDD",
   "runs": [
     {
+      "id": "owac-j4-raw-exposure-20261030",
+      "name": "J4｜RAW曝光一致性｜五照明与同源退化｜J3续学｜30k｜20261030",
+      "group": "J-raw-self-supervised",
+      "job_type": "raw-exposure-dino-ibot",
+      "description": "继承J3 100k纯RAW EMA，新增曝光噪声对应学习；真实五光照保留，无RGB/动作/外部视觉权重。"
+    },
+    {
       "id": "owac-j3-raw-ssl-20261029",
       "name": "J3｜RAW自主表征｜RawVLA五照明｜随机初始化与辐射响应编码｜100k｜20261029",
       "group": "J-raw-self-supervised",

@@ -17,6 +17,7 @@ from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.utils.data import DataLoader
 
 from owac.raw.all_bench_distillation import load_inventory
+from owac.training.raw_exposure import dense_consistency
 from owac.training.raw_ssl import RawSSL, objective, sinkhorn
 from owac.training.raw_ssl_data import RawViews, ResumeSampler, block_masks
 from owac.training.raw_ssl_eval import evaluate
@@ -92,6 +93,14 @@ def main():
             for key, value in state.items():
                 if isinstance(value, torch.Tensor) and value.device.type == "cpu":
                     state[key] = value.clone()
+        del checkpoint
+    elif train.get("initialize_from"):
+        checkpoint = torch.load(
+            train["initialize_from"], map_location="cpu", weights_only=False, mmap=True
+        )
+        # New optimization schedule, initialized only from our own RAW-trained EMA.
+        student.load_state_dict(checkpoint["teacher"])
+        teacher.load_state_dict(checkpoint["teacher"])
         del checkpoint
     ddp = DDP(student, device_ids=[rank])
     sources, _ = load_inventory(cfg["data"]["inventory"])
@@ -175,10 +184,16 @@ def main():
         dist.barrier()
     timer = time.monotonic()
     last_log_step = start
-    for step, (global_views, local_views) in enumerate(loader, start + 1):
+    for step, views in enumerate(loader, start + 1):
+        global_views, local_views = views[:2]
         batch = global_views.shape[0]
         global_views = global_views.transpose(0, 1).flatten(0, 1).to(device, non_blocking=True)
         local_views = local_views.transpose(0, 1).flatten(0, 1).to(device, non_blocking=True)
+        student_views = (
+            views[2].transpose(0, 1).flatten(0, 1).to(device, non_blocking=True)
+            if "exposure" in cfg
+            else global_views
+        )
         masks = block_masks(
             2 * batch, cfg["crops"]["global_size"] // cfg["model"]["patch_size"], device
         )
@@ -214,10 +229,14 @@ def main():
             target_patch = teacher.patch_head(target["patches"][masks])
         tg, tp = sinkhorn(target["global"], temperature), sinkhorn(target_patch, temperature)
         with torch.autocast("cuda", dtype=torch.bfloat16):
-            result = ddp(global_views, local_views, masks)
+            result = ddp(student_views, local_views, masks)
             loss, metrics = objective(
                 result, tg, tp, batch, cfg["crops"]["local_count"], cfg["loss"]
             )
+            if "exposure" in cfg:
+                paired = dense_consistency(result["patches"], target["patches"], masks)
+                loss = loss + cfg["exposure"]["dense_weight"] * paired
+                metrics["exposure_dense"] = paired.detach()
         optimizer.zero_grad(set_to_none=True)
         loss.backward()
         torch.nn.utils.clip_grad_norm_(student.parameters(), 3.0, error_if_nonfinite=True)

@@ -1,3 +1,5 @@
+2026-10-30 J4：继承J3最终100k纯RAW EMA继续学习；新增同源曝光噪声配对与可见token一致性，无RGB/动作/外部权重。双卡工程20→22完整恢复通过，正式30k阶段已启动，SwanLab独立记录。保留逐帧读取及worker4/prefetch1。质量待实际图像评估，见 [J4记录](../research/experiments/j4_raw_exposure_20261030.md)。
+
 2026-10-29 J3：用户授权保留DINO蒸馏并独立重建RAW自监督。新分支lzh/raw-self-supervised；旧框架保全086b77e与lzh/dino-distillation-preserved。无外部视觉权重、RGB目标或动作；辐射响应编码＋DINO/iBOT，双卡global192、100k计划已启动，SwanLab记录token/query。工程恢复通过不等于表征成功。见 research/experiments/j3_raw_ssl_20261029.md。
 
 2026-10-27 用户确认蒸馏技术路线走通，授权提交全部修改并创建“蒸馏成功”标签。已验收RAW因果学生→冻结后端闭环及正常光控制复刻；Low11/20教师、9/20学生和ExtremeLow双方0/20负结果保留。统筹台进入EXPLORE（下一阶段候选与工作单准备），不自动启动新训练/实验。交接见docs/plans/RAW_POST_DISTILLATION_EXPLORATION_2026-10-27.md。

@@ -25,9 +25,10 @@ def evaluate(encoder, sources, cfg, output, step, device):
         for lighting in ("Normal", "Low", "ExtremeLow", "Over", "ExtremeOver"):
             group = [s for s in sources if s.domain == domain and s.lighting == lighting]
             selected.extend(group[:2])
-    images, tokens = [], []
+    images, tokens, originals = [], [], []
     for source in selected:
         raw = reader.frame(source, source.num_frames // 2, DOMAIN_RAW_KEYS[source.domain][0])
+        originals.append(raw)
         raw = F.interpolate(raw[None], size=(256, 256), mode="bilinear", align_corners=False)
         with torch.autocast("cuda", dtype=torch.bfloat16):
             _, patch = encoder(raw.to(device))
@@ -62,7 +63,7 @@ def evaluate(encoder, sources, cfg, output, step, device):
             ax.set_title(f"Query ({y}, {x})")
         for ax in axes:
             ax.axis("off")
-        fig.suptitle(f"J3 step {step} | {source.domain} | {source.lighting} | RAW only")
+        fig.suptitle(f"RAW SSL step {step} | {source.domain} | {source.lighting} | RAW only")
         fig.tight_layout()
         path = directory / f"{i:02d}-{source.domain}-{source.lighting}.png"
         fig.savefig(path, dpi=110)
@@ -76,6 +77,14 @@ def evaluate(encoder, sources, cfg, output, step, device):
         ),
         "eval/images": len(selected),
     }
+    if "exposure" in cfg:
+        from owac.training.raw_exposure import evaluate_exposure
+
+        extra, pair_paths = evaluate_exposure(
+            encoder, originals, selected, features, vectors[:3], mean, cfg, directory, device
+        )
+        metrics.update(extra)
+        paths.extend(pair_paths)
     (directory / "metrics.json").write_text(json.dumps(metrics, indent=2))
     np.savez(
         directory / "tokens.npz",
