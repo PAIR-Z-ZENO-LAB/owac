@@ -18,7 +18,13 @@ from torch.utils.data import DataLoader
 
 from owac.raw.all_bench_distillation import load_inventory
 from owac.training.raw_exposure import dense_consistency
-from owac.training.raw_ssl import RawSSL, objective, sinkhorn
+from owac.training.raw_relations import (
+    diversity_loss,
+    relation_loss,
+    temporal_loss,
+    temporal_targets,
+)
+from owac.training.raw_ssl import RawEncoder, RawSSL, objective, sinkhorn
 from owac.training.raw_ssl_data import RawViews, ResumeSampler, block_masks
 from owac.training.raw_ssl_eval import evaluate
 
@@ -102,6 +108,14 @@ def main():
         student.load_state_dict(checkpoint["teacher"])
         teacher.load_state_dict(checkpoint["teacher"])
         del checkpoint
+    anchor = None
+    if "relations" in cfg:
+        anchor = RawEncoder(cfg["model"]).to(device).eval().requires_grad_(False)
+        reference = torch.load(
+            cfg["relations"]["anchor"], map_location="cpu", weights_only=False, mmap=True
+        )
+        anchor.load_state_dict(reference["encoder"])
+        del reference
     ddp = DDP(student, device_ids=[rank])
     sources, _ = load_inventory(cfg["data"]["inventory"])
     sources = [s for s in sources if s.domain in cfg["data"]["domains"]]
@@ -227,6 +241,19 @@ def main():
         with torch.no_grad(), torch.autocast("cuda", dtype=torch.bfloat16):
             target = teacher(global_views)
             target_patch = teacher.patch_head(target["patches"][masks])
+        if anchor is not None:
+            normal = views[4].to(device).repeat(2)
+            past = views[3].to(device, non_blocking=True)
+            with torch.no_grad(), torch.autocast("cuda", dtype=torch.bfloat16):
+                _, previous = teacher.encoder(past)
+                # Only well-exposed RAW supplies the frozen spatial relation reference.
+                anchor_features = anchor(global_views[normal])[1] if views[4].any() else None
+            temporal_target, confidence, displacement = temporal_targets(
+                target["patches"][:batch],
+                previous,
+                cfg["relations"]["match_radius"],
+                cfg["relations"]["match_temperature"],
+            )
         tg, tp = sinkhorn(target["global"], temperature), sinkhorn(target_patch, temperature)
         with torch.autocast("cuda", dtype=torch.bfloat16):
             result = ddp(student_views, local_views, masks)
@@ -237,6 +264,35 @@ def main():
                 paired = dense_consistency(result["patches"], target["patches"], masks)
                 loss = loss + cfg["exposure"]["dense_weight"] * paired
                 metrics["exposure_dense"] = paired.detach()
+            if anchor is not None:
+                settings = cfg["relations"]
+                spatial = (
+                    relation_loss(result["patches"][normal], anchor_features, masks[normal])
+                    if anchor_features is not None
+                    else result["patches"].sum() * 0
+                )
+                variance, covariance = diversity_loss(result["patches"], masks)
+                temporal = temporal_loss(
+                    result["patches"][:batch], temporal_target, confidence, masks[:batch]
+                )
+                temporal_weight = settings["temporal_weight"] * min(
+                    step / settings["temporal_warmup"], 1
+                )
+                loss = (
+                    loss
+                    + settings["spatial_weight"] * spatial
+                    + settings["variance_weight"] * variance
+                    + settings["covariance_weight"] * covariance
+                    + temporal_weight * temporal
+                )
+                metrics.update(
+                    spatial_relation=spatial.detach(),
+                    token_variance=variance.detach(),
+                    token_covariance=covariance.detach(),
+                    temporal=temporal.detach(),
+                    temporal_confidence=confidence.mean(),
+                    temporal_displacement=displacement,
+                )
         optimizer.zero_grad(set_to_none=True)
         loss.backward()
         torch.nn.utils.clip_grad_norm_(student.parameters(), 3.0, error_if_nonfinite=True)

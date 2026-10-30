@@ -3,6 +3,13 @@
   "name_format": "阶段｜目标｜数据/照明｜训练范围或尝试｜规模或恢复点｜YYYYMMDD",
   "runs": [
     {
+      "id": "owac-j5-raw-relations-20261030",
+      "name": "J5｜RAW区分与时序对应｜五照明｜J4续学｜30k｜20261030",
+      "group": "J-raw-self-supervised",
+      "job_type": "raw-relations-temporal",
+      "description": "J4最终纯RAW EMA续学；自身J3空间关系、输出token多样性、过去RAW软对应；RGB仅评估展示。"
+    },
+    {
       "id": "owac-j4-raw-exposure-20261030",
       "name": "J4｜RAW曝光一致性｜五照明与同源退化｜J3续学｜30k｜20261030",
       "group": "J-raw-self-supervised",

@@ -1,3 +1,5 @@
+2026-10-30 J5：继承J4最终纯RAW EMA继续30k；自身J3空间关系、实际token多样性、过去RAW软对应，无RGB/动作监督。双卡20→22恢复通过，内存约39GiB/OOM0；正式训练启动，SwanLab含J4对照图。质量未宣称成功，见 [J5记录](../research/experiments/j5_raw_relations_20261030.md)。
+
 2026-10-30 J4：继承J3最终100k纯RAW EMA继续学习；新增同源曝光噪声配对与可见token一致性，无RGB/动作/外部权重。双卡工程20→22完整恢复通过，正式30k阶段已启动，SwanLab独立记录。保留逐帧读取及worker4/prefetch1。质量待实际图像评估，见 [J4记录](../research/experiments/j4_raw_exposure_20261030.md)。
 
 2026-10-29 J3：用户授权保留DINO蒸馏并独立重建RAW自监督。新分支lzh/raw-self-supervised；旧框架保全086b77e与lzh/dino-distillation-preserved。无外部视觉权重、RGB目标或动作；辐射响应编码＋DINO/iBOT，双卡global192、100k计划已启动，SwanLab记录token/query。工程恢复通过不等于表征成功。见 research/experiments/j3_raw_ssl_20261029.md。

@@ -8,7 +8,7 @@ import torch
 from torch.nn import functional as F
 
 from owac.raw.all_bench_distillation import DOMAIN_RAW_KEYS
-from owac.training.raw_ssl_data import RawViews
+from owac.training.raw_ssl_data import FrameReader, RawViews
 
 
 @torch.no_grad()
@@ -25,7 +25,7 @@ def evaluate(encoder, sources, cfg, output, step, device):
         for lighting in ("Normal", "Low", "ExtremeLow", "Over", "ExtremeOver"):
             group = [s for s in sources if s.domain == domain and s.lighting == lighting]
             selected.extend(group[:2])
-    images, tokens, originals = [], [], []
+    images, tokens, originals, references = [], [], [], []
     for source in selected:
         raw = reader.frame(source, source.num_frames // 2, DOMAIN_RAW_KEYS[source.domain][0])
         originals.append(raw)
@@ -39,7 +39,7 @@ def evaluate(encoder, sources, cfg, output, step, device):
     flat = features.flatten(0, 1)
     # One PCA fit shared by ALL fixed validation images at this checkpoint.
     mean = flat.mean(0)
-    _, _, vectors = torch.linalg.svd(flat - mean, full_matrices=False)
+    _, singular, vectors = torch.linalg.svd(flat - mean, full_matrices=False)
     pca = (features - mean) @ vectors[:3].T
     low = torch.quantile(pca.flatten(0, 1), 0.01, dim=0)
     high = torch.quantile(pca.flatten(0, 1), 0.99, dim=0)
@@ -51,7 +51,29 @@ def evaluate(encoder, sources, cfg, output, step, device):
     directory.mkdir(parents=True, exist_ok=True)
     paths = []
     for i, source in enumerate(selected):
-        fig, axes = plt.subplots(1, 5, figsize=(15, 3))
+        show_rgb = cfg.get("evaluation", {}).get("rgb_reference", False)
+        fig, axes = plt.subplots(1, 6 if show_rgb else 5, figsize=(18 if show_rgb else 15, 3))
+        if show_rgb:
+            rgb_reader = FrameReader(
+                str(source.path).replace("/raw/", "/rgb/"),
+                "agentview_rgb_uint8" if source.domain == "libero" else "head_camera_rgb_uint8",
+            )
+            rgb = rgb_reader.frame(source.num_frames // 2)
+            rgb_reader.close()
+            rgb = (
+                F.interpolate(
+                    torch.from_numpy(rgb.copy()).permute(2, 0, 1)[None].float(),
+                    size=(256, 256),
+                    mode="bilinear",
+                    align_corners=False,
+                )[0].permute(1, 2, 0)
+                / 255
+            )
+            references.append(rgb)
+            axes[1].imshow(rgb)
+            axes[1].set_title("Paired RGB: display only")
+            axes[1].axis("off")
+            axes = [axes[0], *axes[2:]]
         axes[0].imshow(images[i].permute(1, 2, 0).clamp(0, 1).pow(1 / 2.2))
         axes[0].set_title("RAW preview (gamma only)")
         axes[1].imshow(colors[i].reshape(grid, grid, 3))
@@ -77,6 +99,19 @@ def evaluate(encoder, sources, cfg, output, step, device):
         ),
         "eval/images": len(selected),
     }
+    energy = singular.square() / singular.square().sum()
+    metrics["eval/effective_rank"] = float(
+        torch.exp(-(energy * energy.clamp_min(torch.finfo(energy.dtype).tiny).log()).sum())
+    )
+    grams = normalized @ normalized.transpose(1, 2)
+    off = ~torch.eye(features.shape[1], dtype=torch.bool)
+    metrics["eval/patch_offdiag_cosine"] = float(grams[:, off].mean())
+    for domain in cfg["data"]["domains"]:
+        for lighting in ("Normal", "Low", "ExtremeLow", "Over", "ExtremeOver"):
+            ids = [
+                i for i, s in enumerate(selected) if s.domain == domain and s.lighting == lighting
+            ]
+            metrics[f"eval/{domain}/{lighting}/patch_cosine"] = float(grams[ids][:, off].mean())
     if "exposure" in cfg:
         from owac.training.raw_exposure import evaluate_exposure
 
@@ -85,6 +120,10 @@ def evaluate(encoder, sources, cfg, output, step, device):
         )
         metrics.update(extra)
         paths.extend(pair_paths)
+    if cfg.get("evaluation", {}).get("baseline_tokens"):
+        from owac.training.raw_relations import render_comparison
+
+        paths.extend(render_comparison(features, images, references, selected, cfg, directory))
     (directory / "metrics.json").write_text(json.dumps(metrics, indent=2))
     np.savez(
         directory / "tokens.npz",

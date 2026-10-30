@@ -105,7 +105,14 @@ class RawViews(Dataset):
         group = self.groups[stratum]
         source = self.sources[rng.choice(group)]
         camera = rng.choice(DOMAIN_RAW_KEYS[source.domain])
-        x = self.frame(source, rng.randrange(source.num_frames), camera)
+        relations = self.cfg.get("relations")
+        endpoint = (
+            rng.randrange(1, source.num_frames) if relations else rng.randrange(source.num_frames)
+        )
+        x = self.frame(source, endpoint, camera)
+        if relations:
+            gap = rng.randint(1, min(endpoint, relations["max_frame_gap"]))
+            previous = self.frame(source, endpoint - gap, camera)
         c = self.cfg["crops"]
         if exposure:
             step = index // self.cfg["training"]["batch"]
@@ -113,6 +120,7 @@ class RawViews(Dataset):
                 exposure["max_stops"] - exposure["start_stops"]
             ) * min(step / exposure["curriculum_steps"], 1)
             globals_, degraded = [], []
+            past_view = None
             generator = torch.Generator().manual_seed(self.cfg["seed"] + index)
             for _ in range(2):
                 stops = rng.uniform(0, maximum) if source.lighting == "Normal" else 0.0
@@ -123,12 +131,23 @@ class RawViews(Dataset):
                 )
                 # Identical crop, flip, resize, and mild gain; noise is sampled BEFORE resize.
                 geometry = rng.getstate()
+                if relations and not globals_:
+                    past_view = crop(previous, c["global_size"], c["global_scale"], rng)
+                    rng.setstate(geometry)
                 globals_.append(crop(x, c["global_size"], c["global_scale"], rng))
                 rng.setstate(geometry)
                 degraded.append(crop(dark, c["global_size"], c["global_scale"], rng))
             local = torch.stack(
                 [crop(x, c["local_size"], c["local_scale"], rng) for _ in range(c["local_count"])]
             )
+            if relations:
+                return (
+                    torch.stack(globals_),
+                    local,
+                    torch.stack(degraded),
+                    past_view,
+                    source.lighting == "Normal",
+                )
             return torch.stack(globals_), local, torch.stack(degraded)
         return (
             torch.stack([crop(x, c["global_size"], c["global_scale"], rng) for _ in range(2)]),
