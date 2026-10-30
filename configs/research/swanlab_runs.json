@@ -3,6 +3,13 @@
   "name_format": "阶段｜目标｜数据/照明｜训练范围或尝试｜规模或恢复点｜YYYYMMDD",
   "runs": [
     {
+      "id": "owac-j5-pi05-lora-20261030",
+      "name": "J5-ACT｜LoRA动作适配｜LIBERO五照明｜全量112续接｜累计30k｜20261030",
+      "group": "J5-action",
+      "job_type": "lora-finetune",
+      "description": "继承全量112 online；RAW/投影/动作接口继续训练，语言rank16及动作rank32 LoRA，双卡DDP有效batch256。"
+    },
+    {
       "id": "owac-j5-pi05-full-20261030",
       "name": "J5-ACT｜RAW全模型动作微调｜LIBERO五照明｜官方pi05配方｜30k｜20261030",
       "group": "J5-action",

@@ -68,7 +68,10 @@ def main():
             "-m",
             "owac.training.j5_action_export",
             "--checkpoint",
-            str(root / "latest"),
+            str(
+                root
+                / ("latest.pt" if cfg.get("adaptation", {}).get("kind") == "lora" else "latest")
+            ),
             "--output",
             str(policy),
         ],
@@ -80,12 +83,13 @@ def main():
     servers, clients, streams = [], [], []
     import swanlab
 
+    phase = "J5-ACT-LoRA" if cfg.get("adaptation", {}).get("kind") == "lora" else "J5-ACT"
     swanlab.login(api_key=Path("/root/.config/owac/swanlab-api-key").read_text().strip())
     swanlab.init(
         project="OWAC",
         workspace="Jeong",
         id=cfg["closed_loop"]["swanlab_id"],
-        experiment_name="J5-ACT评估｜官方RGB对照｜LIBERO五照明｜40任务固定初态｜20261030",
+        experiment_name=f"{phase}评估｜官方RGB对照｜LIBERO五照明｜40任务固定初态｜20261030",
         config=cfg,
         logdir=str(evaluation / "swanlab"),
         group="J5-action",

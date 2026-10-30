@@ -33,6 +33,10 @@ class ActionPolicy:
         else:
             payload = torch.load(checkpoint, map_location="cpu", mmap=True, weights_only=False)
             self.model = J5Policy(cfg, initialize=False)
+            if cfg.get("adaptation", {}).get("kind") == "lora":
+                from owac.training.j5_lora import configure_lora
+
+                configure_lora(self.model, cfg)
             self.model.load_state_dict(payload["model"])
         self.model.to(self.device).eval()
         self.tokenizer = sentencepiece.SentencePieceProcessor(model_file=cfg["assets"]["tokenizer"])

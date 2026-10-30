@@ -16,6 +16,24 @@ def main():
     parser.add_argument("--online", action="store_true")
     args = parser.parse_args()
     torch.set_num_threads(8)
+    if args.checkpoint.is_file():
+        from owac.training.j5_lora import build_policy, copy_trainable
+
+        payload = torch.load(args.checkpoint, map_location="cpu", weights_only=False)
+        model = build_policy(payload["config"])
+        kind = "model" if args.online else "ema"
+        copy_trainable(model, payload[kind])
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        torch.save(
+            {
+                "model": model.state_dict(),
+                "config": payload["config"],
+                "step": payload["step"],
+                "weights": kind,
+            },
+            args.output,
+        )
+        return
     metadata = json.loads((args.checkpoint / "metadata.json").read_text())
     model = J5Policy(metadata["config"], initialize=False)
     kind = "model" if args.online else "ema"

@@ -8,7 +8,7 @@ import random
 import shutil
 import signal
 import time
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 from pathlib import Path
 
 import numpy as np
@@ -16,6 +16,7 @@ import torch
 import torch.distributed as dist
 from torch.distributed.fsdp import MixedPrecisionPolicy, fully_shard, register_fsdp_forward_method
 from torch.distributed.tensor import DTensor
+from torch.nn.parallel import DistributedDataParallel
 from torch.utils.data import DataLoader, Sampler
 
 from owac.raw.all_bench_distillation import load_inventory
@@ -28,19 +29,25 @@ def local(value):
 
 
 @contextmanager
-def ema_weights(model, ema):
-    online = {name: local(p).detach().cpu() for name, p in model.named_parameters()}
+def ema_weights(model, ema, *, sharded=True):
+    parameters = {name: p for name, p in model.named_parameters() if name in ema}
+    online = {
+        name: local(p).detach().cpu() if sharded else p.detach().clone()
+        for name, p in parameters.items()
+    }
     with torch.no_grad():
-        for name, p in model.named_parameters():
+        for name, p in parameters.items():
             local(p).copy_(ema[name])
     try:
         yield
     finally:
         # Root weights stay gathered after no-grad forwards (no backward hook).
-        model.reshard()
+        if sharded:
+            model.reshard()
         with torch.no_grad():
             for name, p in model.named_parameters():
-                local(p).copy_(online[name])
+                if name in online:
+                    local(p).copy_(online[name])
 
 
 def disk_save(payload, path):
@@ -225,6 +232,7 @@ def main():
     args = parser.parse_args()
     cfg = json.loads(args.config.read_text())
     train = cfg["training"]
+    lora = cfg.get("adaptation", {}).get("kind") == "lora"
     rank, world = int(os.environ["RANK"]), int(os.environ["WORLD_SIZE"])
     device = torch.device("cuda", int(os.environ["LOCAL_RANK"]))
     torch.cuda.set_device(device)
@@ -235,29 +243,53 @@ def main():
     np.random.seed(cfg["seed"] + rank)
     root = args.output
     root.mkdir(exist_ok=True, parents=True)
-    model = J5Policy(cfg, initialize=args.resume is None)
-    parameter_count = sum(p.numel() for p in model.parameters())
-    mp = MixedPrecisionPolicy(param_dtype=torch.bfloat16, reduce_dtype=torch.float32)
-    pg = model.paligemma_with_expert
-    fully_shard(pg.paligemma.language_model.embed_tokens, mp_policy=mp)
-    for layer in pg.joint_layers:
-        fully_shard(layer, mp_policy=mp)
-    # Remaining small parameters, including RAW response, retain FP32 storage/compute policy.
-    fully_shard(model)
-    register_fsdp_forward_method(model, "sample_sharded")
+    if lora:
+        from owac.training import j5_lora
+
+        # Sequential CPU construction bounds temporary base-checkpoint memory.
+        for reader in range(world):
+            if reader == rank:
+                model = j5_lora.build_policy(cfg).to(device)
+            dist.barrier()
+    else:
+        model = J5Policy(cfg, initialize=args.resume is None)
+        mp = MixedPrecisionPolicy(param_dtype=torch.bfloat16, reduce_dtype=torch.float32)
+        pg = model.paligemma_with_expert
+        fully_shard(pg.paligemma.language_model.embed_tokens, mp_policy=mp)
+        for layer in pg.joint_layers:
+            fully_shard(layer, mp_policy=mp)
+        fully_shard(model)
+        register_fsdp_forward_method(model, "sample_sharded")
+    parameter_count = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    parameters = [p for p in model.parameters() if p.requires_grad]
     optimizer = torch.optim.AdamW(
-        model.parameters(),
+        parameters,
         lr=train["learning_rate"],
         betas=(0.9, 0.95),
         eps=1e-8,
         weight_decay=1e-10,
-        foreach=False,
+        foreach=lora,
     )
     if args.resume:
-        start, ema = load_checkpoint(model, optimizer, args.resume, rank)
+        restore = j5_lora.load if lora else load_checkpoint
+        start, ema = restore(model, optimizer, args.resume, rank)
     else:
-        start = 0
-        ema = {k: local(p).detach().cpu().clone() for k, p in model.named_parameters()}
+        start = cfg["adaptation"]["initial_step"] if lora else 0
+        ema = {
+            k: p.detach().clone() if lora else local(p).detach().cpu().clone()
+            for k, p in model.named_parameters()
+            if p.requires_grad
+        }
+    core = model
+    if lora:
+        # The last language output is unused by the action loss, including its LoRA.
+        model = DistributedDataParallel(
+            core,
+            device_ids=[device.index],
+            broadcast_buffers=False,
+            find_unused_parameters=True,
+            gradient_as_bucket_view=True,
+        )
     gc.collect()
     if not args.resume:
         torch.manual_seed(cfg["seed"] + rank)
@@ -297,7 +329,7 @@ def main():
                 config=cfg,
                 logdir=str(root / "swanlab"),
                 group="J5-action",
-                job_type="full-finetune",
+                job_type="lora-finetune" if lora else "full-finetune",
             )
 
     def report(step, metrics):
@@ -312,14 +344,14 @@ def main():
     stop = [False]
     signal.signal(signal.SIGUSR1, lambda *_: stop.__setitem__(0, True))
     if args.initial_eval:
-        with ema_weights(model, ema):
-            report(start, validate(model, validation, rank, world, device))
+        with ema_weights(core, ema, sharded=not lora):
+            report(start, validate(core, validation, rank, world, device))
             selected = [
                 next(s for s in validation.sources if s.lighting == light)
                 for light in ("Normal", "Low", "ExtremeLow", "Over", "ExtremeOver")
             ]
             probe = RawActionFrames(selected, cfg, validation=True)
-            metrics = validate(model, probe, rank, world, device, sample=True)
+            metrics = validate(core, probe, rank, world, device, sample=True)
             report(
                 start,
                 {
@@ -339,19 +371,26 @@ def main():
             group["lr"] = lr
         optimizer.zero_grad(set_to_none=True)
         total = torch.zeros(2, device=device)
-        for _ in range(accumulation):
+        for micro in range(accumulation):
             batch = move(next(iterator), device)
-            with torch.autocast("cuda", dtype=torch.bfloat16):
-                losses = model(batch)
-                loss = losses.mean()
-            (loss / accumulation).backward()
+            sync = model.no_sync() if lora and micro < accumulation - 1 else nullcontext()
+            with sync:
+                with torch.autocast("cuda", dtype=torch.bfloat16):
+                    losses = model(batch)
+                    loss = losses.mean()
+                (loss / accumulation).backward()
             total += torch.stack((loss.detach(), losses[..., :7].mean().detach())) / accumulation
-        grad = clip_grad(model, 1.0)
+        grad = torch.nn.utils.clip_grad_norm_(parameters, 1.0) if lora else clip_grad(model, 1.0)
         optimizer.step()
         with torch.no_grad():
-            for name, p in model.named_parameters():
-                ema[name].lerp_(local(p).detach().cpu(), 1 - train["ema_decay"])
+            if lora:
+                torch._foreach_lerp_(list(ema.values()), parameters, 1 - train["ema_decay"])
+            else:
+                for name, p in model.named_parameters():
+                    ema[name].lerp_(local(p).detach().cpu(), 1 - train["ema_decay"])
         dist.all_reduce(total)
+        # GPU-resident LoRA EMA is asynchronous; include it in wall-clock timing.
+        torch.cuda.synchronize()
         elapsed = time.monotonic() - timer
         if step == start + 1 or step % train["log_every"] == 0:
             mem = int(Path("/sys/fs/cgroup/memory.current").read_text()) / 2**30
@@ -384,13 +423,16 @@ def main():
         stop[0] = bool(stopping.item())
         final = step == train["updates"] or (args.steps is not None and step - start >= args.steps)
         if step == start + 1 or step % train["save_every"] == 0 or final or stop[0]:
-            save_checkpoint(model, optimizer, ema, root, step, cfg, rank)
+            save = j5_lora.save if lora else save_checkpoint
+            save(core, optimizer, ema, root, step, cfg, rank)
+            if rank == 0:
+                (root / "status.json").write_text(json.dumps({"step": step, "status": "running"}))
         if not args.steps and (step % train["eval_every"] == 0 or final):
-            with ema_weights(model, ema):
+            with ema_weights(core, ema, sharded=not lora):
                 report(
                     step,
                     validate(
-                        model,
+                        core,
                         validation,
                         rank,
                         world,

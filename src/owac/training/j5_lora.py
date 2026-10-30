@@ -1,0 +1,126 @@
+"""LoRA adaptation and compact resumable checkpoints for the J5 action policy."""
+
+import math
+import os
+import random
+from pathlib import Path
+
+import numpy as np
+import torch
+import torch.distributed as dist
+from torch import nn
+
+
+class LoRALinear(nn.Module):
+    def __init__(self, base, rank, alpha):
+        super().__init__()
+        self.base = base
+        self.base.requires_grad_(False)
+        self.scale = alpha / rank
+        self.a = nn.Linear(base.in_features, rank, bias=False)
+        self.b = nn.Linear(rank, base.out_features, bias=False)
+        nn.init.kaiming_uniform_(self.a.weight, a=math.sqrt(5))
+        nn.init.zeros_(self.b.weight)
+
+    @property
+    def weight(self):
+        return self.base.weight
+
+    @property
+    def bias(self):
+        return self.base.bias
+
+    def forward(self, x):
+        return self.base(x) + self.b(self.a(x)) * self.scale
+
+
+def configure_lora(model, cfg):
+    model.requires_grad_(False)
+    # Keep the RAW signal processing and small action-interface weights trainable.
+    for name, module in model.named_children():
+        if name != "paligemma_with_expert":
+            module.requires_grad_(True)
+    for block in model.paligemma_with_expert.joint_layers:
+        for stream, layer in enumerate(block.streams):
+            rank = cfg["adaptation"]["ranks"][stream]
+            for parent, names in (
+                (layer.self_attn, ("q_proj", "k_proj", "v_proj", "o_proj")),
+                (layer.mlp, ("gate_proj", "up_proj", "down_proj")),
+            ):
+                for name in names:
+                    setattr(
+                        parent,
+                        name,
+                        LoRALinear(
+                            getattr(parent, name), rank, rank * cfg["adaptation"]["alpha_over_rank"]
+                        ),
+                    )
+    # Frozen weights need no FP32 master/Adam copy. Trainable weights remain FP32.
+    for p in model.parameters():
+        if not p.requires_grad:
+            p.data = p.data.to(torch.bfloat16)
+    return model
+
+
+def build_policy(cfg):
+    from owac.training.j5_pi05 import J5Policy
+
+    model = J5Policy(cfg, initialize=False)
+    path = Path(cfg["adaptation"]["base"])
+    payload = torch.load(path, mmap=True, weights_only=False, map_location="cpu")
+    model.load_state_dict(payload["model"])
+    del payload
+    with path.open("rb") as stream:
+        os.posix_fadvise(stream.fileno(), 0, 0, os.POSIX_FADV_DONTNEED)
+    return configure_lora(model, cfg)
+
+
+def trainable(model):
+    return {name: p for name, p in model.named_parameters() if p.requires_grad}
+
+
+@torch.no_grad()
+def copy_trainable(model, state):
+    for name, p in trainable(model).items():
+        p.copy_(state[name])
+
+
+def save(model, optimizer, ema, root, step, cfg, rank):
+    from owac.training.j5_action_train import disk_save
+
+    rng = {
+        "python": random.getstate(),
+        "numpy": np.random.get_state(),
+        "torch": torch.get_rng_state(),
+        "cuda": torch.cuda.get_rng_state(),
+    }
+    states = [None] * dist.get_world_size() if rank == 0 else None
+    dist.gather_object(rng, states, dst=0)
+    if rank == 0:
+        disk_save(
+            {
+                "step": step,
+                "config": cfg,
+                "model": {k: p.detach().cpu() for k, p in trainable(model).items()},
+                "ema": {k: p.cpu() for k, p in ema.items()},
+                "optimizer": optimizer.state_dict(),
+                "rng": states,
+            },
+            root / "saving.pt",
+        )
+        (root / "saving.pt").replace(root / "latest.pt")
+    dist.barrier()
+
+
+def load(model, optimizer, path, rank):
+    payload = torch.load(path, map_location="cpu", weights_only=False)
+    copy_trainable(model, payload["model"])
+    optimizer.load_state_dict(payload["optimizer"])
+    device = next(model.parameters()).device
+    ema = {k: p.to(device) for k, p in payload["ema"].items()}
+    rng = payload["rng"][rank]
+    random.setstate(rng["python"])
+    np.random.set_state(rng["numpy"])
+    torch.set_rng_state(rng["torch"])
+    torch.cuda.set_rng_state(rng["cuda"])
+    return payload["step"], ema
