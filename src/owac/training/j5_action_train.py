@@ -3,6 +3,7 @@
 import argparse
 import gc
 import json
+import math
 import os
 import random
 import shutil
@@ -199,7 +200,14 @@ def validate(model, dataset, rank, world, device, *, sample=False):
             tau = model.sample_time(1, device)
             with torch.autocast("cuda", dtype=torch.bfloat16):
                 loss = model(batch, noise=noise, time=tau)
-                prediction = model.sample_sharded(batch, noise) if sample else None
+                if sample and not hasattr(model, "reshard"):
+                    from owac.training.j5_pi05 import observation
+
+                    prediction = model.sample_actions(
+                        device, observation(batch), noise=noise, num_steps=10
+                    )
+                else:
+                    prediction = model.sample_sharded(batch, noise) if sample else None
             if valid:
                 row = names.index(batch["lighting"][0])
                 totals[row, 0] += loss.mean()
@@ -218,6 +226,8 @@ def validate(model, dataset, rank, world, device, *, sample=False):
         if sample:
             values[f"val/{name}/sample_mae7"] = row[2] / row[4]
             values[f"val/{name}/gripper_sign_error"] = row[3] / row[4]
+    if sample:
+        values["val/sample_mae7"] = (totals[:, 2].sum() / totals[:, 4].sum()).item()
     model.train()
     return values
 
@@ -262,8 +272,28 @@ def main():
         register_fsdp_forward_method(model, "sample_sharded")
     parameter_count = sum(p.numel() for p in model.parameters() if p.requires_grad)
     parameters = [p for p in model.parameters() if p.requires_grad]
+    parameter_groups = parameters
+    if "expert_learning_rate" in train:
+        parameter_groups = [
+            {
+                "params": [
+                    p
+                    for n, p in model.named_parameters()
+                    if p.requires_grad and n.startswith("raw_projector.")
+                ],
+                "lr_scale": 1.0,
+            },
+            {
+                "params": [
+                    p
+                    for n, p in model.named_parameters()
+                    if p.requires_grad and not n.startswith("raw_projector.")
+                ],
+                "lr_scale": train["expert_learning_rate"] / train["learning_rate"],
+            },
+        ]
     optimizer = torch.optim.AdamW(
-        parameters,
+        parameter_groups,
         lr=train["learning_rate"],
         betas=(0.9, 0.95),
         eps=1e-8,
@@ -280,6 +310,14 @@ def main():
             for k, p in model.named_parameters()
             if p.requires_grad
         }
+    selection = {"best": None, "bad_evals": 0, "lr_factor": 1.0}
+    if args.resume and lora:
+        selection.update(
+            torch.load(args.resume, map_location="cpu", weights_only=False)
+            .get("config", {})
+            .get("selection", {})
+        )
+    cfg["selection"] = selection
     core = model
     if lora:
         # The last language output is unused by the action loss, including its LoRA.
@@ -287,7 +325,7 @@ def main():
             core,
             device_ids=[device.index],
             broadcast_buffers=False,
-            find_unused_parameters=True,
+            find_unused_parameters=cfg["adaptation"]["ranks"][0] > 0,
             gradient_as_bucket_view=True,
         )
     gc.collect()
@@ -309,6 +347,7 @@ def main():
         pin_memory=True,
         persistent_workers=True,
         collate_fn=collate_actions,
+        generator=torch.Generator().manual_seed(cfg["seed"] + rank),
     )
     iterator = iter(loader)
     tracker = None
@@ -367,8 +406,12 @@ def main():
         lr = initial_lr + (train["learning_rate"] - initial_lr) * min(
             (step - 1) / train["warmup"], 1
         )
+        if train.get("schedule") == "cosine":
+            progress = max(0, step - train["warmup"]) / (train["updates"] - train["warmup"])
+            lr *= 0.1 + 0.9 * (1 + math.cos(math.pi * progress)) / 2
+            lr *= selection["lr_factor"]
         for group in optimizer.param_groups:
-            group["lr"] = lr
+            group["lr"] = lr * group.get("lr_scale", 1.0)
         optimizer.zero_grad(set_to_none=True)
         total = torch.zeros(2, device=device)
         for micro in range(accumulation):
@@ -408,6 +451,7 @@ def main():
                     "train/flow7": total[1].item() / world,
                     "train/grad_norm": grad.item(),
                     "train/lr": lr,
+                    "train/validation_lr_factor": selection["lr_factor"],
                     "train/seconds_per_update": elapsed,
                     "train/images_per_second": train["batch"] / elapsed,
                     "host/memory_gib": mem,
@@ -427,19 +471,55 @@ def main():
             save(core, optimizer, ema, root, step, cfg, rank)
             if rank == 0:
                 (root / "status.json").write_text(json.dumps({"step": step, "status": "running"}))
-        if not args.steps and (step % train["eval_every"] == 0 or final):
+        if (not args.steps or train.get("retain_best")) and (
+            step % train["eval_every"] == 0 or final
+        ):
             with ema_weights(core, ema, sharded=not lora):
-                report(
-                    step,
-                    validate(
-                        core,
-                        validation,
-                        rank,
-                        world,
-                        device,
-                        sample=step % train["sample_every"] == 0 or final,
-                    ),
+                metrics = validate(
+                    core,
+                    validation,
+                    rank,
+                    world,
+                    device,
+                    sample=step % train["sample_every"] == 0 or final,
                 )
+                report(step, metrics)
+            if train.get("retain_best") and "val/sample_mae7" in metrics:
+                improved = (
+                    selection["best"] is None or metrics["val/sample_mae7"] < selection["best"]
+                )
+                if improved:
+                    selection["best"] = metrics["val/sample_mae7"]
+                    selection["best_step"] = step
+                    selection["bad_evals"] = 0
+                else:
+                    selection["bad_evals"] += 1
+                    if selection["bad_evals"] >= train["plateau_patience"]:
+                        selection["lr_factor"] *= 0.5
+                        selection["bad_evals"] = 0
+                        # Restore a coherent model/Adam pair; keep the current data cursor.
+                        best = torch.load(root / "best.pt", map_location="cpu", weights_only=False)
+                        j5_lora.copy_trainable(core, best["model"])
+                        optimizer.load_state_dict(best["optimizer"])
+                        ema = {name: value.to(device) for name, value in best["ema"].items()}
+                        del best
+                        report(
+                            step,
+                            {
+                                "train/rollback_to_step": selection["best_step"],
+                                "train/validation_lr_factor": selection["lr_factor"],
+                            },
+                        )
+                j5_lora.save(core, optimizer, ema, root, step, cfg, rank)
+                if rank == 0:
+                    if improved:
+                        (root / "best.pt").unlink(missing_ok=True)
+                        os.link(root / "latest.pt", root / "best.pt")
+                    if step % train["retain_every"] == 0 or final:
+                        target = root / f"step-{step:06d}.pt"
+                        target.unlink(missing_ok=True)
+                        os.link(root / "latest.pt", target)
+                    (root / "selection.json").write_text(json.dumps(selection, indent=2))
         if final or stop[0]:
             break
     if rank == 0:

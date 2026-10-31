@@ -140,6 +140,12 @@ class J5Policy(PI0Pytorch):
         pg.forward = MethodType(joint_forward, pg)
         self.requires_grad_(True)
 
+    def train(self, mode=True):
+        super().train(mode)
+        if getattr(self, "freeze_raw_encoder", False):
+            self.raw_encoder.eval()
+        return self
+
     def _preprocess_observation(self, observation, *, train=True):
         # Dataset handles RAW-safe geometric augmentation; no RGB range conversion.
         return (

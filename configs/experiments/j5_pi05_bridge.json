@@ -1,0 +1,109 @@
+{
+  "seed": 20261031,
+  "assets": {
+    "j5": "/root/owac/repo/outputs/j5-raw-relations-20261030/attempts/user-stop-12818/encoder.pt",
+    "pi05": "/root/owac/pi05-base-pytorch/model.safetensors",
+    "tokenizer": "/root/owac/repo/outputs/checkpoints/raw-distillation/paligemma_tokenizer.model",
+    "statistics": "/root/owac/repo/outputs/checkpoints/raw-distillation/pi05_libero_jax/assets/physical-intelligence/libero/norm_stats.json"
+  },
+  "data": {
+    "inventory": "/root/owac/repo/outputs/raw-distillation-all-bench-20261022/inventory.json",
+    "domains": [
+      "libero"
+    ],
+    "split_counts": {
+      "train": 1421,
+      "validation": 177,
+      "test": 173
+    },
+    "sampling": "uniform training frames; existing five lighting/source partitions"
+  },
+  "training": {
+    "updates": 6000,
+    "batch": 256,
+    "micro_batch": 128,
+    "workers": 2,
+    "learning_rate": 5e-05,
+    "warmup": 500,
+    "ema_decay": 0.0,
+    "log_every": 10,
+    "save_every": 500,
+    "eval_every": 500,
+    "sample_every": 500,
+    "schedule": "cosine",
+    "retain_best": true,
+    "retain_every": 1000,
+    "plateau_patience": 3,
+    "expert_learning_rate": 5e-06
+  },
+  "swanlab": {
+    "id": "owac-j5-bridge-20261031",
+    "name": "J5-ACT\uff5c\u51bb\u7ed3\u89c6\u89c9\u4e0e\u7b56\u7565\u6865\u63a5\uff5cLIBERO\u4e94\u7167\u660e\uff5c\u4ec5\u8fde\u63a5\u5c42\uff5c6k\uff5c20261031"
+  },
+  "official_source": "openpi 15a9616a00943ada6c20a0f158e3adb39df2ccac",
+  "differences": [
+    "Frozen accepted J5 12818 RAW encoder; frozen official pi05-base; only 384->2048 projector trains",
+    "Official 32D flow objective and action normalization retained; RAW only training",
+    "AdamW, 500 warmup then cosine decay; validation plateau halves LR after 3 non-improving evaluations",
+    "No EMA smoothing; best fixed validation sampled 7D MAE checkpoint plus 1000-step checkpoints",
+    "DDP micro128 global256, 2 workers/rank, prefetch1, bounded frame readers; no RAW encoder backward"
+  ],
+  "closed_loop": {
+    "task_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "lighting": [
+      "Normal",
+      "Low",
+      "ExtremeLow",
+      "Over",
+      "ExtremeOver"
+    ],
+    "seeds_per_task": 5,
+    "execute_horizon": 5,
+    "flow_steps": 10,
+    "suites": [
+      "libero_spatial",
+      "libero_object",
+      "libero_goal",
+      "libero_10"
+    ],
+    "swanlab_id": "owac-j5-bridge-eval-20261031"
+  },
+  "simulation": {
+    "legacy_root": "/root/owac/repo/outputs/raw-distillation-all-bench-20261022/lowlight-20261027",
+    "author_root": "/root/owac/repo/outputs/raw-distillation-20261020-sol/teacher-search-v2/author-main",
+    "openpi_root": "/root/owac/openpi-official-15a9616",
+    "python": "/root/owac/repo/outputs/raw-distillation-all-bench-20261022/lowlight-20261027/runtime/python/bin/python3.11",
+    "rgb_checkpoint": "/root/autodl-pub/checkpoints/openpi/pi05_libero_pytorch/model.safetensors"
+  },
+  "adaptation": {
+    "kind": "lora",
+    "fresh_official": true,
+    "initial_step": 0,
+    "ranks": [
+      0,
+      0
+    ],
+    "dense_modules": [
+      "raw_projector"
+    ],
+    "alpha_over_rank": 1,
+    "targets_list": [
+      "v_proj",
+      "o_proj",
+      "gate_proj",
+      "up_proj",
+      "down_proj"
+    ]
+  }
+}

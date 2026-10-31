@@ -36,18 +36,24 @@ class LoRALinear(nn.Module):
 
 def configure_lora(model, cfg):
     model.requires_grad_(False)
-    # Keep the RAW signal processing and small action-interface weights trainable.
+    # Legacy runs train the dense front end; staged runs name only the bridge.
     for name, module in model.named_children():
-        if name != "paligemma_with_expert":
+        if name in cfg["adaptation"].get(
+            "dense_modules", [n for n, _ in model.named_children() if n != "paligemma_with_expert"]
+        ):
             module.requires_grad_(True)
     for block in model.paligemma_with_expert.joint_layers:
         for stream, layer in enumerate(block.streams):
             rank = cfg["adaptation"]["ranks"][stream]
+            if rank == 0:
+                continue
             for parent, names in (
                 (layer.self_attn, ("q_proj", "k_proj", "v_proj", "o_proj")),
                 (layer.mlp, ("gate_proj", "up_proj", "down_proj")),
             ):
                 for name in names:
+                    if name not in cfg["adaptation"].get("targets_list", names):
+                        continue
                     setattr(
                         parent,
                         name,
@@ -55,9 +61,12 @@ def configure_lora(model, cfg):
                             getattr(parent, name), rank, rank * cfg["adaptation"]["alpha_over_rank"]
                         ),
                     )
-    # Frozen weights need no FP32 master/Adam copy. Trainable weights remain FP32.
-    for p in model.parameters():
-        if not p.requires_grad:
+    model.freeze_raw_encoder = not any(p.requires_grad for p in model.raw_encoder.parameters())
+    if model.freeze_raw_encoder:
+        model.raw_encoder.eval()
+    # Frozen backend needs no FP32 master/Adam copy. Keep accepted RAW weights FP32.
+    for name, p in model.named_parameters():
+        if not p.requires_grad and not name.startswith("raw_encoder."):
             p.data = p.data.to(torch.bfloat16)
     return model
 
@@ -65,6 +74,9 @@ def configure_lora(model, cfg):
 def build_policy(cfg):
     from owac.training.j5_pi05 import J5Policy
 
+    if cfg["adaptation"].get("fresh_official", False):
+        torch.manual_seed(cfg["seed"])
+        return configure_lora(J5Policy(cfg, initialize=True), cfg)
     model = J5Policy(cfg, initialize=False)
     path = Path(cfg["adaptation"]["base"])
     payload = torch.load(path, mmap=True, weights_only=False, map_location="cpu")

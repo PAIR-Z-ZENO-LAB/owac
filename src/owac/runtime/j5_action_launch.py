@@ -16,6 +16,7 @@ def main():
     parser.add_argument("--resume", type=Path)
     parser.add_argument("--steps", type=int)
     parser.add_argument("--initial-eval", action="store_true")
+    parser.add_argument("--no-evaluation", action="store_true")
     args = parser.parse_args()
     root = args.output.resolve()
     root.mkdir(parents=True, exist_ok=True)
@@ -56,7 +57,7 @@ def main():
     (root / "train.exit.json").write_text(
         json.dumps({"native_exit": code, "ended_at": time.time()})
     )
-    if code == 0 and not args.steps:
+    if code == 0 and not args.steps and not args.no_evaluation:
         status = json.loads((root / "status.json").read_text())
         if status["status"] == "completed":
             with (root / "evaluation.log").open("w") as stream:
