@@ -1,3 +1,5 @@
+2026-10-31 J5-ACT LoRA：按用户要求在14041完整保存/native0停止，保留attempts/user-stop-14041。固定177源复核online/EMA均有退化；20例FP32采样误差未恢复，梯度能量81%集中动作专家LoRA。高学习率下后端共同适配失稳为主要假设，尚无因果对照；8k未保留是保存策略缺陷。未恢复训练，见 [停止与诊断](../research/experiments/j5_pi05_lora_diagnosis_20261031.md)。
+
 2026-10-30 J5-ACT LoRA：全量训练112步完整保存/native0停止，继承online权重转为语言rank16/动作rank32 LoRA，RAW与动作接口继续训练。5861万可训练参数，双卡DDP micro64/累计batch256；正式续接已推进至140，约6.87秒/更新（约1.95倍加速），allocated18.23GiB/卡、OOM0。恢复/EMA验证/仿真连通通过，动作成功率待闭环。见 [LoRA记录](../research/experiments/j5_pi05_lora_20261030.md)。
 
 2026-10-30 J5-ACT：用户授权将已保留的J5 12818视觉EMA接入官方π0.5-base，独立分支lzh/j5-pi05-full-finetune。29.62亿参数全量微调，LIBERO原分区/五照明、官方flow loss及batch256/30k配方；双5090已实际恢复并推进，SwanLab在线。RAW/RGB仿真连通检查通过；恢复/EMA切换问题已修复，4分钟内存峰值76.83GiB、OOM0。闭环成功率尚未完成，训练结束自动对照。见 [J5-ACT记录](../research/experiments/j5_pi05_full_20261030.md)。
