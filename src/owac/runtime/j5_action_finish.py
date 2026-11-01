@@ -93,8 +93,10 @@ def main():
     import swanlab
 
     swanlab.login(api_key=Path("/root/.config/owac/swanlab-api-key").read_text().strip())
+    if cfg.get("monitoring", {}).get("version") == 2:
+        swanlab.merge_settings(swanlab.Settings(probe=swanlab.Settings.Probe(monitor=False)))
     swanlab.init(
-        project="OWAC",
+        project=cfg["closed_loop"].get("swanlab_project", "OWAC"),
         workspace="Jeong",
         id=cfg["closed_loop"]["swanlab_id"],
         resume="allow",
@@ -104,6 +106,9 @@ def main():
         group="J5-action",
         job_type="closed-loop",
     )
+    if cfg.get("monitoring", {}).get("version") == 2:
+        swanlab.define_metric("progress/*", section_name="01 回合进度")
+        swanlab.define_metric("success/*", section_name="02 闭环成功率")
     try:
         for role, gpu, port in endpoints:
             checkpoint = policy if role == "raw" else Path(cfg["simulation"]["rgb_checkpoint"])

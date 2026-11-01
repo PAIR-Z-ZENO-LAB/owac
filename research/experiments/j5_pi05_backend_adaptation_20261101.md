@@ -4,6 +4,22 @@
 
 用户授权实现、服务器训练与闭环验证。目标是检验“线性桥接和过度冻结后端未完成RAW适配”的假设；当前工程运行不能证明动作收益。
 
+## 监测与动作验证更新（2026-11-01）
+
+按用户要求，训练在477步完整保存/native0退出后恢复，未重置权重、Adam或数据游标。迁移前的latest/best、配置、日志保存在`attempts/monitor-v2-477/`；旧执行源码保留，新增`source-monitor-v2/`执行快照。
+
+当前看板：[OWAC-Action-Training](https://swanlab.cn/@Jeong/OWAC-Action-Training/runs/owac-j5-act2-normal-mse-20261101)。仅四组：01训练目标、02动作验证、03优化器、04运行资源。原训练曲线按实际step回填；去掉重复的基础LR（与桥接LR相同），停用SDK自动资源曲线，保留显式记录的内存/吞吐。闭环结果写入独立`OWAC-Action-Evaluation`，不混入训练面板。
+
+SwanLab图表按项目共享，已存在图表不能靠再次`define_metric`移动（[官方定义](https://docs.swanlab.cn/api/py-define_metric.html)）。本次使用新项目隔离历史视觉/工程图表；**旧OWAC页面的历史分组未删除**。浏览器连接不可用，因此没有声称已通过网页清空旧分组。API已读回新项目25个自定义指标，仅4个命名前缀；自动SYSTEM标量为空，MSE477步数值与本地一致。
+
+主指标`validation/action_mse`为实际10步Euler采样动作与示范的**7维归一化动作MSE**；不是flow loss，排除25个潜空间补零维度和轨迹末尾重复补齐动作。按照有效动作步加权聚合。验证扩展为每条轨迹均匀8个固定时刻、固定噪声；这是覆盖全部验证轨迹的固定帧子集，不是逐帧全量验证。当前Normal32条轨迹、256时刻、2272有效动作步。训练集与测试集未混入。
+
+辅助指标：动作MAE；实际每轮执行前5步的MSE；反归一化后平移/旋转三维RMSE（原始控制命令单位，不宣称米或弧度）；夹爪命令正负判断错误率。进入五光照后在同一验证组内补充每光照MSE；单光照阶段不重复创建Normal与全局两张相同曲线。样本数与有效动作数同时记录。
+
+477步基线：MSE **0.1995621**、MAE **0.2923230**、前5步MSE **0.1997837**、平移RMSE **0.3977135**、旋转RMSE **0.0690166**、夹爪错误率 **9.4630%**。best与学习率停滞判断切换为MSE，旧MAE选择分数不沿用，新基线从477建立，原best保留在迁移归档。闭环成功率继续独立检验实际控制能力。
+
+针对MSE维度/尾部屏蔽、有效动作加权、夹爪反归一化及数据读取的5项测试通过；定向ruff通过。make check仍为既有213项lint错误。服务器真实验证后已继续更新，OOM0。500步MSE=0.2124411、MAE=0.2992522，未刷新477步best；选择状态实测为metric=validation/action_mse、best_step=477、bad_evals=1。
+
 ## 初始化与训练范围
 
 继承 `/root/owac/repo/outputs/j5-pi05-bridge-20261031/expert/policy-final-ema.pt`（expert第5000步）。保留J5 12818 RAW编码器、原桥接和既有专家V/O/MLP LoRA权重。RAW编码器保持FP32/eval并冻结，官方后端基础权重与动作/时间接口冻结。
@@ -49,5 +65,5 @@
 - 服务器根目录：`/root/owac/repo/outputs/j5-pi05-adapt-20261101/`；`source/`为执行源码快照。
 - `engineering/`：工程3→5→7恢复、checkpoint、原生日志及收据。
 - `normal/`、`development-001000/003000/006000/`、`five-light/`：分阶段产物；`curriculum-status.json`与`development-results.json`记录实际进度。
-- [正常光SwanLab](https://swanlab.cn/@Jeong/OWAC/runs/owac-j5-act2-normal-20261101)
+- [旧正常光SwanLab（截至477）](https://swanlab.cn/@Jeong/OWAC/runs/owac-j5-act2-normal-20261101)
 - [工程SwanLab](https://swanlab.cn/@Jeong/OWAC/runs/owac-j5-act2-engineering-20261101)

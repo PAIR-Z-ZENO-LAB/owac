@@ -42,11 +42,13 @@
       "language": 5e-06,
       "expert_content": 5e-06,
       "expert_qk": 1e-06
-    }
+    },
+    "selection_metric": "validation/action_mse"
   },
   "swanlab": {
-    "id": "owac-j5-act2-normal-20261101",
-    "name": "J5-ACT2｜RAW后端适配｜LIBERO正常光｜残差桥接+语言16/动作8｜继承expert5000｜20261101"
+    "id": "owac-j5-act2-normal-mse-20261101",
+    "name": "J5-ACT2｜RAW后端适配｜LIBERO正常光｜残差桥接+语言16/动作8｜继承expert5000｜20261101",
+    "project": "OWAC-Action-Training"
   },
   "official_source": "openpi 15a9616a00943ada6c20a0f158e3adb39df2ccac",
   "differences": [
@@ -86,7 +88,8 @@
       "libero_goal",
       "libero_10"
     ],
-    "swanlab_id": "owac-j5-act2-final-20261101"
+    "swanlab_id": "owac-j5-act2-final-20261101",
+    "swanlab_project": "OWAC-Action-Evaluation"
   },
   "simulation": {
     "legacy_root": "/root/owac/repo/outputs/raw-distillation-all-bench-20261022/lowlight-20261027",
@@ -143,5 +146,13 @@
     "roles": [
       "raw"
     ]
+  },
+  "validation": {
+    "action_metrics": true,
+    "frames_per_source": 8,
+    "protocol": "eight evenly spaced anchors per validation trajectory; fixed noise; actual 7D sampled actions; repeated terminal padding excluded"
+  },
+  "monitoring": {
+    "version": 2
   }
 }

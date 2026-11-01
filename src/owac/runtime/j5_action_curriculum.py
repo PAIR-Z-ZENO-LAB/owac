@@ -22,7 +22,7 @@ def main():
     config_path = normal / "production.json"
     config_path.write_text(json.dumps(cfg, indent=2))
     resume = args.resume
-    if resume and (resume.parent / "best.pt").exists():
+    if resume and resume.parent != normal and not (normal / "best.pt").exists():
         os.link(resume.parent / "best.pt", normal / "best.pt")
     results = []
 
@@ -44,6 +44,8 @@ def main():
         ]
         if restore:
             command += ["--resume", str(restore)]
+        if cfg.get("validation", {}).get("action_metrics"):
+            command.append("--initial-eval")
         if reset_patience:
             command.append("--reset-patience")
         if until:
@@ -126,6 +128,7 @@ def main():
     five = root / "five-light"
     five.mkdir(exist_ok=True)
     five_cfg = json.loads(json.dumps(cfg))
+    five_cfg.get("monitoring", {}).pop("history", None)
     five_cfg["data"].pop("lighting")
     five_cfg["data"]["sampling"] = "uniform training frames; all five lighting conditions"
     five_cfg["adaptation"]["base"] = str(base)
@@ -139,7 +142,8 @@ def main():
         },
     )
     five_cfg["swanlab"] = {
-        "id": "owac-j5-act2-five-20261101",
+        "id": "owac-j5-act2-five-mse-20261101",
+        "project": cfg["swanlab"].get("project", "OWAC"),
         "name": "J5-ACT2｜RAW后端适配｜LIBERO五照明｜正常光开发选择续接｜20261101",
     }
     five_config = five / "production.json"

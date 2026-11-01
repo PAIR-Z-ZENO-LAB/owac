@@ -1,3 +1,5 @@
+2026-11-01 J5监测V2：477步完整保存/native0后续训，当前已完成500步验证。动作训练迁入OWAC-Action-Training，四个固定分组并回填训练曲线；旧OWAC历史分组保留。32条Normal验证轨迹×8时刻、2272有效动作步，7维归一化采样动作MSE用于best/降LR；500步0.21244，best仍477步0.19956。辅助MAE、执行前5步MSE、分量RMSE、夹爪错误率；排除潜空间与轨迹尾部补齐。云端API核对通过，OOM0。见 [监测记录](../research/experiments/j5_pi05_backend_adaptation_20261101.md)。
+
 2026-11-01 J5-ACT2：继承expert5000，冻结J5视觉，新增残差桥接、语言rank16及低LR专家Q/K；2636万可训练参数。双5090 micro128/global256完成3→5→7恢复/native0，完整300步闭环连通/native0但0/1成功。正式正常光已续接至10步，SwanLab在线；显存27.20GiB/卡、主机80.67GiB、OOM0。1000/3000/6000步开发闭环使用初态5..9，动作收益待测。旧评估已中断并保留：配对204例RAW0、RGB128。见 [后端适配记录](../research/experiments/j5_pi05_backend_adaptation_20261101.md)。
 
 2026-11-01 J5执行诊断：Normal/ExtremeLow两条失败轨迹共14时刻复算及成功RGB首帧均复现原动作。已生成执行画面、固定PCA、目标query、动作专家attention；RAW并非完全不读视觉，但上下文query与指令attention明显不同于成功RGB参考。优先怀疑新模态后端适配不足，尚未因果定论；未训练。见 [执行诊断](../research/experiments/j5_pi05_execution_trace_20261101.md)。

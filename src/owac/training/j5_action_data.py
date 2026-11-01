@@ -56,6 +56,22 @@ class RawActionFrames(Dataset):
         import sentencepiece
 
         self.sources, self.cfg, self.validation = sources, cfg, validation
+        points = cfg.get("validation", {}).get("frames_per_source", 1)
+        self.validation_indices = (
+            [
+                (sid, int(frame))
+                for sid, source in enumerate(sources)
+                for frame in (
+                    [source.num_frames // 2]
+                    if points == 1
+                    else np.linspace(
+                        0, source.num_frames - 1, min(points, source.num_frames), dtype=int
+                    )
+                )
+            ]
+            if validation
+            else []
+        )
         self.ends = np.cumsum([s.num_frames for s in sources])
         self.readers = OrderedDict()
         self.labels = OrderedDict()
@@ -65,7 +81,7 @@ class RawActionFrames(Dataset):
 
     def __len__(self):
         return (
-            len(self.sources)
+            len(self.validation_indices)
             if self.validation
             else self.cfg["training"]["updates"] * self.cfg["training"]["batch"]
         )
@@ -82,8 +98,8 @@ class RawActionFrames(Dataset):
     def __getitem__(self, index):
         rng = np.random.default_rng(self.cfg["seed"] + index)
         if self.validation:
-            source = self.sources[index]
-            endpoint = source.num_frames // 2
+            sid, endpoint = self.validation_indices[index]
+            source = self.sources[sid]
         else:
             frame = int(rng.integers(self.ends[-1]))
             sid = int(np.searchsorted(self.ends, frame, side="right"))
@@ -118,6 +134,7 @@ class RawActionFrames(Dataset):
             "tokens": tokens,
             "token_mask": mask,
             "actions": action_chunk(actions, endpoint, self.stats["actions"]),
+            "action_valid": np.arange(10) + endpoint < len(actions),
             "lighting": source.lighting,
             "source": key,
             "endpoint": endpoint,

@@ -21,7 +21,9 @@ from torch.nn.parallel import DistributedDataParallel
 from torch.utils.data import DataLoader, Sampler
 
 from owac.raw.all_bench_distillation import load_inventory
+from owac.training import j5_monitoring
 from owac.training.j5_action_data import RawActionFrames, collate_actions
+from owac.training.j5_action_metrics import action_metrics, action_sums
 from owac.training.j5_pi05 import J5Policy
 
 
@@ -186,7 +188,8 @@ def clip_grad(model, max_norm):
 def validate(model, dataset, rank, world, device, *, sample=False):
     model.eval()
     names = ["Normal", "Low", "ExtremeLow", "Over", "ExtremeOver"]
-    totals = torch.zeros((5, 5), device=device)
+    action_validation = dataset.cfg.get("validation", {}).get("action_metrics", False)
+    totals = torch.zeros((5, 13), device=device, dtype=torch.float64)
     # Equal forward counts on all ranks; padded observations have zero metric weight.
     ids = list(range(rank, len(dataset), world))
     count = (len(dataset) + world - 1) // world
@@ -214,11 +217,31 @@ def validate(model, dataset, rank, world, device, *, sample=False):
                 totals[row, 1] += loss[..., :7].mean()
                 totals[row, 4] += 1
                 if sample:
+                    if action_validation:
+                        totals[row, 5:] += action_sums(
+                            prediction,
+                            batch["actions"],
+                            batch["action_valid"],
+                            dataset.stats["actions"],
+                            dataset.cfg["closed_loop"]["execute_horizon"],
+                        )
                     totals[row, 2] += (prediction[..., :7] - batch["actions"][..., :7]).abs().mean()
                     totals[row, 3] += (
                         ((prediction[..., 6] > 0) != (batch["actions"][..., 6] > 0)).float().mean()
                     )
     dist.all_reduce(totals)
+    if action_validation:
+        aggregate = totals.sum(0).cpu().tolist()
+        values = {"objective/validation_flow32": aggregate[0] / aggregate[4]}
+        if sample:
+            values.update(action_metrics(aggregate[5:]))
+            values["validation/anchors"] = aggregate[4]
+            if (totals[:, 4] > 0).sum().item() > 1:
+                for name, row in zip(names, totals.cpu().tolist(), strict=True):
+                    if row[4]:
+                        values[f"validation/{name}_action_mse"] = row[5] / (7 * row[11])
+        model.train()
+        return values
     values = {}
     for name, row in zip(names, totals.cpu().tolist(), strict=True):
         if row[4] == 0:
@@ -325,6 +348,10 @@ def main():
         )
     if args.reset_patience:
         selection["bad_evals"] = 0
+    selection_metric = train.get("selection_metric", "val/sample_mae7")
+    if selection.get("metric", "val/sample_mae7") != selection_metric:
+        selection = {"best": None, "bad_evals": 0, "lr_factor": selection["lr_factor"]}
+    selection["metric"] = selection_metric
     cfg["selection"] = selection
     core = model
     if lora:
@@ -369,8 +396,12 @@ def main():
             import swanlab
 
             swanlab.login(api_key=Path("/root/.config/owac/swanlab-api-key").read_text().strip())
+            if cfg.get("monitoring", {}).get("version") == 2:
+                swanlab.merge_settings(
+                    swanlab.Settings(probe=swanlab.Settings.Probe(monitor=False))
+                )
             tracker = swanlab.init(
-                project="OWAC",
+                project=cfg["swanlab"].get("project", "OWAC"),
                 workspace="Jeong",
                 experiment_name=cfg["swanlab"]["name"],
                 id=cfg["swanlab"]["id"],
@@ -381,7 +412,12 @@ def main():
                 job_type="lora-finetune" if lora else "full-finetune",
             )
 
+            if cfg.get("monitoring", {}).get("version") == 2:
+                j5_monitoring.setup(swanlab, cfg, root)
+
     def report(step, metrics):
+        if cfg.get("monitoring", {}).get("version") == 2:
+            metrics = j5_monitoring.canonical(metrics)
         if rank == 0:
             record = {"step": step, "metrics": metrics}
             with (root / "metrics.jsonl").open("a") as stream:
@@ -392,7 +428,19 @@ def main():
 
     stop = [False]
     signal.signal(signal.SIGUSR1, lambda *_: stop.__setitem__(0, True))
-    if args.initial_eval:
+    if args.initial_eval and cfg.get("validation", {}).get("action_metrics"):
+        if selection["best"] is None:
+            with ema_weights(core, ema, sharded=not lora):
+                metrics = validate(core, validation, rank, world, device, sample=True)
+            report(start, metrics)
+            if train.get("retain_best"):
+                selection.update(best=metrics[selection_metric], best_step=start, bad_evals=0)
+                j5_lora.save(core, optimizer, ema, root, start, cfg, rank)
+                if rank == 0:
+                    (root / "best.pt").unlink(missing_ok=True)
+                    os.link(root / "latest.pt", root / "best.pt")
+                    (root / "selection.json").write_text(json.dumps(selection, indent=2))
+    elif args.initial_eval:
         with ema_weights(core, ema, sharded=not lora):
             report(start, validate(core, validation, rank, world, device))
             selected = [
@@ -503,12 +551,12 @@ def main():
                     sample=step % train["sample_every"] == 0 or final,
                 )
                 report(step, metrics)
-            if train.get("retain_best") and "val/sample_mae7" in metrics:
+            if train.get("retain_best") and selection_metric in metrics:
                 improved = (
-                    selection["best"] is None or metrics["val/sample_mae7"] < selection["best"]
+                    selection["best"] is None or metrics[selection_metric] < selection["best"]
                 )
                 if improved:
-                    selection["best"] = metrics["val/sample_mae7"]
+                    selection["best"] = metrics[selection_metric]
                     selection["best_step"] = step
                     selection["bad_evals"] = 0
                 else:
