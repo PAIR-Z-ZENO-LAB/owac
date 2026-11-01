@@ -1,3 +1,5 @@
+2026-11-01 J5动作闭环：两阶段均6000步/native0，验证选择expert5000（MAE7=0.33939）。原自动评估被SwanLab resume参数错误阻断，已修复并实际启动。首个预定任务spatial0五照明各5初态，RAW0/25、官方RGB14/25；这是单任务初筛，不是40任务总体成功率。完整每角色1000场仍运行。见 [闭环记录](../research/experiments/j5_pi05_closed_loop_20261101.md)。
+
 2026-10-31 J5-ACT 分阶段适配：新分支lzh/j5-action-staged，冻结J5 12818及官方π0.5，仅训练788480参数连接层；双5090 micro128/global256已从工程5完整恢复至正式6步，SwanLab在线。3→5完整恢复及177源动作采样/best保存通过，显存25.54GiB/卡、主机72.10GiB、OOM0。后续自动比较专家V/O/MLP rank8候选，再对验证胜出版本做RAW/RGB完整闭环；成功率尚未产生。见 [分阶段记录](../research/experiments/j5_pi05_staged_20261031.md)。
 
 2026-10-31 J5-ACT LoRA：按用户要求在14041完整保存/native0停止，保留attempts/user-stop-14041。固定177源复核online/EMA均有退化；20例FP32采样误差未恢复，梯度能量81%集中动作专家LoRA。高学习率下后端共同适配失稳为主要假设，尚无因果对照；8k未保留是保存策略缺陷。未恢复训练，见 [停止与诊断](../research/experiments/j5_pi05_lora_diagnosis_20261031.md)。

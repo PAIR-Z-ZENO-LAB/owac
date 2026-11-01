@@ -92,6 +92,7 @@ def main():
         project="OWAC",
         workspace="Jeong",
         id=cfg["closed_loop"]["swanlab_id"],
+        resume="allow",
         experiment_name=f"{cfg['swanlab']['name']}｜闭环与官方RGB对照",
         config=cfg,
         logdir=str(evaluation / "swanlab"),
