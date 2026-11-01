@@ -1,3 +1,5 @@
+2026-11-01 J5执行诊断：Normal/ExtremeLow两条失败轨迹共14时刻复算及成功RGB首帧均复现原动作。已生成执行画面、固定PCA、目标query、动作专家attention；RAW并非完全不读视觉，但上下文query与指令attention明显不同于成功RGB参考。优先怀疑新模态后端适配不足，尚未因果定论；未训练。见 [执行诊断](../research/experiments/j5_pi05_execution_trace_20261101.md)。
+
 2026-11-01 J5动作闭环：两阶段均6000步/native0，验证选择expert5000（MAE7=0.33939）。原自动评估被SwanLab resume参数错误阻断，已修复并实际启动。首个预定任务spatial0五照明各5初态，RAW0/25、官方RGB14/25；这是单任务初筛，不是40任务总体成功率。完整每角色1000场仍运行。见 [闭环记录](../research/experiments/j5_pi05_closed_loop_20261101.md)。
 
 2026-10-31 J5-ACT 分阶段适配：新分支lzh/j5-action-staged，冻结J5 12818及官方π0.5，仅训练788480参数连接层；双5090 micro128/global256已从工程5完整恢复至正式6步，SwanLab在线。3→5完整恢复及177源动作采样/best保存通过，显存25.54GiB/卡、主机72.10GiB、OOM0。后续自动比较专家V/O/MLP rank8候选，再对验证胜出版本做RAW/RGB完整闭环；成功率尚未产生。见 [分阶段记录](../research/experiments/j5_pi05_staged_20261031.md)。
