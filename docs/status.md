@@ -1,3 +1,5 @@
+2026-11-01 J5-ACT2：继承expert5000，冻结J5视觉，新增残差桥接、语言rank16及低LR专家Q/K；2636万可训练参数。双5090 micro128/global256完成3→5→7恢复/native0，完整300步闭环连通/native0但0/1成功。正式正常光已续接至10步，SwanLab在线；显存27.20GiB/卡、主机80.67GiB、OOM0。1000/3000/6000步开发闭环使用初态5..9，动作收益待测。旧评估已中断并保留：配对204例RAW0、RGB128。见 [后端适配记录](../research/experiments/j5_pi05_backend_adaptation_20261101.md)。
+
 2026-11-01 J5执行诊断：Normal/ExtremeLow两条失败轨迹共14时刻复算及成功RGB首帧均复现原动作。已生成执行画面、固定PCA、目标query、动作专家attention；RAW并非完全不读视觉，但上下文query与指令attention明显不同于成功RGB参考。优先怀疑新模态后端适配不足，尚未因果定论；未训练。见 [执行诊断](../research/experiments/j5_pi05_execution_trace_20261101.md)。
 
 2026-11-01 J5动作闭环：两阶段均6000步/native0，验证选择expert5000（MAE7=0.33939）。原自动评估被SwanLab resume参数错误阻断，已修复并实际启动。首个预定任务spatial0五照明各5初态，RAW0/25、官方RGB14/25；这是单任务初筛，不是40任务总体成功率。完整每角色1000场仍运行。见 [闭环记录](../research/experiments/j5_pi05_closed_loop_20261101.md)。

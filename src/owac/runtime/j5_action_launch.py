@@ -17,6 +17,8 @@ def main():
     parser.add_argument("--steps", type=int)
     parser.add_argument("--initial-eval", action="store_true")
     parser.add_argument("--no-evaluation", action="store_true")
+    parser.add_argument("--until-step", type=int)
+    parser.add_argument("--reset-patience", action="store_true")
     args = parser.parse_args()
     root = args.output.resolve()
     root.mkdir(parents=True, exist_ok=True)
@@ -37,6 +39,10 @@ def main():
         command.extend(["--resume", str(args.resume.resolve())])
     if args.steps:
         command.extend(["--steps", str(args.steps)])
+    if args.until_step:
+        command.extend(["--until-step", str(args.until_step)])
+    if args.reset_patience:
+        command.append("--reset-patience")
     if args.initial_eval:
         command.append("--initial-eval")
     env = dict(
@@ -57,6 +63,12 @@ def main():
     (root / "train.exit.json").write_text(
         json.dumps({"native_exit": code, "ended_at": time.time()})
     )
+    if args.until_step:
+        (root / f"segment-{args.until_step:06d}.exit.json").write_text(
+            json.dumps(
+                {"native_exit": code, "ended_at": time.time(), "target_step": args.until_step}
+            )
+        )
     if code == 0 and not args.steps and not args.no_evaluation:
         status = json.loads((root / "status.json").read_text())
         if status["status"] == "completed":

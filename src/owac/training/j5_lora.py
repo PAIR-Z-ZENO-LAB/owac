@@ -34,7 +34,30 @@ class LoRALinear(nn.Module):
         return self.base(x) + self.b(self.a(x)) * self.scale
 
 
+class ResidualProjector(nn.Module):
+    """Keep the learned bridge and add a zero-initialized nonlinear correction."""
+
+    def __init__(self, base, hidden=1024):
+        super().__init__()
+        self.base = base
+        self.residual = nn.Sequential(
+            nn.LayerNorm(base.in_features),
+            nn.Linear(base.in_features, hidden),
+            nn.GELU(),
+            nn.Linear(hidden, base.out_features),
+        )
+        nn.init.zeros_(self.residual[-1].weight)
+        nn.init.zeros_(self.residual[-1].bias)
+
+    def forward(self, x):
+        return self.base(x) + self.residual(x)
+
+
 def configure_lora(model, cfg):
+    if cfg["adaptation"].get("residual_projector") and not isinstance(
+        model.raw_projector, ResidualProjector
+    ):
+        model.raw_projector = ResidualProjector(model.raw_projector)
     model.requires_grad_(False)
     # Legacy runs train the dense front end; staged runs name only the bridge.
     for name, module in model.named_children():
@@ -53,6 +76,11 @@ def configure_lora(model, cfg):
             ):
                 for name in names:
                     if name not in cfg["adaptation"].get("targets_list", names):
+                        continue
+                    existing = getattr(parent, name)
+                    if isinstance(existing, LoRALinear):
+                        existing.a.requires_grad_(True)
+                        existing.b.requires_grad_(True)
                         continue
                     setattr(
                         parent,
@@ -80,6 +108,8 @@ def build_policy(cfg):
     model = J5Policy(cfg, initialize=False)
     path = Path(cfg["adaptation"]["base"])
     payload = torch.load(path, mmap=True, weights_only=False, map_location="cpu")
+    if cfg["adaptation"].get("base_has_adapters"):
+        configure_lora(model, payload["config"])
     model.load_state_dict(payload["model"])
     del payload
     with path.open("rb") as stream:
@@ -89,6 +119,28 @@ def build_policy(cfg):
 
 def trainable(model):
     return {name: p for name, p in model.named_parameters() if p.requires_grad}
+
+
+def parameter_groups(model, training):
+    grouped = {name: [] for name in training["group_learning_rates"]}
+    for name, parameter in trainable(model).items():
+        if name.startswith("raw_projector."):
+            group = "bridge"
+        elif ".streams.0." in name:
+            group = "language"
+        elif ".q_proj." in name or ".k_proj." in name:
+            group = "expert_qk"
+        else:
+            group = "expert_content"
+        grouped[group].append(parameter)
+    return [
+        {
+            "name": name,
+            "params": values,
+            "lr_scale": training["group_learning_rates"][name] / training["learning_rate"],
+        }
+        for name, values in grouped.items()
+    ]
 
 
 @torch.no_grad()

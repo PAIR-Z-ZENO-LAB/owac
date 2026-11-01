@@ -1,0 +1,147 @@
+{
+  "seed": 20261101,
+  "assets": {
+    "j5": "/root/owac/repo/outputs/j5-raw-relations-20261030/attempts/user-stop-12818/encoder.pt",
+    "pi05": "/root/owac/pi05-base-pytorch/model.safetensors",
+    "tokenizer": "/root/owac/repo/outputs/checkpoints/raw-distillation/paligemma_tokenizer.model",
+    "statistics": "/root/owac/repo/outputs/checkpoints/raw-distillation/pi05_libero_jax/assets/physical-intelligence/libero/norm_stats.json"
+  },
+  "data": {
+    "inventory": "/root/owac/repo/outputs/raw-distillation-all-bench-20261022/inventory.json",
+    "domains": [
+      "libero"
+    ],
+    "split_counts": {
+      "train": 1421,
+      "validation": 177,
+      "test": 173
+    },
+    "sampling": "uniform Normal training frames; original source-level split retained",
+    "lighting": [
+      "Normal"
+    ]
+  },
+  "training": {
+    "updates": 6000,
+    "batch": 256,
+    "micro_batch": 128,
+    "workers": 2,
+    "learning_rate": 3e-05,
+    "warmup": 300,
+    "ema_decay": 0.0,
+    "log_every": 10,
+    "save_every": 500,
+    "eval_every": 500,
+    "sample_every": 500,
+    "schedule": "cosine",
+    "retain_best": true,
+    "retain_every": 1000,
+    "plateau_patience": 3,
+    "group_learning_rates": {
+      "bridge": 3e-05,
+      "language": 5e-06,
+      "expert_content": 5e-06,
+      "expert_qk": 1e-06
+    }
+  },
+  "swanlab": {
+    "id": "owac-j5-act2-normal-20261101",
+    "name": "J5-ACT2｜RAW后端适配｜LIBERO正常光｜残差桥接+语言16/动作8｜继承expert5000｜20261101"
+  },
+  "official_source": "openpi 15a9616a00943ada6c20a0f158e3adb39df2ccac",
+  "differences": [
+    "Warm start accepted J5 encoder and entire expert5000 policy, preserving existing expert V/O/MLP adapters",
+    "Frozen J5 FP32 eval; pretrained backbone weights frozen; language rank16 and expert rank8 all Q/K/V/O/MLP adapters",
+    "Learned bridge plus zero-final-layer LN/384->1024/GELU/1024->2048 residual",
+    "Four LR groups: bridge3e-5/language5e-6/expert content5e-6/expert QK1e-6; 300 warmup then cosine",
+    "Normal-only curriculum first; complete development rollouts at 1000/3000/6000 on initial states5..9",
+    "Official 32D flow MSE retained; RAW/text/actions training only; global256/micro128/DDP; bounded frame IO"
+  ],
+  "closed_loop": {
+    "task_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "lighting": [
+      "Normal",
+      "Low",
+      "ExtremeLow",
+      "Over",
+      "ExtremeOver"
+    ],
+    "seeds_per_task": 5,
+    "execute_horizon": 5,
+    "flow_steps": 10,
+    "suites": [
+      "libero_spatial",
+      "libero_object",
+      "libero_goal",
+      "libero_10"
+    ],
+    "swanlab_id": "owac-j5-act2-final-20261101"
+  },
+  "simulation": {
+    "legacy_root": "/root/owac/repo/outputs/raw-distillation-all-bench-20261022/lowlight-20261027",
+    "author_root": "/root/owac/repo/outputs/raw-distillation-20261020-sol/teacher-search-v2/author-main",
+    "openpi_root": "/root/owac/openpi-official-15a9616",
+    "python": "/root/owac/repo/outputs/raw-distillation-all-bench-20261022/lowlight-20261027/runtime/python/bin/python3.11",
+    "rgb_checkpoint": "/root/autodl-pub/checkpoints/openpi/pi05_libero_pytorch/model.safetensors"
+  },
+  "adaptation": {
+    "kind": "lora",
+    "fresh_official": false,
+    "initial_step": 0,
+    "ranks": [
+      16,
+      8
+    ],
+    "dense_modules": [
+      "raw_projector"
+    ],
+    "alpha_over_rank": 1,
+    "targets_list": [
+      "q_proj",
+      "k_proj",
+      "v_proj",
+      "o_proj",
+      "gate_proj",
+      "up_proj",
+      "down_proj"
+    ],
+    "base_has_adapters": true,
+    "base": "/root/owac/repo/outputs/j5-pi05-bridge-20261031/expert/policy-final-ema.pt",
+    "residual_projector": true
+  },
+  "development": {
+    "checkpoints": [
+      1000,
+      3000,
+      6000
+    ],
+    "task_ids": [
+      0
+    ],
+    "suites": [
+      "libero_spatial",
+      "libero_object",
+      "libero_goal",
+      "libero_10"
+    ],
+    "initial_offset": 5,
+    "seeds_per_task": 5,
+    "lighting": [
+      "Normal"
+    ],
+    "roles": [
+      "raw"
+    ]
+  }
+}

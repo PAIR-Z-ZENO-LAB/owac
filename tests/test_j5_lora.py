@@ -96,3 +96,69 @@ def test_selective_expert_lora_leaves_language_and_query_key_frozen():
     assert not right.self_attn.v_proj.base.weight.requires_grad
     assert model.freeze_raw_encoder
     assert not model.raw_encoder.training
+
+
+def test_residual_bridge_preserves_old_mapping_and_learns_correction():
+    from owac.training.j5_lora import ResidualProjector
+
+    torch.manual_seed(31)
+    base = nn.Linear(6, 4)
+    bridge = ResidualProjector(base, hidden=8)
+    x = torch.randn(3, 6)
+    torch.testing.assert_close(bridge(x), base(x))
+    bridge(x).square().mean().backward()
+    assert bridge.residual[-1].weight.grad.norm() > 0
+    assert bridge.base.weight.grad.norm() > 0
+
+
+def test_expanding_lora_preserves_existing_adapters():
+    from owac.training.j5_lora import configure_lora, parameter_groups
+
+    model = nn.Module()
+    model.raw_encoder = nn.Linear(4, 4)
+    model.raw_projector = nn.Linear(4, 4)
+    model.paligemma_with_expert = nn.Module()
+    block = nn.Module()
+    block.streams = nn.ModuleList()
+    for _ in range(2):
+        layer = nn.Module()
+        layer.self_attn = nn.ModuleDict(
+            {n: nn.Linear(4, 4) for n in ["q_proj", "k_proj", "v_proj", "o_proj"]}
+        )
+        layer.mlp = nn.ModuleDict(
+            {n: nn.Linear(4, 4) for n in ["gate_proj", "up_proj", "down_proj"]}
+        )
+        block.streams.append(layer)
+    model.paligemma_with_expert.joint_layers = nn.ModuleList([block])
+    cfg = {
+        "adaptation": {
+            "dense_modules": ["raw_projector"],
+            "ranks": [0, 2],
+            "alpha_over_rank": 1,
+            "targets_list": ["v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
+        }
+    }
+    configure_lora(model, cfg)
+    old = block.streams[1].self_attn.v_proj
+    with torch.no_grad():
+        old.b.weight.fill_(0.125)
+    cfg["adaptation"].update(ranks=[2, 2], residual_projector=True)
+    del cfg["adaptation"]["targets_list"]
+    configure_lora(model, cfg)
+    assert block.streams[1].self_attn.v_proj is old
+    assert old.a.weight.requires_grad and old.b.weight.requires_grad
+    assert torch.all(old.b.weight == 0.125)
+    assert torch.count_nonzero(block.streams[1].self_attn.q_proj.b.weight) == 0
+    training = {
+        "learning_rate": 3e-5,
+        "group_learning_rates": {
+            "bridge": 3e-5,
+            "language": 5e-6,
+            "expert_content": 5e-6,
+            "expert_qk": 1e-6,
+        },
+    }
+    groups = parameter_groups(model, training)
+    ids = [id(p) for g in groups for p in g["params"]]
+    assert len(ids) == len(set(ids))
+    assert set(ids) == {id(p) for p in model.parameters() if p.requires_grad}

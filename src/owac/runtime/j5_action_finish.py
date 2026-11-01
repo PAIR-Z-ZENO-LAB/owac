@@ -58,9 +58,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--checkpoint", type=Path)
     args = parser.parse_args()
     cfg = json.loads(args.config.read_text())
     root = args.output.resolve()
+    root.mkdir(parents=True, exist_ok=True)
     policy = root / "policy-final-ema.pt"
     subprocess.run(
         [
@@ -69,7 +71,8 @@ def main():
             "owac.training.j5_action_export",
             "--checkpoint",
             str(
-                root
+                args.checkpoint
+                or root
                 / (
                     ("best.pt" if cfg["training"].get("retain_best") else "latest.pt")
                     if cfg.get("adaptation", {}).get("kind") == "lora"
@@ -85,6 +88,8 @@ def main():
     evaluation.mkdir(exist_ok=True)
     env = simulation_environment(cfg, evaluation)
     servers, clients, streams = [], [], []
+    roles = cfg["closed_loop"].get("roles", ["raw", "rgb"])
+    endpoints = [(role, gpu, 9015 + gpu) for gpu, role in enumerate(roles)]
     import swanlab
 
     swanlab.login(api_key=Path("/root/.config/owac/swanlab-api-key").read_text().strip())
@@ -93,14 +98,14 @@ def main():
         workspace="Jeong",
         id=cfg["closed_loop"]["swanlab_id"],
         resume="allow",
-        experiment_name=f"{cfg['swanlab']['name']}｜闭环与官方RGB对照",
+        experiment_name=f"{cfg['swanlab']['name']}｜闭环评估",
         config=cfg,
         logdir=str(evaluation / "swanlab"),
         group="J5-action",
         job_type="closed-loop",
     )
     try:
-        for role, gpu, port in [("raw", 0, 9015), ("rgb", 1, 9016)]:
+        for role, gpu, port in endpoints:
             checkpoint = policy if role == "raw" else Path(cfg["simulation"]["rgb_checkpoint"])
             command = [
                 sys.executable,
@@ -121,7 +126,7 @@ def main():
             streams.append(stream)
             server = subprocess.Popen(command, stdout=stream, stderr=subprocess.STDOUT)
             servers.append(server)
-        for (role, port), server in zip([("raw", 9015), ("rgb", 9016)], servers, strict=True):
+        for (role, _, port), server in zip(endpoints, servers, strict=True):
             wait_for_server(server, port)
             command = [
                 cfg["simulation"]["python"],
@@ -150,7 +155,7 @@ def main():
                     "Closed-loop process failed; raw logs and completed episodes retained"
                 )
             values, total = {}, 0
-            for role in ["raw", "rgb"]:
+            for role in roles:
                 file = evaluation / role / "episodes.jsonl"
                 rows = (
                     [json.loads(line) for line in file.read_text().splitlines()]
@@ -168,8 +173,7 @@ def main():
             if process.returncode != 0:
                 raise RuntimeError(f"Closed-loop exit {process.returncode}")
         summaries = {
-            role: json.loads((evaluation / role / "summary.json").read_text())
-            for role in ["raw", "rgb"]
+            role: json.loads((evaluation / role / "summary.json").read_text()) for role in roles
         }
         (evaluation / "comparison.json").write_text(json.dumps(summaries, indent=2))
         metrics = {

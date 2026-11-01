@@ -221,6 +221,8 @@ def validate(model, dataset, rank, world, device, *, sample=False):
     dist.all_reduce(totals)
     values = {}
     for name, row in zip(names, totals.cpu().tolist(), strict=True):
+        if row[4] == 0:
+            continue
         values[f"val/{name}/flow32"] = row[0] / row[4]
         values[f"val/{name}/flow7"] = row[1] / row[4]
         if sample:
@@ -239,6 +241,8 @@ def main():
     parser.add_argument("--resume", type=Path)
     parser.add_argument("--steps", type=int)
     parser.add_argument("--initial-eval", action="store_true")
+    parser.add_argument("--until-step", type=int)
+    parser.add_argument("--reset-patience", action="store_true")
     args = parser.parse_args()
     cfg = json.loads(args.config.read_text())
     train = cfg["training"]
@@ -273,7 +277,9 @@ def main():
     parameter_count = sum(p.numel() for p in model.parameters() if p.requires_grad)
     parameters = [p for p in model.parameters() if p.requires_grad]
     parameter_groups = parameters
-    if "expert_learning_rate" in train:
+    if "group_learning_rates" in train:
+        parameter_groups = j5_lora.parameter_groups(model, train)
+    elif "expert_learning_rate" in train:
         parameter_groups = [
             {
                 "params": [
@@ -317,6 +323,8 @@ def main():
             .get("config", {})
             .get("selection", {})
         )
+    if args.reset_patience:
+        selection["bad_evals"] = 0
     cfg["selection"] = selection
     core = model
     if lora:
@@ -333,6 +341,8 @@ def main():
         torch.manual_seed(cfg["seed"] + rank)
     sources, _ = load_inventory(cfg["data"]["inventory"])
     sources = [s for s in sources if s.domain == "libero"]
+    if cfg["data"].get("lighting"):
+        sources = [s for s in sources if s.lighting in cfg["data"]["lighting"]]
     dataset = RawActionFrames([s for s in sources if s.split == "train"], cfg)
     validation = RawActionFrames(
         [s for s in sources if s.split == "validation"], cfg, validation=True
@@ -387,7 +397,7 @@ def main():
             report(start, validate(core, validation, rank, world, device))
             selected = [
                 next(s for s in validation.sources if s.lighting == light)
-                for light in ("Normal", "Low", "ExtremeLow", "Over", "ExtremeOver")
+                for light in dict.fromkeys(s.lighting for s in validation.sources)
             ]
             probe = RawActionFrames(selected, cfg, validation=True)
             metrics = validate(core, probe, rank, world, device, sample=True)
@@ -452,6 +462,11 @@ def main():
                     "train/grad_norm": grad.item(),
                     "train/lr": lr,
                     "train/validation_lr_factor": selection["lr_factor"],
+                    **{
+                        f"train/lr_{g['name']}": g["lr"]
+                        for g in optimizer.param_groups
+                        if "name" in g
+                    },
                     "train/seconds_per_update": elapsed,
                     "train/images_per_second": train["batch"] / elapsed,
                     "host/memory_gib": mem,
@@ -465,7 +480,11 @@ def main():
         stopping = torch.tensor(int(stop[0]), device=device)
         dist.all_reduce(stopping, op=dist.ReduceOp.MAX)
         stop[0] = bool(stopping.item())
-        final = step == train["updates"] or (args.steps is not None and step - start >= args.steps)
+        final = (
+            step == train["updates"]
+            or step == args.until_step
+            or (args.steps is not None and step - start >= args.steps)
+        )
         if step == start + 1 or step % train["save_every"] == 0 or final or stop[0]:
             save = j5_lora.save if lora else save_checkpoint
             save(core, optimizer, ema, root, step, cfg, rank)
@@ -524,7 +543,18 @@ def main():
             break
     if rank == 0:
         (root / "status.json").write_text(
-            json.dumps({"step": step, "status": "paused" if stop[0] else "completed"})
+            json.dumps(
+                {
+                    "step": step,
+                    "status": (
+                        "paused"
+                        if stop[0]
+                        else "segment_completed"
+                        if args.until_step and step < train["updates"]
+                        else "completed"
+                    ),
+                }
+            )
         )
         if tracker:
             swanlab.finish()

@@ -48,7 +48,9 @@ def main():
             task = suite.get_task(task_id)
             states = suite.get_task_init_states(task_id)
             for light in lights:
-                for initial_index in range(episodes):
+                for initial_index in range(
+                    cfg.get("initial_offset", 0), cfg.get("initial_offset", 0) + episodes
+                ):
                     seed = 20261030 + suite_index * 1000 + task_id * 10 + initial_index
                     rng = np.random.default_rng(seed)
                     ev = float(rng.uniform(*DEFAULT_EV_RANGES[light]))
