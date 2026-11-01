@@ -46,9 +46,10 @@
     "selection_metric": "validation/action_mse"
   },
   "swanlab": {
-    "id": "owac-j5-act2-normal-mse-20261101",
-    "name": "J5-ACT2｜RAW后端适配｜LIBERO正常光｜残差桥接+语言16/动作8｜继承expert5000｜20261101",
-    "project": "OWAC-Action-Training"
+    "id": "owac-j5-act2-normal-unified-20261101",
+    "name": "J5-ACT2｜RAW后端适配｜LIBERO正常光｜动作MSE监测｜771步完整续接｜20261101",
+    "project": "OWAC",
+    "group": "01 动作训练"
   },
   "official_source": "openpi 15a9616a00943ada6c20a0f158e3adb39df2ccac",
   "differences": [
@@ -89,7 +90,8 @@
       "libero_10"
     ],
     "swanlab_id": "owac-j5-act2-final-20261101",
-    "swanlab_project": "OWAC-Action-Evaluation"
+    "swanlab_project": "OWAC",
+    "swanlab_group": "05 闭环评估"
   },
   "simulation": {
     "legacy_root": "/root/owac/repo/outputs/raw-distillation-all-bench-20261022/lowlight-20261027",
@@ -153,6 +155,7 @@
     "protocol": "eight evenly spaced anchors per validation trajectory; fixed noise; actual 7D sampled actions; repeated terminal padding excluded"
   },
   "monitoring": {
-    "version": 2
+    "version": 2,
+    "history": "/root/owac/repo/outputs/j5-pi05-adapt-20261101/attempts/cloud-continuation-771/metrics.jsonl"
   }
 }

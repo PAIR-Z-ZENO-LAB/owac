@@ -37,14 +37,19 @@ def setup(swanlab, cfg, root):
         ("runtime", "04 运行资源"),
     ]:
         swanlab.define_metric(f"{prefix}/*", section_name=section)
-    marker = root / "monitor-v2-history.json"
+    marker = root / f"monitor-v2-history-{cfg['swanlab']['id']}.json"
     history = cfg.get("monitoring", {}).get("history")
     if history and not marker.exists():
         steps = []
         for line in Path(history).read_text().splitlines():
             record = json.loads(line)
             # Preserve measured training history; never relabel historical MAE as MSE.
-            metrics = {k: v for k, v in record["metrics"].items() if k in RENAMES}
+            metrics = {
+                k: v
+                for k, v in record["metrics"].items()
+                if k in RENAMES
+                or k.startswith(("objective/", "validation/", "optimizer/", "runtime/"))
+            }
             if metrics:
                 swanlab.log(canonical(metrics), step=record["step"])
                 steps.append(record["step"])

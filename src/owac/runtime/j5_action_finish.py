@@ -100,15 +100,27 @@ def main():
         workspace="Jeong",
         id=cfg["closed_loop"]["swanlab_id"],
         resume="allow",
-        experiment_name=f"{cfg['swanlab']['name']}｜闭环评估",
+        experiment_name=cfg["closed_loop"].get(
+            "swanlab_name",
+            "｜".join(
+                [
+                    cfg["swanlab"]["name"].split("｜")[0],
+                    "闭环评估",
+                    cfg["swanlab"]["name"].split("｜")[2],
+                    "+".join(role.upper() for role in roles),
+                    root.name,
+                    cfg["closed_loop"]["swanlab_id"].rsplit("-", 1)[1],
+                ]
+            ),
+        ),
         config=cfg,
         logdir=str(evaluation / "swanlab"),
-        group="J5-action",
+        group=cfg["closed_loop"].get("swanlab_group", "J5-action"),
         job_type="closed-loop",
     )
     if cfg.get("monitoring", {}).get("version") == 2:
-        swanlab.define_metric("progress/*", section_name="01 回合进度")
-        swanlab.define_metric("success/*", section_name="02 闭环成功率")
+        swanlab.define_metric("progress/*", section_name="05 闭环评估")
+        swanlab.define_metric("success/*", section_name="05 闭环评估")
     try:
         for role, gpu, port in endpoints:
             checkpoint = policy if role == "raw" else Path(cfg["simulation"]["rgb_checkpoint"])

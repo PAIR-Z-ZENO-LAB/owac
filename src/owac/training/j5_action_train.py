@@ -408,7 +408,7 @@ def main():
                 resume="allow",
                 config=cfg,
                 logdir=str(root / "swanlab"),
-                group="J5-action",
+                group=cfg["swanlab"].get("group", "J5-action"),
                 job_type="lora-finetune" if lora else "full-finetune",
             )
 

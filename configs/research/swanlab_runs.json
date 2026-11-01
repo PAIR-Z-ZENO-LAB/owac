@@ -3,51 +3,114 @@
   "name_format": "阶段｜目标｜数据/照明｜训练范围或尝试｜规模或恢复点｜YYYYMMDD",
   "runs": [
     {
+      "id": "owac-j5-act2-normal-unified-20261101",
+      "name": "J5-ACT2｜RAW后端适配｜LIBERO正常光｜动作MSE监测｜771步完整续接｜20261101",
+      "group": "01 动作训练",
+      "job_type": "lora-finetune",
+      "description": "当前正式运行；771步完整状态恢复，按原step回填训练目标、优化器、资源及477/500步动作MSE。旧MAE不冒充MSE；保留两个历史监测运行。"
+    },
+    {
+      "id": "owac-j5-act2-normal-mse-20261101",
+      "name": "J5-ACT2｜迁移历史｜LIBERO正常光｜动作MSE监测｜原日志至616步｜20261101",
+      "group": "01 动作训练",
+      "job_type": "lora-finetune",
+      "description": "原生MOVE保留的历史运行，读取旧根数据至616步。迁移后续写指标未被网页显示，616至771步已完整保存并回填至owac-j5-act2-normal-unified-20261101；正式训练与完整曲线请查看该运行。"
+    },
+    {
+      "id": "owac-j5-act2-normal-20261101",
+      "name": "J5-ACT2｜RAW后端适配｜LIBERO正常光｜旧MAE监测｜截至477步｜20261101",
+      "group": "01 动作训练",
+      "job_type": "lora-finetune",
+      "description": "监测切换前的历史运行，训练从expert5000适配；后续记录见owac-j5-act2-normal-mse-20261101。历史MAE与新有效动作MSE口径不同。"
+    },
+    {
+      "id": "owac-j5-act2-engineering-eval-20261101",
+      "name": "J5-ACT2｜工程闭环验证｜LIBERO goal6正常光｜初态5｜第7步检查点｜20261101",
+      "group": "05 闭环评估",
+      "job_type": "closed-loop",
+      "description": "工程恢复后完整原生闭环连通验证；仅是该检查点和初态的工程记录，不代表正式模型成功率。"
+    },
+    {
+      "id": "owac-j5-act2-engineering-20261101",
+      "name": "J5-ACT2｜工程恢复｜LIBERO正常光｜残差桥接与语言LoRA｜3到7步｜20261101",
+      "group": "04 工程检查",
+      "job_type": "lora-finetune",
+      "description": "完整训练状态的恢复与更新检查，3到7步；不作为正式训练能力结论。"
+    },
+    {
+      "id": "owac-j5-bridge-eval-20261031",
+      "name": "J5-ACT｜闭环与RGB对照｜LIBERO五照明｜冻结视觉与选择性动作LoRA｜6k检查点｜20261031",
+      "group": "05 闭环评估",
+      "job_type": "closed-loop",
+      "description": "历史RAW策略闭环及官方RGB策略对照；保留原始已执行回合及停止状态，成功率以实际回合分母为准。"
+    },
+    {
+      "id": "owac-j5-selective-expert-20261031",
+      "name": "J5-ACT｜冻结视觉选择性动作LoRA｜LIBERO五照明｜V/O/MLP-r8｜计划6k｜20261031",
+      "group": "01 动作训练",
+      "job_type": "lora-finetune",
+      "description": "桥接阶段之后的选择性动作专家适配；视觉编码器冻结，动作专家V/O/MLP rank8 LoRA。"
+    },
+    {
+      "id": "owac-j5-bridge-20261031",
+      "name": "J5-ACT｜冻结视觉与策略桥接｜LIBERO五照明｜仅连接层｜计划6k｜20261031",
+      "group": "01 动作训练",
+      "job_type": "lora-finetune",
+      "description": "冻结视觉与策略后端，仅训练连接层的历史桥接阶段；闭环结果单列。"
+    },
+    {
+      "id": "owac-j2s-raw-semantic-100k-20261029",
+      "name": "J2S｜RAW稠密语义｜LIBERO五照明｜完整编码器与DINOv3监督｜计划100k｜20261029",
+      "group": "03 视觉蒸馏",
+      "job_type": "dense-semantic-distillation",
+      "description": "DINOv3教师监督的RAW稠密表征蒸馏基线；与后续无外部教师的J3/J4/J5自监督路线分开记录。"
+    },
+    {
       "id": "owac-j5-pi05-lora-20261030",
-      "name": "J5-ACT｜LoRA动作适配｜LIBERO五照明｜全量112续接｜累计30k｜20261030",
-      "group": "J5-action",
+      "name": "J5-ACT｜LoRA动作适配｜LIBERO五照明｜全量112续接｜计划累计30k｜20261030",
+      "group": "01 动作训练",
       "job_type": "lora-finetune",
       "description": "继承全量112 online；RAW/投影/动作接口继续训练，语言rank16及动作rank32 LoRA，双卡DDP有效batch256。"
     },
     {
       "id": "owac-j5-pi05-full-20261030",
-      "name": "J5-ACT｜RAW全模型动作微调｜LIBERO五照明｜官方pi05配方｜30k｜20261030",
-      "group": "J5-action",
+      "name": "J5-ACT｜RAW全模型动作微调｜LIBERO五照明｜官方pi05配方｜计划30k｜20261030",
+      "group": "01 动作训练",
       "job_type": "full-finetune",
       "description": "J5 12818 EMA视觉编码器接入官方pi05-base；RAW、投影、语言及动作专家全部训练；官方32维flow loss与LIBERO超参，FSDP2累计batch256。"
     },
     {
       "id": "owac-j5-raw-relations-20261030",
-      "name": "J5｜RAW区分与时序对应｜五照明｜J4续学｜30k｜20261030",
-      "group": "J-raw-self-supervised",
+      "name": "J5｜RAW区分与时序对应｜五照明｜J4续学｜保存12818步｜20261030",
+      "group": "02 视觉自监督",
       "job_type": "raw-relations-temporal",
       "description": "J4最终纯RAW EMA续学；自身J3空间关系、输出token多样性、过去RAW软对应；RGB仅评估展示。"
     },
     {
       "id": "owac-j4-raw-exposure-20261030",
-      "name": "J4｜RAW曝光一致性｜五照明与同源退化｜J3续学｜30k｜20261030",
-      "group": "J-raw-self-supervised",
+      "name": "J4｜RAW曝光一致性｜五照明与同源退化｜J3续学｜计划30k｜20261030",
+      "group": "02 视觉自监督",
       "job_type": "raw-exposure-dino-ibot",
       "description": "继承J3 100k纯RAW EMA，新增曝光噪声对应学习；真实五光照保留，无RGB/动作/外部视觉权重。"
     },
     {
       "id": "owac-j3-raw-ssl-20261029",
-      "name": "J3｜RAW自主表征｜RawVLA五照明｜随机初始化与辐射响应编码｜100k｜20261029",
-      "group": "J-raw-self-supervised",
+      "name": "J3｜RAW自主表征｜RawVLA五照明｜随机初始化与辐射响应编码｜计划100k｜20261029",
+      "group": "02 视觉自监督",
       "job_type": "dino-ibot-raw-only",
       "description": "随机初始化；RAW辐射响应＋DINO/iBOT；无外部视觉教师/动作；token/query仅评估。"
     },
     {
       "id": "owac-j1-raw-jepa-100k-20261028",
-      "name": "J1｜视觉自监督｜LIBERO五照明｜RAW-JEPA｜100k｜20261028",
-      "group": "J-raw-visual-pretraining",
+      "name": "J1｜视觉自监督｜LIBERO五照明｜RAW-JEPA｜计划100k｜20261028",
+      "group": "02 视觉自监督",
       "job_type": "masked-feature-prediction",
       "description": "公开pi05视觉初始化；EMA目标仅来自本run；无RAW教师/历史学生/动作专家；100k更新。"
     },
     {
       "id": "owac-r1-action-100k-20261027",
-      "name": "R1｜动作监督｜LIBERO五照明｜全视觉头｜100k｜20261027",
-      "group": "R-action-adaptation",
+      "name": "R1｜动作监督｜LIBERO五照明｜全视觉头｜计划100k｜20261027",
+      "group": "01 动作训练",
       "job_type": "flow-matching",
       "tags": [
         "stage:R1",
@@ -62,7 +125,7 @@
     {
       "id": "owac-all-bench-20261022-resume250",
       "name": "ADAPT｜Token蒸馏｜全量五照明｜全视觉头｜250步续训｜20261022",
-      "group": "RAW-token-distillation",
+      "group": "03 视觉蒸馏",
       "job_type": "token-distillation",
       "tags": [
         "stage:ADAPT",
@@ -76,8 +139,8 @@
     },
     {
       "id": "owac-all-bench-20261022-attempt2",
-      "name": "ADAPT｜Token蒸馏｜全量五照明｜尝试02-句柄故障｜20261022",
-      "group": "RAW-token-distillation",
+      "name": "ADAPT｜Token蒸馏｜全量五照明｜全视觉头｜尝试02-句柄故障｜20261022",
+      "group": "03 视觉蒸馏",
       "job_type": "token-distillation",
       "tags": [
         "stage:ADAPT",
@@ -92,8 +155,8 @@
     },
     {
       "id": "owac-all-bench-20261022",
-      "name": "ADAPT｜Token蒸馏｜全量五照明｜尝试01-OOM｜20261022",
-      "group": "RAW-token-distillation",
+      "name": "ADAPT｜Token蒸馏｜全量五照明｜全视觉头｜尝试01-OOM｜20261022",
+      "group": "03 视觉蒸馏",
       "job_type": "token-distillation",
       "tags": [
         "stage:ADAPT",
@@ -109,7 +172,7 @@
     {
       "id": "owac-fullvisual-shared-stage",
       "name": "ADAPT｜Token蒸馏｜task6正常光｜全视觉头｜3116步｜20261022",
-      "group": "RAW-token-distillation",
+      "group": "03 视觉蒸馏",
       "job_type": "token-distillation",
       "tags": [
         "stage:ADAPT",
@@ -121,5 +184,14 @@
       ],
       "description": "共享盘task6正常光8/2/2源拆分，完整全视觉头3116次阶段更新。global batch16；历史实验及曲线保留。"
     }
+  ],
+  "sections": [
+    "01 训练目标",
+    "02 动作验证",
+    "03 优化器",
+    "04 运行资源",
+    "05 闭环评估",
+    "06 视觉诊断",
+    "07 Token与Query"
   ]
 }

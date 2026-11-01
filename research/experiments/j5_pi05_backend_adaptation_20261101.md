@@ -4,13 +4,37 @@
 
 用户授权实现、服务器训练与闭环验证。目标是检验“线性桥接和过度冻结后端未完成RAW适配”的假设；当前工程运行不能证明动作收益。
 
+## OWAC统一迁移与看板整理（2026-11-01）
+
+所有运行回到 [Jeong/OWAC](https://swanlab.cn/@Jeong/OWAC)。当前正式训练入口为 [771步完整续训](https://swanlab.cn/@Jeong/OWAC/runs/owac-j5-act2-normal-unified-20261101)；临时训练和评估项目均无运行。运行登记表扩展为20项，使用六段名称、说明及五类实验组：动作训练8、视觉自监督4、视觉蒸馏5、工程检查1、闭环评估2。计划更新数明确标为“计划”，不当作已训练步数。
+
+项目总览由17个section整理为7个，286张图表的标识及定义保留，归并后清除10个空分组。历史指标不改数值、不把旧MAE或flow loss改名冒充动作MSE。
+
+| Section | 图表数 | 内容 |
+|---|---:|---|
+| 01 训练目标 | 44 | 官方flow及历史表征训练目标 |
+| 02 动作验证 | 29 | 动作MSE置首，执行前5步MSE、MAE、命令RMSE、夹爪错误率及旧采样诊断 |
+| 03 优化器 | 21 | 各参数组LR、梯度及EMA |
+| 04 运行资源 | 51 | 内存、GPU、OOM、吞吐、进度与历史资源记录 |
+| 05 闭环评估 | 5 | 成功率与实际回合分母 |
+| 06 视觉诊断 | 135 | 五照明、曝光、表示空间与蒸馏诊断 |
+| 07 Token与Query | 1 | 历史表征图像 |
+
+浏览器已设置最大显示24个运行、平滑系数0，避免只显示前12个历史运行或把平滑后的曲线当成原值。
+
+迁移有两次完整保存：616步native0后使用网页官方“移动实验”；771步native0后处理实际发现的迁移续写问题。官方MOVE保持slug，但内部ID由`9diekrp51mivdj63w1nl6`变为`95hzm7rie3tl9092y1436`，保留`rootExpId`引用。恢复后本地继续到770步，云端曲线却仍只读旧根至610步。故保留迁移历史运行，并在OWAC建立可续写的新根运行，从771步完整model/Adam/选择状态恢复，按原始step回填训练指标及477/500步MSE。回填时间戳属于本次上传时间，不用于还原原始耗时；原始时间和日志留在历史运行与服务器归档。
+
+历史回填标记改为每run独立，支持已经规范化的MSE指标；五光照阶段重置step时不回填正常光历史。训练目标、学习率、数据、验证口径没有改变。六项相关测试和定向ruff通过。云端已读回新根运行`l9y9s3ndu9vm92wipzsk1`的772及790步新指标；790步内存76.17GiB、OOM0，只有该正式运行处于RUNNING。当前best仍为477步MSE=0.1995621，500步0.2124411；这次工作是监测整理，不是新的动作收益结论。
+
+服务器证据：`outputs/swanlab-unify-20261101/`保存迁移前后运行表、分组、图表配置和云端读回；`attempts/owac-migration-616/`与`attempts/cloud-continuation-771/`保存完整latest/best、配置、日志和native退出收据。正式执行使用`source-unified/`与`production-unified.json`。
+
 ## 监测与动作验证更新（2026-11-01）
 
 按用户要求，训练在477步完整保存/native0退出后恢复，未重置权重、Adam或数据游标。迁移前的latest/best、配置、日志保存在`attempts/monitor-v2-477/`；旧执行源码保留，新增`source-monitor-v2/`执行快照。
 
-当前看板：[OWAC-Action-Training](https://swanlab.cn/@Jeong/OWAC-Action-Training/runs/owac-j5-act2-normal-mse-20261101)。仅四组：01训练目标、02动作验证、03优化器、04运行资源。原训练曲线按实际step回填；去掉重复的基础LR（与桥接LR相同），停用SDK自动资源曲线，保留显式记录的内存/吞吐。闭环结果写入独立`OWAC-Action-Evaluation`，不混入训练面板。
+477步切换时的临时看板（现已迁回OWAC）：[OWAC-Action-Training](https://swanlab.cn/@Jeong/OWAC-Action-Training/runs/owac-j5-act2-normal-mse-20261101)。仅四组：01训练目标、02动作验证、03优化器、04运行资源。原训练曲线按实际step回填；去掉重复的基础LR（与桥接LR相同），停用SDK自动资源曲线，保留显式记录的内存/吞吐。当时计划把闭环结果写入独立`OWAC-Action-Evaluation`；此方案已由上面的统一OWAC方案取代。
 
-SwanLab图表按项目共享，已存在图表不能靠再次`define_metric`移动（[官方定义](https://docs.swanlab.cn/api/py-define_metric.html)）。本次使用新项目隔离历史视觉/工程图表；**旧OWAC页面的历史分组未删除**。浏览器连接不可用，因此没有声称已通过网页清空旧分组。API已读回新项目25个自定义指标，仅4个命名前缀；自动SYSTEM标量为空，MSE477步数值与本地一致。
+SwanLab图表按项目共享，已存在图表不能靠再次`define_metric`移动（[官方定义](https://docs.swanlab.cn/api/py-define_metric.html)）。当时使用新项目隔离历史视觉/工程图表，尚未整理旧OWAC页面；现已完成上面的统一归组。浏览器连接不可用，因此没有声称已通过网页清空旧分组。API已读回新项目25个自定义指标，仅4个命名前缀；自动SYSTEM标量为空，MSE477步数值与本地一致。
 
 主指标`validation/action_mse`为实际10步Euler采样动作与示范的**7维归一化动作MSE**；不是flow loss，排除25个潜空间补零维度和轨迹末尾重复补齐动作。按照有效动作步加权聚合。验证扩展为每条轨迹均匀8个固定时刻、固定噪声；这是覆盖全部验证轨迹的固定帧子集，不是逐帧全量验证。当前Normal32条轨迹、256时刻、2272有效动作步。训练集与测试集未混入。
 

@@ -74,7 +74,9 @@ def main():
         dev_cfg = json.loads(json.dumps(cfg))
         dev_cfg["closed_loop"].update(cfg["development"])
         dev_cfg["closed_loop"]["swanlab_id"] = f"owac-j5-act2-dev-{step}-20261101"
-        dev_cfg["swanlab"]["name"] += f"｜开发闭环{step}"
+        dev_cfg["closed_loop"]["swanlab_name"] = (
+            f"J5-ACT2｜开发闭环｜LIBERO正常光｜RAW开发集｜第{step}步｜20261101"
+        )
         dev_config = development / "config.json"
         dev_config.write_text(json.dumps(dev_cfg, indent=2))
         status("development-rollouts", step=step)
@@ -141,10 +143,12 @@ def main():
             "expert_qk": 5e-7,
         },
     )
+    five_cfg["monitoring"].pop("history", None)
     five_cfg["swanlab"] = {
         "id": "owac-j5-act2-five-mse-20261101",
         "project": cfg["swanlab"].get("project", "OWAC"),
-        "name": "J5-ACT2｜RAW后端适配｜LIBERO五照明｜正常光开发选择续接｜20261101",
+        "group": cfg["swanlab"].get("group", "J5-action"),
+        "name": "J5-ACT2｜RAW后端适配｜LIBERO五照明｜动作MSE监测｜正常光择优续接｜20261101",
     }
     five_config = five / "production.json"
     five_config.write_text(json.dumps(five_cfg, indent=2))
