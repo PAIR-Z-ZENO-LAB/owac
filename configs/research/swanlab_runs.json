@@ -3,6 +3,13 @@
   "name_format": "阶段｜目标｜数据/照明｜训练范围或尝试｜规模或恢复点｜YYYYMMDD",
   "runs": [
     {
+      "id": "owac-j5-act2-dev1000-rgb-20261101",
+      "name": "J5-ACT2｜配对RGB基线｜LIBERO正常光｜官方LIBERO权重｜初态5至9共20场｜20261101",
+      "group": "05 闭环评估",
+      "job_type": "closed-loop",
+      "description": "与RAW1000步同初态/噪声配对：RGB20/20、RAW0/20。32条Normal同源验证轨迹256anchors，RGB动作MSE0.018424；不同初始化和官方训练数据暴露范围限制公平比较。"
+    },
+    {
       "id": "owac-j5-act2-normal-unified-20261101",
       "name": "J5-ACT2｜RAW后端适配｜LIBERO正常光｜动作MSE监测｜771步完整续接｜20261101",
       "group": "01 动作训练",

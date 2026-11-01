@@ -1,3 +1,5 @@
+2026-11-01 J5-ACT2配对诊断：1000步Normal开发集RAW0/20、官方LIBERO RGB20/20，逐场物理初态/种子/光照/扩散噪声一致。256同源验证anchors动作MSE为0.17848/0.01842；指令干预响应RAW约为RGB三分之一，换图有明显响应。初始化不对等，不能归因于视觉编码器单独失效。1047步完整暂停后恢复，已完成1050更新；跳过已有1000评估、继续原3000节点。见 [诊断记录](../research/experiments/j5_act2_rgb_diagnosis_20261101.md)。
+
 2026-11-01 SwanLab统一OWAC：全部运行归入OWAC，20项运行使用统一名称、说明和五类实验组；17个section合并为7个，保留286张图表，动作MSE置首。原生MOVE运行续写后网页仍读旧根，已保留迁移历史并从771步完整状态建立OWAC正式续训，回填原step指标；不重置训练权重/优化器/选择状态。训练及后续闭环统一写入OWAC。见 [迁移与监测记录](../research/experiments/j5_pi05_backend_adaptation_20261101.md)。
 
 2026-11-01 J5监测V2：477步完整保存/native0后续训，当前已完成500步验证。动作训练迁入OWAC-Action-Training，四个固定分组并回填训练曲线；旧OWAC历史分组保留。32条Normal验证轨迹×8时刻、2272有效动作步，7维归一化采样动作MSE用于best/降LR；500步0.21244，best仍477步0.19956。辅助MAE、执行前5步MSE、分量RMSE、夹爪错误率；排除潜空间与轨迹尾部补齐。云端API核对通过，OOM0。见 [监测记录](../research/experiments/j5_pi05_backend_adaptation_20261101.md)。

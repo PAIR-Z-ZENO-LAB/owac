@@ -24,7 +24,9 @@ def main():
     resume = args.resume
     if resume and resume.parent != normal and not (normal / "best.pt").exists():
         os.link(resume.parent / "best.pt", normal / "best.pt")
-    results = []
+    results_path = root / "development-results.json"
+    results = json.loads(results_path.read_text()) if results_path.exists() else []
+    completed_steps = {row["step"] for row in results}
 
     def status(phase, **fields):
         (root / "curriculum-status.json").write_text(
@@ -57,6 +59,8 @@ def main():
         )
 
     for step in cfg["development"]["checkpoints"]:
+        if step in completed_steps:
+            continue
         status("normal-training", target_step=step)
         if not train(
             config_path,
