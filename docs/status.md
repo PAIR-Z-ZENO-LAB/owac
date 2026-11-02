@@ -1,3 +1,5 @@
+2026-11-02 J5退化实查：六轨迹重放及348同观测动作精确复现；取罐6000失败、仅修夹爪仍失败、3000前55步接近抓取后交6000成功。验证取罐转折MSE .166→.205，均匀anchor仍改善；尚未定位具体参数模块。训练0，诊断服务已关闭。见 [实查记录](../research/experiments/j5_contact_regression_diagnosis_20261102.md)。
+
 2026-11-02 SwanLab同步修复：旧J5-LIBERO run云端曲线停3000、本地已3652；完整保存/native0后保留历史，新建OWAC续写run `owac-j5-libero-live-3652-20261102`，原step全历史回填，模型/Adam/RNG/选择状态不重置。新run运行期间API已读到新更新3653及3500步MSE0.1060712；继续原6000节点，OOM0。旧run续写/云端可见性异常的内部根因未确定。见 [运行记录](../research/experiments/j5_libero_backend_control_20261102.md)。
 
 2026-11-02 J5-LIBERO独立对照已启动：保留冻结J5 12818，改用RGB参考同一pi05_libero后端，清除旧动作适配器，新桥接及语言rank16/动作rank8 LoRA；Normal原数据/6000步配方。3步/native0及完整恢复至4已实测，双5090显存27.20GiB/卡、主机83.96GiB、OOM0，OWAC独立监测。1000/3000/6000各20开发闭环后结束，不自动扩光照；未宣称动作收益。旧ACT2已6000步/native0，三个节点均0/20。见 [对照记录](../research/experiments/j5_libero_backend_control_20261102.md)。
