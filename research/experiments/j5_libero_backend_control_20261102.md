@@ -53,3 +53,13 @@ export JAX_PLATFORMS=cpu
 - 相关LoRA、动作指标、监测测试10项通过；修改文件Ruff/格式/编译通过。`make check`仍被其他文件既有213项lint问题阻断，没有修改无关文件。
 
 整体训练/闭环尚未完成，不预报高成功率；总GPU时间、长期峰值资源和最终策略质量待测。原始收据本地副本位于`outputs/j5-libero-backend-20261102`，服务器保存完整权重、源码快照和配置。
+
+## 2026-11-02：3652步监测续写故障
+
+用户发现SwanLab停在3000。实际训练继续超过3570；API直接读取旧run的训练损失、动作MSE、资源序列，均仅到3000，排除仅浏览器显示滞后的解释。日志没有常规上传异常；SDK 0.10.3恢复会话的本地`.swanlab`含3500步MSE=0.1060712256。用SDK相同上传接口补传该原始记录收到SUCCESS，但云端读回仍停在3000。SDK心跳接口另返回`FlagId is invalid`，其代码使用固定flagId；这是一项独立异常，未证明它是唯一根因。
+
+在3652更新边界SIGUSR1完整保存并native0退出，记录存于`attempts/swanlab-sync-3652`。结束会话报告上传1219记录，云端仍未显示3000以后的数据。已保留旧run，采用独立OWAC运行`owac-j5-libero-live-3652-20261102`续写，全历史按原step回填；回填时间为补传时间，原始日志保留。运行配置`production-live.json`、源码`source-live/src`；恢复完整权重/Adam/RNG/选择状态，仍向6000推进，已有1000/3000评估不会重复。
+
+本次是监测链路替换，没有修改训练数学或已有结果。已观测故障定位为旧run的续写/云端可见性异常；未声称已修复SwanLab服务端或确认其内部根因。浏览器工具本轮返回host unavailable，验证改用官方SDK的云端API读回。
+
+修复验证：新run保持RUNNING时，官方API已读回恢复后新产生的3653步`objective/train_flow7=0.0948672593`，以及回填的3500步`validation/action_mse=0.1060712256`。这区别于只验证SDK初始化或上传成功。3653步训练OOM0；当前下一节点仍6000。验证收据`cloud-live-verification.json`。本次没有模型代码改动；配置JSON读取与diff检查通过，make check仍为既有213项lint错误。

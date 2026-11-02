@@ -3,11 +3,18 @@
   "name_format": "阶段｜目标｜数据/照明｜训练范围或尝试｜规模或恢复点｜YYYYMMDD",
   "runs": [
     {
+      "id": "owac-j5-libero-live-3652-20261102",
+      "name": "J5-LIBERO｜相同后端对照｜LIBERO正常光｜监测修复续训｜3652步完整恢复｜20261102",
+      "group": "01 动作训练",
+      "job_type": "lora-finetune",
+      "description": "原run续写后云端仅显示至3000；3652完整保存/native0后独立续写，全历史按原step回填，权重/Adam/选择状态不重置。"
+    },
+    {
       "id": "owac-j5-libero-normal-20261102",
       "name": "J5-LIBERO｜相同后端对照｜LIBERO正常光｜新桥接与LoRA｜6000步｜20261102",
       "group": "01 动作训练",
       "job_type": "lora-finetune",
-      "description": "独立RAW对照：J5视觉冻结，官方pi05_libero后端初始化，新桥接/语言rank16/动作rank8；RAW动作监督、Normal原拆分，6000步。与RGB共享后端起点，未宣称闭环收益。"
+      "description": "历史监测：本地训练至3652，云端续写查询停在3000。完整状态与日志保留；后续见owac-j5-libero-live-3652-20261102。"
     },
     {
       "id": "owac-j5-act2-dev1000-rgb-20261101",
