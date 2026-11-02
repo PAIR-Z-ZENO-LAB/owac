@@ -21,7 +21,7 @@ def main():
     normal.mkdir(exist_ok=True)
     config_path = normal / "production.json"
     config_path.write_text(json.dumps(cfg, indent=2))
-    resume = args.resume
+    resume = args.resume.resolve() if args.resume else None
     if resume and resume.parent != normal and not (normal / "best.pt").exists():
         os.link(resume.parent / "best.pt", normal / "best.pt")
     results_path = root / "development-results.json"
@@ -77,9 +77,18 @@ def main():
         development.mkdir(exist_ok=True)
         dev_cfg = json.loads(json.dumps(cfg))
         dev_cfg["closed_loop"].update(cfg["development"])
-        dev_cfg["closed_loop"]["swanlab_id"] = f"owac-j5-act2-dev-{step}-20261101"
+        dev_cfg["closed_loop"]["swanlab_id"] = (
+            cfg["development"]
+            .get("swanlab_id_template", "owac-j5-act2-dev-{step}-20261101")
+            .format(step=step)
+        )
         dev_cfg["closed_loop"]["swanlab_name"] = (
-            f"J5-ACT2｜开发闭环｜LIBERO正常光｜RAW开发集｜第{step}步｜20261101"
+            cfg["development"]
+            .get(
+                "swanlab_name_template",
+                "J5-ACT2｜开发闭环｜LIBERO正常光｜RAW开发集｜第{step}步｜20261101",
+            )
+            .format(step=step)
         )
         dev_config = development / "config.json"
         dev_config.write_text(json.dumps(dev_cfg, indent=2))
@@ -110,6 +119,9 @@ def main():
         # Compact checkpoint retains recovery; full exported dev policy is transient.
         (development / "policy-final-ema.pt").unlink()
     selected = max(results, key=lambda r: r["successes"])
+    if cfg["development"].get("normal_only", False):
+        status("completed", development=results, selected_normal_step=selected["step"])
+        return
     if selected["successes"] == 0:
         status(
             "normal-control-not-established",
