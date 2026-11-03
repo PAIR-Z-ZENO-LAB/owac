@@ -17,6 +17,7 @@ from owac.training.j5_pi05 import J5Policy, observation
 
 class ActionPolicy:
     def __init__(self, cfg, checkpoint, baseline, device):
+        self.proprio = cfg.get("proprioception")
         self.device, self.baseline = torch.device(device), baseline
         if baseline:
             from safetensors.torch import load_model
@@ -48,6 +49,13 @@ class ActionPolicy:
     def infer(self, request):
         prompt = request["prompt"].strip().replace("_", " ").replace("\n", " ")
         ids = (self.tokenizer.encode(prompt, add_bos=True) + self.tokenizer.encode("\n"))[:200]
+        state = None
+        if self.proprio and not self.baseline:
+            from owac.training.j5_proprio import normalize_proprio, tokenize_proprio
+
+            state = normalize_proprio(request["proprio"], self.proprio["statistics"])
+            ids, valid = tokenize_proprio(self.tokenizer, prompt, state)
+            ids = ids[valid].tolist()
         tokens = torch.tensor([ids], device=self.device)
         masks = torch.ones_like(tokens, dtype=torch.bool)
         yes = torch.ones(1, dtype=torch.bool, device=self.device)
@@ -76,7 +84,10 @@ class ActionPolicy:
             )
         else:
             raw = torch.tensor(request["raw"], device=self.device).permute(0, 3, 1, 2).float() / 255
-            obs = observation({"raw": raw[None], "tokens": tokens, "token_mask": masks})
+            batch = {"raw": raw[None], "tokens": tokens, "token_mask": masks}
+            if state is not None:
+                batch["state"] = torch.tensor(state[None], device=self.device)
+            obs = observation(batch)
         noise = torch.tensor(request["noise"], device=self.device).float()[None]
         with torch.autocast("cuda", dtype=torch.bfloat16):
             normalized = self.model.sample_actions(self.device, obs, noise=noise, num_steps=10)[

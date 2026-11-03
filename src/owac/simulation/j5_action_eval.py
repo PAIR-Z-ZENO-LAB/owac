@@ -12,6 +12,7 @@ from owac.simulation.rawvla_teacher_controller import (
     _load_author_replay_module,
     raw_observation_frames,
 )
+from owac.training.j5_proprio import joint_gripper_from_observation
 
 
 def main():
@@ -71,7 +72,7 @@ def main():
                     for _ in range(10):
                         obs, _, _, _ = env.step([0.0] * 6 + [-1.0])
                     client.reset()
-                    executed, plans, noises = [], [], []
+                    executed, plans, noises, proprioceptions = [], [], [], []
                     success = False
                     horizon = 5 if args.smoke else horizons[suite_name]
                     with imageio.get_writer(directory / "rollout.mp4", fps=20) as video:
@@ -102,16 +103,19 @@ def main():
                                         **({"variant": args.variant} if args.variant else {}),
                                         args.role: np.stack(inputs),
                                         "prompt": task.language,
+                                        "proprio": joint_gripper_from_observation(obs),
                                         "noise": noise,
                                     }
                                 )
                                 plan = prediction["actions"]
                                 plans.append(plan)
                                 noises.append(noise)
+                                proprioceptions.append(joint_gripper_from_observation(obs))
                                 if step == 0:
                                     np.savez(
                                         directory / "initial.npz",
                                         inputs=np.stack(inputs),
+                                        proprio=joint_gripper_from_observation(obs),
                                         state=states[initial_index],
                                         noise=noise,
                                     )
@@ -128,6 +132,7 @@ def main():
                         executed=np.asarray(executed),
                         plans=np.asarray(plans),
                         noises=np.asarray(noises),
+                        proprio=np.asarray(proprioceptions),
                     )
                     record = {
                         "suite": suite_name,

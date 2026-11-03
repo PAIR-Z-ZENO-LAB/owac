@@ -10,6 +10,7 @@ import torch
 from torch.nn import functional as F
 from torch.utils.data import Dataset
 
+from owac.training.j5_proprio import normalize_proprio, tokenize_proprio
 from owac.training.raw_ssl_data import FrameReader
 
 
@@ -77,6 +78,7 @@ class RawActionFrames(Dataset):
         self.labels = OrderedDict()
         self.prompts = {}
         self.tokenizer = sentencepiece.SentencePieceProcessor(model_file=cfg["assets"]["tokenizer"])
+        self.proprio = cfg.get("proprioception")
         self.stats = json.loads(Path(cfg["assets"]["statistics"]).read_text())["norm_stats"]
 
     def __len__(self):
@@ -111,11 +113,16 @@ class RawActionFrames(Dataset):
                 self.labels[key] = (
                     archive["actions"].copy(),
                     json.loads(str(archive["metadata_json"].item()))["task_description"],
+                    (
+                        archive["states"][:, self.proprio["state_columns"]].astype(np.float32)
+                        if self.proprio
+                        else None
+                    ),
                 )
             if len(self.labels) > 16:
                 self.labels.popitem(last=False)
         self.labels.move_to_end(key)
-        actions, prompt = self.labels[key]
+        actions, prompt, proprio = self.labels[key]
         if prompt not in self.prompts:
             cleaned = prompt.strip().replace("_", " ").replace("\n", " ")
             ids = self.tokenizer.encode(cleaned, add_bos=True) + self.tokenizer.encode("\n")
@@ -129,7 +136,12 @@ class RawActionFrames(Dataset):
         if not self.validation:
             images[0] = geometric_augment(images[0], rng)
         tokens, mask = self.prompts[prompt]
+        state = np.zeros(32, np.float32)
+        if self.proprio:
+            state = normalize_proprio(proprio[endpoint], self.proprio["statistics"])
+            tokens, mask = tokenize_proprio(self.tokenizer, prompt, state)
         return {
+            "state": state,
             "raw": images,
             "tokens": tokens,
             "token_mask": mask,

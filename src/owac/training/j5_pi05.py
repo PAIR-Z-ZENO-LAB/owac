@@ -105,7 +105,7 @@ class J5Policy(PI0Pytorch):
             Pi0Config(
                 pi05=True,
                 action_horizon=10,
-                discrete_state_input=False,
+                discrete_state_input=bool(cfg.get("proprioception")),
                 dtype="float32",
                 pytorch_compile_mode=None,
             )
@@ -216,5 +216,5 @@ def observation(batch):
         tokenized_prompt_mask=batch["token_mask"],
         token_ar_mask=None,
         token_loss_mask=None,
-        state=torch.zeros((len(raw), 32), device=raw.device),
+        state=batch.get("state", torch.zeros((len(raw), 32), device=raw.device)),
     )
