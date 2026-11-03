@@ -13,6 +13,8 @@ from owac.runtime.j5_action_finish import simulation_environment, wait_for_serve
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, required=True)
+    parser.add_argument("--before", type=Path)
+    parser.add_argument("--after", type=Path)
     parser.add_argument("--variants", nargs="+", required=True)
     parser.add_argument("--device", default="cuda:1")
     parser.add_argument("--port", type=int, default=9026)
@@ -21,14 +23,22 @@ def main():
     out = root / "weight-audit"
     cfg = json.loads((root / "production.json").read_text())
     cfg["closed_loop"].update(cfg["development"])
-    config = out / "native-config.json"
+    out.mkdir(parents=True, exist_ok=True)
+    label = "-".join(args.variants)
+    before = (args.before or root / "normal/initial-003000.pt").resolve()
+    after = (args.after or root / "normal/step-004000.pt").resolve()
+    cfg["weight_intervention"] = {
+        "before": str(before),
+        "after": str(after),
+        "variants": args.variants,
+    }
+    config = out / f"native-{label}-config.json"
     config.write_text(json.dumps(cfg, indent=2))
     env = simulation_environment(cfg, out)
     import swanlab
 
     swanlab.login(api_key=Path("/root/.config/owac/swanlab-api-key").read_text().strip())
     swanlab.merge_settings(swanlab.Settings(probe=swanlab.Settings.Probe(monitor=False)))
-    label = "-".join(args.variants)
     swanlab.init(
         project="OWAC",
         workspace="Jeong",
@@ -47,9 +57,9 @@ def main():
         "-m",
         "owac.runtime.j5_weight_policy",
         "--before",
-        str(root / "normal/initial-003000.pt"),
+        str(before),
         "--after",
-        str(root / "normal/step-004000.pt"),
+        str(after),
         "--device",
         args.device,
         "--port",
