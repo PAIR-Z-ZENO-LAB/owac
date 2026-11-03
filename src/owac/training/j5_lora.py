@@ -124,7 +124,9 @@ def trainable(model):
 def parameter_groups(model, training):
     grouped = {name: [] for name in training["group_learning_rates"]}
     for name, parameter in trainable(model).items():
-        if name.startswith("raw_projector."):
+        if name.startswith("raw_encoder."):
+            group = "vision"
+        elif name.startswith("raw_projector."):
             group = "bridge"
         elif ".streams.0." in name:
             group = "language"

@@ -1,3 +1,5 @@
+2026-11-03 用户选择从J5-LIBERO 3000步解冻RAW视觉续训：继承权重/504项Adam/RNG，新增视觉LR1e-6；4855万可训练参数，global256/micro64。3000→3003真实更新/native0，视觉参数变化已核实，18.04GiB显存/卡、OOM0；正式控制器已启动，4000/5000/6000各20闭环。见 [实验记录](../research/experiments/j5_unfreeze_3000_20261103.md)。
+
 2026-11-02 J5退化实查：六轨迹重放及348同观测动作精确复现；取罐6000失败、仅修夹爪仍失败、3000前55步接近抓取后交6000成功。验证取罐转折MSE .166→.205，均匀anchor仍改善；尚未定位具体参数模块。训练0，诊断服务已关闭。见 [实查记录](../research/experiments/j5_contact_regression_diagnosis_20261102.md)。
 
 2026-11-02 SwanLab同步修复：旧J5-LIBERO run云端曲线停3000、本地已3652；完整保存/native0后保留历史，新建OWAC续写run `owac-j5-libero-live-3652-20261102`，原step全历史回填，模型/Adam/RNG/选择状态不重置。新run运行期间API已读到新更新3653及3500步MSE0.1060712；继续原6000节点，OOM0。旧run续写/云端可见性异常的内部根因未确定。见 [运行记录](../research/experiments/j5_libero_backend_control_20261102.md)。

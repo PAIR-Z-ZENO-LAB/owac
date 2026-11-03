@@ -162,3 +162,34 @@ def test_expanding_lora_preserves_existing_adapters():
     ids = [id(p) for g in groups for p in g["params"]]
     assert len(ids) == len(set(ids))
     assert set(ids) == {id(p) for p in model.parameters() if p.requires_grad}
+
+
+def test_unfrozen_encoder_receives_action_gradient_in_its_own_lr_group():
+    from owac.training.j5_lora import configure_lora, parameter_groups
+
+    model = nn.Module()
+    model.raw_encoder = nn.Linear(6, 6)
+    model.raw_projector = nn.Linear(6, 4)
+    model.action_out_proj = nn.Linear(4, 2)
+    model.paligemma_with_expert = nn.Module()
+    model.paligemma_with_expert.joint_layers = nn.ModuleList()
+    configure_lora(
+        model, {"adaptation": {"dense_modules": ["raw_encoder", "raw_projector"], "ranks": [0, 0]}}
+    )
+    groups = parameter_groups(
+        model, {"learning_rate": 3e-5, "group_learning_rates": {"vision": 1e-6, "bridge": 3e-5}}
+    )
+    before = {n: p.detach().clone() for n, p in model.named_parameters()}
+    optimizer = torch.optim.AdamW(groups, lr=1e-3)
+    pred = model.action_out_proj(
+        model.raw_projector(model.raw_encoder(torch.randn(3, 6))).to(torch.bfloat16)
+    )
+    pred.float().square().mean().backward()
+    optimizer.step()
+    assert not model.freeze_raw_encoder
+    assert model.raw_encoder.training
+    assert model.raw_encoder.weight.grad.norm() > 0
+    assert not torch.equal(model.raw_encoder.weight, before["raw_encoder.weight"])
+    assert torch.equal(model.action_out_proj.weight, before["action_out_proj.weight"])
+    assert {id(p) for p in groups[0]["params"]} == {id(p) for p in model.raw_encoder.parameters()}
+    assert groups[0]["lr_scale"] == 1e-6 / 3e-5

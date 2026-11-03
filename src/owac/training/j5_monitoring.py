@@ -19,7 +19,7 @@ RENAMES = {
     "gpu/peak_allocated_gib": "runtime/gpu_peak_allocated_gib",
     **{
         f"train/lr_{name}": f"optimizer/lr_{name}"
-        for name in ["bridge", "language", "expert_content", "expert_qk"]
+        for name in ["vision", "bridge", "language", "expert_content", "expert_qk"]
     },
 }
 
