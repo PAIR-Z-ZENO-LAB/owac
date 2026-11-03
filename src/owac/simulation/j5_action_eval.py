@@ -22,6 +22,7 @@ def main():
     parser.add_argument("--role", choices=["raw", "rgb"], required=True)
     parser.add_argument("--port", type=int, required=True)
     parser.add_argument("--smoke", action="store_true")
+    parser.add_argument("--variant", help="Named module swap served by the diagnostic policy")
     args = parser.parse_args()
     cfg = json.loads(args.config.read_text())["closed_loop"]
     author = _load_author_replay_module(args.author_root)
@@ -98,6 +99,7 @@ def main():
                                 )
                                 prediction = client.infer(
                                     {
+                                        **({"variant": args.variant} if args.variant else {}),
                                         args.role: np.stack(inputs),
                                         "prompt": task.language,
                                         "noise": noise,

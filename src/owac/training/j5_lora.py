@@ -54,6 +54,14 @@ class ResidualProjector(nn.Module):
 
 
 def configure_lora(model, cfg):
+    if cfg["adaptation"].get("deterministic_raw_encoder", False):
+        # Keep gradients/checkpointing, but do not inherit SSL-only stochastic geometry.
+        backbone = model.raw_encoder.backbone
+        backbone.config.pos_embed_shift = None
+        backbone.config.pos_embed_jitter = None
+        backbone.config.pos_embed_rescale = None
+        for layer in backbone.layer:
+            layer.drop_path = nn.Identity()
     if cfg["adaptation"].get("residual_projector") and not isinstance(
         model.raw_projector, ResidualProjector
     ):
