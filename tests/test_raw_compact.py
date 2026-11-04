@@ -1,6 +1,9 @@
 """Behavioral checks for action masking, temporal alignment and modality paths."""
 
 import copy
+import itertools
+import subprocess
+import sys
 
 import numpy as np
 import pytest
@@ -9,7 +12,48 @@ import torch
 from owac.frameworks.raw_compact._vendor.action_generator import DiTActionGenerator
 from owac.frameworks.raw_compact._vendor.representation import Representation
 from owac.frameworks.raw_compact.policy import masked_flow_loss
+from owac.runtime.compact_rollouts import evaluation_shards, wait_for_rollouts
 from owac.training.compact_data import normalized_chunk, unnormalize_actions
+
+
+def test_last_rollout_process_failure_is_not_reported_as_native_zero(tmp_path):
+    process = subprocess.Popen([sys.executable, "-c", "raise SystemExit(7)"])
+    process.wait()
+    with pytest.raises(RuntimeError, match="exited 7"):
+        wait_for_rollouts([process], [], tmp_path)
+
+
+@pytest.mark.parametrize("task_shards", [1, 2, 3])
+def test_parallel_evaluation_preserves_every_episode_and_seed(task_shards):
+    suites = ["libero_spatial", "libero_object", "libero_goal", "libero_10"]
+    cfg = {
+        "closed_loop": {
+            "suites": suites,
+            "task_ids": list(range(10)),
+            "lighting": ["Normal", "Low"],
+            "initial_offset": 5,
+            "seeds_per_task": 5,
+            "task_shards_per_suite": task_shards,
+        }
+    }
+    original = copy.deepcopy(cfg)
+    episodes = []
+    for gpu, shard in evaluation_shards(cfg):
+        local = shard["closed_loop"]
+        suite = local["suites"][0]
+        index = suites.index(suite)
+        assert gpu == index % 2
+        assert local["suite_seed_indices"][suite] == index
+        episodes.extend(
+            (suite, task, light, initial)
+            for task, light, initial in itertools.product(
+                local["task_ids"], local["lighting"], range(5, 10)
+            )
+        )
+    expected = set(itertools.product(suites, range(10), ["Normal", "Low"], range(5, 10)))
+    assert len(episodes) == len(set(episodes))
+    assert set(episodes) == expected
+    assert cfg == original
 
 
 def config():

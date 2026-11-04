@@ -102,6 +102,7 @@
       "Normal"
     ],
     "seeds_per_task": 5,
+    "task_shards_per_suite": 2,
     "initial_offset": 5,
     "execute_horizon": 5,
     "action_horizon": 12,

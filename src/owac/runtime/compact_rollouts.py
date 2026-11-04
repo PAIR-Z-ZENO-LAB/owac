@@ -12,29 +12,48 @@ from pathlib import Path
 from owac.runtime.j5_action_finish import simulation_environment, wait_for_server
 
 
+def evaluation_shards(cfg):
+    """Partition task IDs while retaining the original suite's RNG and GPU mapping."""
+    closed_loop = cfg["closed_loop"]
+    suites = closed_loop["suites"]
+    task_shards = closed_loop.get("task_shards_per_suite", 1)
+    for task_shard in range(task_shards):
+        task_ids = closed_loop["task_ids"][task_shard::task_shards]
+        if not task_ids:
+            continue
+        for suite_index, suite in enumerate(suites):
+            local = copy.deepcopy(cfg)
+            local["closed_loop"].update(
+                suites=[suite],
+                task_ids=task_ids,
+                suite_seed_indices={name: index for index, name in enumerate(suites)},
+            )
+            yield suite_index % 2, local
+
+
+def wait_for_rollouts(clients, servers, output):
+    while any(process.poll() is None for process in clients):
+        for process in clients + servers:
+            if process.poll() not in (None, 0):
+                raise RuntimeError(
+                    f"Native evaluation process exited {process.returncode}; see {output}"
+                )
+        time.sleep(5)
+    # The last process may fail between polls, when no client remains running.
+    for process in clients:
+        code = process.wait()
+        if code:
+            raise RuntimeError(f"Native evaluation process exited {code}; see {output}")
+
+
 def run(cfg, checkpoint, output, *, episodes=None, initial_offset=None, lighting=None):
     output.mkdir(parents=True, exist_ok=True)
     servers, clients, streams = [], [], []
     shards = []
     try:
         for gpu in range(2):
-            shard = output / f"shard-{gpu}"
-            shard.mkdir(exist_ok=True)
-            local = copy.deepcopy(cfg)
-            local["closed_loop"]["suite_seed_indices"] = {
-                name: index for index, name in enumerate(cfg["closed_loop"]["suites"])
-            }
-            local["closed_loop"]["suites"] = cfg["closed_loop"]["suites"][gpu::2]
-            if episodes is not None:
-                local["closed_loop"]["seeds_per_task"] = episodes
-            if initial_offset is not None:
-                local["closed_loop"]["initial_offset"] = initial_offset
-            if lighting is not None:
-                local["closed_loop"]["lighting"] = lighting
-            config = shard / "config.json"
-            config.write_text(json.dumps(local, ensure_ascii=False, indent=2))
             port = 9036 + gpu
-            stream = (shard / "server.log").open("w")
+            stream = (output / f"server-{gpu}.log").open("w")
             streams.append(stream)
             openpi = Path(cfg["simulation"]["openpi_root"])
             server_env = dict(os.environ)
@@ -63,6 +82,20 @@ def run(cfg, checkpoint, output, *, episodes=None, initial_offset=None, lighting
             )
             servers.append(server)
             wait_for_server(server, port)
+        # Policies have no episode state; each client supplies its own fixed noise.
+        # Concurrent simulators can share a model without changing policy inputs.
+        for shard_index, (gpu, local) in enumerate(evaluation_shards(cfg)):
+            shard = output / f"shard-{shard_index}"
+            shard.mkdir(exist_ok=True)
+            if episodes is not None:
+                local["closed_loop"]["seeds_per_task"] = episodes
+            if initial_offset is not None:
+                local["closed_loop"]["initial_offset"] = initial_offset
+            if lighting is not None:
+                local["closed_loop"]["lighting"] = lighting
+            config = shard / "config.json"
+            config.write_text(json.dumps(local, ensure_ascii=False, indent=2))
+            port = 9036 + gpu
             env = simulation_environment(local, shard)
             # EGL and inference use the same physical GPU for this shard.
             env["MUJOCO_EGL_DEVICE_ID"] = str(gpu)
@@ -91,13 +124,7 @@ def run(cfg, checkpoint, output, *, episodes=None, initial_offset=None, lighting
                 )
             )
             shards.append(shard)
-        while any(p.poll() is None for p in clients):
-            for process in clients + servers:
-                if process.poll() not in (None, 0):
-                    raise RuntimeError(
-                        f"Native evaluation process exited {process.returncode}; see {output}"
-                    )
-            time.sleep(5)
+        wait_for_rollouts(clients, servers, output)
         rows = []
         for shard in shards:
             rows.extend(
