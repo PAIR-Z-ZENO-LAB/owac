@@ -53,7 +53,8 @@ def main():
                 for initial_index in range(
                     cfg.get("initial_offset", 0), cfg.get("initial_offset", 0) + episodes
                 ):
-                    seed = 20261030 + suite_index * 1000 + task_id * 10 + initial_index
+                    seed_suite = cfg.get("suite_seed_indices", {}).get(suite_name, suite_index)
+                    seed = 20261030 + seed_suite * 1000 + task_id * 10 + initial_index
                     rng = np.random.default_rng(seed)
                     ev = float(rng.uniform(*DEFAULT_EV_RANGES[light]))
                     lighting = dict(
@@ -95,7 +96,12 @@ def main():
                                     )
                                 noise = (
                                     np.random.default_rng(seed * 100003 + step)
-                                    .standard_normal((10, 32))
+                                    .standard_normal(
+                                        (
+                                            cfg.get("action_horizon", 10),
+                                            cfg.get("noise_action_dim", 32),
+                                        )
+                                    )
                                     .astype(np.float32)
                                 )
                                 prediction = client.infer(

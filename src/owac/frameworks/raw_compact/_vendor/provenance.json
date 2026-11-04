@@ -1,0 +1,31 @@
+{
+  "repository": "https://github.com/corp-policy/CoRP",
+  "commit": "52445740aa9517ae396cc8fb14bae8fe5922f118",
+  "license": "Apache-2.0",
+  "files": [
+    {
+      "source": "corp/action_generator.py",
+      "destination": "action_generator.py",
+      "upstream_sha256": "9bc64e228f934e8fcf5b927669b3a6c0cf4300735b7e973150436eeef3a289d9"
+    },
+    {
+      "source": "corp/representation/cross_attention_resampler.py",
+      "destination": "cross_attention_resampler.py",
+      "upstream_sha256": "4e86fae7523c5c1a8c6da2bccdbc54cba2fbea8d914fe8eb13202209f51e1fa1"
+    },
+    {
+      "source": "corp/representation/state_encoder.py",
+      "destination": "state_encoder.py",
+      "upstream_sha256": "cb6f4be3d443c0e1adfe2c6d974301373ebc75f1da51728889fa6c0050e6a973"
+    },
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "upstream_sha256": "868124a2c898356384d313a997c217ebe915930b4b7f1740a85d62f3f7dead1f"
+    }
+  ],
+  "changes": [
+    "Representation dataclass moved locally; optional padding mask carried through prefix cache.",
+    "No RGB encoder or policy checkpoint imported."
+  ]
+}

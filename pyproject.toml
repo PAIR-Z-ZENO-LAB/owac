@@ -37,6 +37,7 @@ where = ["src"]
 "owac.baselines._vendor.dbsr" = ["LICENSE", "provenance.json"]
 "owac.baselines._vendor.sea_raft" = ["LICENSE", "provenance.json", "*.py"]
 "owac.baselines._vendor.sea_raft.utils" = ["*.py"]
+"owac.frameworks.raw_compact._vendor" = ["LICENSE", "provenance.json"]
 
 [tool.ruff]
 target-version = "py311"

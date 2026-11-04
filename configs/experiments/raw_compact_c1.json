@@ -1,0 +1,195 @@
+{
+  "seed": 20261104,
+  "assets": {
+    "j5": "/root/owac/repo/outputs/j5-raw-relations-20261030/attempts/user-stop-12818/encoder.pt",
+    "tokenizer": "/root/owac/repo/outputs/raw-compact-assets/tokenizer"
+  },
+  "data": {
+    "inventory": "/root/owac/repo/outputs/raw-distillation-all-bench-20261022/inventory.json",
+    "sampling": "uniform task, uniform lighting within task, uniform source then frame; original train/validation/test split"
+  },
+  "model": {
+    "raw_encoder": {
+      "width": 384,
+      "depth": 12,
+      "heads": 6,
+      "patch_size": 16,
+      "image_size": 256,
+      "drop_path": 0.0,
+      "response_pivot": 0.02
+    },
+    "visual_initialization": "j5",
+    "language": {
+      "architectures": [
+        "T5ForConditionalGeneration"
+      ],
+      "d_ff": 1024,
+      "d_kv": 64,
+      "d_model": 256,
+      "decoder_start_token_id": 0,
+      "dropout_rate": 0.1,
+      "eos_token_id": 1,
+      "feed_forward_proj": "relu",
+      "initializer_factor": 1.0,
+      "is_encoder_decoder": true,
+      "layer_norm_epsilon": 1e-06,
+      "model_type": "t5",
+      "n_positions": 512,
+      "num_decoder_layers": 4,
+      "num_heads": 4,
+      "num_layers": 4,
+      "pad_token_id": 0,
+      "relative_attention_num_buckets": 32,
+      "torch_dtype": "float32",
+      "transformers_version": "4.17.0.dev0",
+      "use_cache": true,
+      "vocab_size": 32128
+    },
+    "language_initialization": "random; released T5 text tokenizer only",
+    "language_length": 32,
+    "hidden_dim": 768,
+    "action_dim": 7,
+    "action_horizon": 12,
+    "tokens_per_view": 48,
+    "resampler_heads": 8,
+    "film_rank": 64,
+    "action_generator": {
+      "num_layers": 1,
+      "num_heads": 12,
+      "mlp_ratio": 4.0,
+      "max_horizon": 128,
+      "adaln_rank": 64,
+      "num_sample_steps": 10
+    }
+  },
+  "training": {
+    "updates": 80000,
+    "batch": 256,
+    "micro_batch": 64,
+    "workers": 4,
+    "learning_rate": 5e-05,
+    "warmup": 1000,
+    "weight_decay": 0.01,
+    "ema_decay": 0.999,
+    "task_loss_weight": 0.01,
+    "log_every": 20,
+    "save_every": 1000,
+    "eval_every": 1000
+  },
+  "validation": {
+    "frames_per_source": 8
+  },
+  "closed_loop": {
+    "suites": [
+      "libero_spatial",
+      "libero_object",
+      "libero_goal",
+      "libero_10"
+    ],
+    "task_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "lighting": [
+      "Normal"
+    ],
+    "seeds_per_task": 5,
+    "initial_offset": 5,
+    "execute_horizon": 5,
+    "action_horizon": 12,
+    "noise_action_dim": 7
+  },
+  "simulation": {
+    "legacy_root": "/root/owac/repo/outputs/raw-distillation-all-bench-20261022/lowlight-20261027",
+    "author_root": "/root/owac/repo/outputs/raw-distillation-20261020-sol/teacher-search-v2/author-main",
+    "openpi_root": "/root/owac/openpi-official-15a9616",
+    "python": "/root/owac/repo/outputs/raw-distillation-all-bench-20261022/lowlight-20261027/runtime/python/bin/python3.11",
+    "rgb_checkpoint": "/root/autodl-pub/checkpoints/openpi/pi05_libero_pytorch/model.safetensors"
+  },
+  "swanlab": {
+    "id": "owac-raw-compact-j5-20261104",
+    "name": "C1｜紧凑动作联合训练｜LIBERO五照明RAW｜J5+本体+任务语言｜全训练集80k｜20261104",
+    "group": "C-raw-compact"
+  },
+  "research": {
+    "selection_episodes": 200,
+    "stages": [
+      {
+        "step": 1000,
+        "episodes": 1,
+        "lighting": [
+          "Normal"
+        ]
+      },
+      {
+        "step": 5000,
+        "episodes": 5,
+        "lighting": [
+          "Normal"
+        ]
+      },
+      {
+        "step": 10000,
+        "episodes": 5,
+        "lighting": [
+          "Normal"
+        ]
+      },
+      {
+        "step": 20000,
+        "episodes": 5,
+        "lighting": [
+          "Normal"
+        ]
+      },
+      {
+        "step": 40000,
+        "episodes": 5,
+        "lighting": [
+          "Normal"
+        ]
+      },
+      {
+        "step": 60000,
+        "episodes": 5,
+        "lighting": [
+          "Normal"
+        ]
+      },
+      {
+        "step": 80000,
+        "episodes": 5,
+        "lighting": [
+          "Normal"
+        ]
+      }
+    ],
+    "final": {
+      "episodes": 10,
+      "initial_offset": 20,
+      "lighting": [
+        "Normal",
+        "Low",
+        "ExtremeLow",
+        "Over",
+        "ExtremeOver"
+      ]
+    },
+    "primary_metric": "native multi-task closed-loop success; independent final initial states",
+    "review": "Review failure videos and task/lighting distribution at each development checkpoint; architecture and budget may be revised, preserving old evidence."
+  },
+  "provenance": {
+    "corp_commit": "52445740aa9517ae396cc8fb14bae8fe5922f118",
+    "visual_weights": "J5 RAW-only self-supervision step12818; no external visual pretrained weights",
+    "network_weights": "Only own RAW encoder inherited; language/action/state/resampler random",
+    "raw_kind": "LIBERO uint8 three-channel pseudo-RAW; not native Bayer CFA"
+  }
+}
