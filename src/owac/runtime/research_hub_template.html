@@ -1273,7 +1273,7 @@ function viewOverview() {
     '</div>' + notice +
     strategyHero() + lineageView() +
     (DATA.strategy && DATA.strategy.active_route ? '' : '<div class="route-grid">' + ROUTES().filter((r) => r.lifecycle !== 'archived').map(routeCard).join('') + '</div>') +
-    (ROUTES().some((r) => r.lifecycle === 'archived') ? disclosure('archives', '历史路线与原始证据', '3 条暂停探索 · 保留原文', () => '<div class="route-grid">' + ROUTES().filter((r) => r.lifecycle === 'archived').map(routeCard).join('') + '</div>') : '') +
+    (ROUTES().some((r) => r.lifecycle === 'archived') ? disclosure('archives', '历史路线与原始证据', '历史路线 · 保留结果与原文', () => '<div class="route-grid">' + ROUTES().filter((r) => r.lifecycle === 'archived').map(routeCard).join('') + '</div>') : '') +
   '</section>' +
   '<section class="section">' +
     disclosure('shared', '共同参考', allDocs().length + ' 份文档', sharedBody) +

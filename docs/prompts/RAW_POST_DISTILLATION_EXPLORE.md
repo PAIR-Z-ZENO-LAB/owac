@@ -1,3 +1,5 @@
+本探索入口已由 `docs/prompts/R/R1.md` 接替；当前路线见 `docs/plans/R_RAW_ACTION_ADAPTATION_2026-10-27.md`。
+
 # OWAC 蒸馏成功之后：探索准备
 
 进入/home/jeong/zeno/owac/repo，读取AGENTS.md、README.md、docs/status.md，保留现有修改。

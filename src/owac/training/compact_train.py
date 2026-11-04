@@ -165,28 +165,17 @@ def main():
             )
         )
         if not args.offline:
-            import swanlab
-
-            swanlab.login(api_key=Path("/root/.config/owac/swanlab-api-key").read_text().strip())
-            swanlab.merge_settings(swanlab.Settings(probe=swanlab.Settings.Probe(monitor=False)))
-            swanlab.init(
-                project="OWAC",
-                workspace="Jeong",
-                id=cfg["swanlab"]["id"],
-                resume="allow",
-                experiment_name=cfg["swanlab"]["name"],
-                group=cfg["swanlab"]["group"],
-                job_type="raw-proprio-language-flow",
-                config=cfg,
-                logdir=str(root / "swanlab"),
+            from owac.runtime.compact_swanlab import (
+                completed_results,
+                init_run,
+                log_results,
+                save_receipts,
             )
-            for section, label in [
-                ("objective", "01 训练目标"),
-                ("validation", "02 动作验证"),
-                ("optimizer", "03 优化器"),
-                ("runtime", "04 运行资源"),
-            ]:
-                swanlab.define_metric(f"{section}/*", section_name=label)
+
+            swanlab = init_run(cfg, root / "swanlab")
+            # Also recover summaries produced before this logger was deployed, or
+            # saved successfully before a previous evaluation's upload failed.
+            evaluation_receipts = log_results(swanlab, cfg, completed_results(root.parent))
     stop_requested = [False]
     signal.signal(signal.SIGUSR1, lambda *_: stop_requested.__setitem__(0, True))
 
@@ -309,6 +298,7 @@ def main():
             break
     if swanlab:
         swanlab.finish()
+        save_receipts(evaluation_receipts)
     dist.destroy_process_group()
 
 

@@ -1,0 +1,315 @@
+{
+  "project": "Jeong/OWAC",
+  "completed_at": "2026-11-04T04:59:51.597776+00:00",
+  "source_runs": 28,
+  "target_runs": 8,
+  "project_runs_before": 50,
+  "project_runs_after": 22,
+  "source_points": 23077,
+  "verified_target_points": 50058,
+  "audit_directory": "outputs/swanlab-run-consolidation-20261104",
+  "status": "merged-verified-deleted",
+  "notes": [
+    "来源配置、全部标量与系统指标、日志在本地和服务器备份；原始评估、视频、权重保留。",
+    "目标原有指标与合并指标共50058点已于删除前后核验；成功率精确一致，一项硬件遥测浮点值发生1 ULP序列化舍入，原值保存在备份。",
+    "各checkpoint完整开发验证按实际训练步数连线；工程、RGB、权重干预、holdout与中止评估分开记录。",
+    "readout-fit横轴2224为拟合anchors数量，不是优化器更新。",
+    "唯一完成评估的checkpoint保留单点，不制造额外评估点。",
+    "SwanLab续写省略config会清空云端配置；8个目标的原配置已从备份恢复并逐个云端核验，迁移脚本已改为显式传入配置。"
+  ],
+  "one_ulp_serialization_differences": [
+    {
+      "target": "owac-j5-selective-expert-20261031",
+      "key": [
+        "evaluation_history/owac-j5-bridge-eval-20261031/__swanlab__.gpu.0.mem.pct",
+        172
+      ],
+      "original": 26.599349832857982,
+      "readback": 26.599349832857985
+    }
+  ],
+  "runs": [
+    {
+      "source": "owac-j5-proprio-dev-4000-20261103",
+      "target": "owac-j5-proprio-3000-20261103",
+      "kind": "evaluation",
+      "step": 4000,
+      "namespace": "success",
+      "reason": "Same native development protocol; checkpoint step from evaluation command; use canonical continuation run.",
+      "source_name": "J5-本体感知｜开发闭环｜LIBERO正常光｜RAW+本体｜第4000步｜20261103",
+      "target_name": "J5-本体感知｜动作续训｜LIBERO正常光｜RAW+关节角+夹爪+文字｜3000至6000步｜20261103"
+    },
+    {
+      "source": "owac-j5-proprio-dev-5000-20261103",
+      "target": "owac-j5-proprio-3000-20261103",
+      "kind": "evaluation",
+      "step": 5000,
+      "namespace": "success",
+      "reason": "Same native development protocol; checkpoint step from evaluation command; use canonical continuation run.",
+      "source_name": "J5-本体感知｜开发闭环｜LIBERO正常光｜RAW+本体｜第5000步｜20261103",
+      "target_name": "J5-本体感知｜动作续训｜LIBERO正常光｜RAW+关节角+夹爪+文字｜3000至6000步｜20261103"
+    },
+    {
+      "source": "owac-j5-proprio-dev-6000-20261103",
+      "target": "owac-j5-proprio-3000-20261103",
+      "kind": "evaluation",
+      "step": 6000,
+      "namespace": "success",
+      "reason": "Same native development protocol; checkpoint step from evaluation command; use canonical continuation run.",
+      "source_name": "J5-本体感知｜开发闭环｜LIBERO正常光｜RAW+本体｜第6000步｜20261103",
+      "target_name": "J5-本体感知｜动作续训｜LIBERO正常光｜RAW+关节角+夹爪+文字｜3000至6000步｜20261103"
+    },
+    {
+      "source": "owac-j5-deterministic-dev-4000-20261103",
+      "target": "owac-j5-deterministic-3000-20261103",
+      "kind": "evaluation",
+      "step": 4000,
+      "namespace": "success",
+      "reason": "Same native development protocol; checkpoint step from evaluation command; use canonical continuation run.",
+      "source_name": "J5-视觉确定性｜开发闭环｜LIBERO正常光｜修正版｜第4000步｜20261103",
+      "target_name": "J5-视觉确定性｜动作续训｜LIBERO正常光｜关闭随机位置与drop-path｜3000至4000步｜20261103"
+    },
+    {
+      "source": "owac-j5-unfreeze-dev-4000-20261103",
+      "target": "owac-j5-unfreeze-3000-20261103",
+      "kind": "evaluation",
+      "step": 4000,
+      "namespace": "success",
+      "reason": "Same native development protocol; checkpoint step from evaluation command; use canonical continuation run.",
+      "source_name": "J5-解冻视觉｜开发闭环｜LIBERO正常光｜RAW配对｜第4000步｜20261103",
+      "target_name": "J5-解冻视觉｜动作续训｜LIBERO正常光｜视觉全量与后端LoRA｜3000至6000步｜20261103"
+    },
+    {
+      "source": "owac-j5-libero-dev-1000-20261102",
+      "target": "owac-j5-libero-live-3652-20261102",
+      "kind": "evaluation",
+      "step": 1000,
+      "namespace": "success",
+      "reason": "Same native development protocol; checkpoint step from evaluation command; use canonical continuation run.",
+      "source_name": "J5-LIBERO｜开发闭环｜LIBERO正常光｜RAW配对对照｜第1000步｜20261102",
+      "target_name": "J5-LIBERO｜相同后端对照｜LIBERO正常光｜监测修复续训｜3652步完整恢复｜20261102"
+    },
+    {
+      "source": "owac-j5-libero-dev-3000-20261102",
+      "target": "owac-j5-libero-live-3652-20261102",
+      "kind": "evaluation",
+      "step": 3000,
+      "namespace": "success",
+      "reason": "Same native development protocol; checkpoint step from evaluation command; use canonical continuation run.",
+      "source_name": "J5-LIBERO｜开发闭环｜LIBERO正常光｜RAW配对对照｜第3000步｜20261102",
+      "target_name": "J5-LIBERO｜相同后端对照｜LIBERO正常光｜监测修复续训｜3652步完整恢复｜20261102"
+    },
+    {
+      "source": "owac-j5-libero-dev-6000-20261102",
+      "target": "owac-j5-libero-live-3652-20261102",
+      "kind": "evaluation",
+      "step": 6000,
+      "namespace": "success",
+      "reason": "Same native development protocol; checkpoint step from evaluation command; use canonical continuation run.",
+      "source_name": "J5-LIBERO｜开发闭环｜LIBERO正常光｜RAW配对对照｜第6000步｜20261102",
+      "target_name": "J5-LIBERO｜相同后端对照｜LIBERO正常光｜监测修复续训｜3652步完整恢复｜20261102"
+    },
+    {
+      "source": "owac-j5-act2-dev-1000-20261101",
+      "target": "owac-j5-act2-normal-unified-20261101",
+      "kind": "evaluation",
+      "step": 1000,
+      "namespace": "success",
+      "reason": "Same native development protocol; checkpoint step from evaluation command; use canonical continuation run.",
+      "source_name": "J5-ACT2｜开发闭环｜LIBERO正常光｜RAW开发集｜第1000步｜20261101",
+      "target_name": "J5-ACT2｜RAW后端适配｜LIBERO正常光｜动作MSE监测｜771步完整续接｜20261101"
+    },
+    {
+      "source": "owac-j5-act2-dev-3000-20261101",
+      "target": "owac-j5-act2-normal-unified-20261101",
+      "kind": "evaluation",
+      "step": 3000,
+      "namespace": "success",
+      "reason": "Same native development protocol; checkpoint step from evaluation command; use canonical continuation run.",
+      "source_name": "J5-ACT2｜开发闭环｜LIBERO正常光｜RAW开发集｜第3000步｜20261101",
+      "target_name": "J5-ACT2｜RAW后端适配｜LIBERO正常光｜动作MSE监测｜771步完整续接｜20261101"
+    },
+    {
+      "source": "owac-j5-act2-dev-6000-20261101",
+      "target": "owac-j5-act2-normal-unified-20261101",
+      "kind": "evaluation",
+      "step": 6000,
+      "namespace": "success",
+      "reason": "Same native development protocol; checkpoint step from evaluation command; use canonical continuation run.",
+      "source_name": "J5-ACT2｜开发闭环｜LIBERO正常光｜RAW开发集｜第6000步｜20261101",
+      "target_name": "J5-ACT2｜RAW后端适配｜LIBERO正常光｜动作MSE监测｜771步完整续接｜20261101"
+    },
+    {
+      "source": "owac-j5-proprio-engineering-20261103",
+      "target": "owac-j5-proprio-3000-20261103",
+      "kind": "evaluation",
+      "step": 3003,
+      "namespace": "success/engineering",
+      "reason": "Engineering full single episode at saved step3003; distinct from 20-episode development.",
+      "source_name": "J5-本体感知｜工程闭环｜LIBERO正常光｜3003步完整单场｜20261103",
+      "target_name": "J5-本体感知｜动作续训｜LIBERO正常光｜RAW+关节角+夹爪+文字｜3000至6000步｜20261103"
+    },
+    {
+      "source": "owac-j5-act2-engineering-eval-20261101",
+      "target": "owac-j5-act2-engineering-20261101",
+      "kind": "evaluation",
+      "step": 7,
+      "namespace": "success/engineering",
+      "reason": "Actual command loads engineering/step-000007.pt; copied config incorrectly names the production run.",
+      "source_name": "J5-ACT2｜工程闭环验证｜LIBERO goal6正常光｜初态5｜第7步检查点｜20261101",
+      "target_name": "J5-ACT2｜工程恢复｜LIBERO正常光｜残差桥接与语言LoRA｜3到7步｜20261101"
+    },
+    {
+      "source": "owac-j5-act2-dev1000-rgb-20261101",
+      "target": "owac-j5-act2-normal-unified-20261101",
+      "kind": "evaluation",
+      "step": 1000,
+      "namespace": "success",
+      "reason": "Official RGB reference paired with RAW1000; RGB metric keys remain separate; validation renamed rgb_reference.",
+      "source_name": "J5-ACT2｜配对RGB基线｜LIBERO正常光｜官方LIBERO权重｜初态5至9共20场｜20261101",
+      "target_name": "J5-ACT2｜RAW后端适配｜LIBERO正常光｜动作MSE监测｜771步完整续接｜20261101"
+    },
+    {
+      "source": "owac-j5-swap-vision-20261103",
+      "target": "owac-j5-unfreeze-3000-20261103",
+      "kind": "evaluation",
+      "step": 4000,
+      "namespace": "success/diagnostics/development",
+      "reason": "Assign by actual after-checkpoint provenance, retaining variant and initial-state protocol.",
+      "source_name": "J5-权重诊断｜原生闭环｜LIBERO正常光｜vision｜3000与4000交换｜20261103",
+      "target_name": "J5-解冻视觉｜动作续训｜LIBERO正常光｜视觉全量与后端LoRA｜3000至6000步｜20261103"
+    },
+    {
+      "source": "owac-j5-swap-without_bridge-20261103",
+      "target": "owac-j5-unfreeze-3000-20261103",
+      "kind": "evaluation",
+      "step": 4000,
+      "namespace": "success/diagnostics/development",
+      "reason": "Assign by actual after-checkpoint provenance, retaining variant and initial-state protocol.",
+      "source_name": "J5-权重诊断｜原生闭环｜LIBERO正常光｜without_bridge｜3000与4000交换｜20261103",
+      "target_name": "J5-解冻视觉｜动作续训｜LIBERO正常光｜视觉全量与后端LoRA｜3000至6000步｜20261103"
+    },
+    {
+      "source": "owac-j5-swap-half-20261103",
+      "target": "owac-j5-unfreeze-3000-20261103",
+      "kind": "evaluation",
+      "step": 4000,
+      "namespace": "success/diagnostics/development",
+      "reason": "Assign by actual after-checkpoint provenance, retaining variant and initial-state protocol.",
+      "source_name": "J5-权重诊断｜原生闭环｜LIBERO正常光｜half｜3000与4000交换｜20261103",
+      "target_name": "J5-解冻视觉｜动作续训｜LIBERO正常光｜视觉全量与后端LoRA｜3000至6000步｜20261103"
+    },
+    {
+      "source": "owac-j5-swap-language_half-20261103",
+      "target": "owac-j5-unfreeze-3000-20261103",
+      "kind": "evaluation",
+      "step": 4000,
+      "namespace": "success/diagnostics/development",
+      "reason": "Assign by actual after-checkpoint provenance, retaining variant and initial-state protocol.",
+      "source_name": "J5-权重诊断｜原生闭环｜LIBERO正常光｜language_half｜3000与4000交换｜20261103",
+      "target_name": "J5-解冻视觉｜动作续训｜LIBERO正常光｜视觉全量与后端LoRA｜3000至6000步｜20261103"
+    },
+    {
+      "source": "owac-j5-swap-expert_zero-20261103",
+      "target": "owac-j5-unfreeze-3000-20261103",
+      "kind": "evaluation",
+      "step": 4000,
+      "namespace": "success/diagnostics/development",
+      "reason": "Assign by actual after-checkpoint provenance, retaining variant and initial-state protocol.",
+      "source_name": "J5-权重诊断｜原生闭环｜LIBERO正常光｜expert_zero｜3000与4000交换｜20261103",
+      "target_name": "J5-解冻视觉｜动作续训｜LIBERO正常光｜视觉全量与后端LoRA｜3000至6000步｜20261103"
+    },
+    {
+      "source": "owac-j5-swap-official_precision-20261103",
+      "target": "owac-j5-unfreeze-3000-20261103",
+      "kind": "evaluation",
+      "step": 4000,
+      "namespace": "success/diagnostics/development",
+      "reason": "Assign by actual after-checkpoint provenance, retaining variant and initial-state protocol.",
+      "source_name": "J5-权重诊断｜原生闭环｜LIBERO正常光｜official_precision｜3000与4000交换｜20261103",
+      "target_name": "J5-解冻视觉｜动作续训｜LIBERO正常光｜视觉全量与后端LoRA｜3000至6000步｜20261103"
+    },
+    {
+      "source": "owac-j5-swap-reference_half-20261103",
+      "target": "owac-j5-unfreeze-3000-20261103",
+      "kind": "evaluation",
+      "step": 4000,
+      "namespace": "success/diagnostics/holdout",
+      "reason": "Assign by actual after-checkpoint provenance, retaining variant and initial-state protocol.",
+      "source_name": "J5-权重诊断｜原生闭环｜LIBERO正常光｜reference_half｜3000与4000交换｜20261103",
+      "target_name": "J5-解冻视觉｜动作续训｜LIBERO正常光｜视觉全量与后端LoRA｜3000至6000步｜20261103"
+    },
+    {
+      "source": "owac-j5-swap-half_corrected-20261103",
+      "target": "owac-j5-deterministic-3000-20261103",
+      "kind": "evaluation",
+      "step": 4000,
+      "namespace": "success/diagnostics/development",
+      "reason": "Assign by actual after-checkpoint provenance, retaining variant and initial-state protocol.",
+      "source_name": "J5-权重诊断｜原生闭环｜LIBERO正常光｜half_corrected｜3000与4000交换｜20261103",
+      "target_name": "J5-视觉确定性｜动作续训｜LIBERO正常光｜关闭随机位置与drop-path｜3000至4000步｜20261103"
+    },
+    {
+      "source": "owac-j5-swap-corrected_half_holdout-20261103",
+      "target": "owac-j5-deterministic-3000-20261103",
+      "kind": "evaluation",
+      "step": 4000,
+      "namespace": "success/diagnostics/holdout",
+      "reason": "Assign by actual after-checkpoint provenance, retaining variant and initial-state protocol.",
+      "source_name": "J5-权重诊断｜原生闭环｜LIBERO正常光｜corrected_half_holdout｜3000与4000交换｜20261103",
+      "target_name": "J5-视觉确定性｜动作续训｜LIBERO正常光｜关闭随机位置与drop-path｜3000至4000步｜20261103"
+    },
+    {
+      "source": "owac-j5-swap-readout_ridge-20261103",
+      "target": "owac-j5-readout-fit-20261103",
+      "kind": "evaluation",
+      "step": 2224,
+      "namespace": "success/diagnostics/development",
+      "reason": "Assign by actual after-checkpoint provenance, retaining variant and initial-state protocol. Readout fit x-axis is 2224 fit anchors, not optimizer updates.",
+      "source_name": "J5-权重诊断｜原生闭环｜LIBERO正常光｜readout_ridge｜3000与4000交换｜20261103",
+      "target_name": "J5-动作读出｜解析校准｜LIBERO正常光训练集｜仅7维输出行｜冻结其余权重｜20261103"
+    },
+    {
+      "source": "owac-j5-bridge-eval-20261031",
+      "target": "owac-j5-selective-expert-20261031",
+      "kind": "partial",
+      "step": 5000,
+      "namespace": null,
+      "reason": "Aborted evaluation of selected expert5000; retain every progress point and partial status, do not synthesize complete success.",
+      "source_name": "J5-ACT｜闭环与RGB对照｜LIBERO五照明｜冻结视觉与选择性动作LoRA｜6k检查点｜20261031",
+      "target_name": "J5-ACT｜冻结视觉选择性动作LoRA｜LIBERO五照明｜V/O/MLP-r8｜计划6k｜20261031"
+    },
+    {
+      "source": "owac-j5-libero-normal-20261102",
+      "target": "owac-j5-libero-live-3652-20261102",
+      "kind": "continuation",
+      "step": null,
+      "namespace": null,
+      "reason": "Documented monitoring migration of same training trajectory. Verify identical points; preserve any nonidentical or late historical columns separately.",
+      "source_name": "J5-LIBERO｜相同后端对照｜LIBERO正常光｜新桥接与LoRA｜6000步｜20261102",
+      "target_name": "J5-LIBERO｜相同后端对照｜LIBERO正常光｜监测修复续训｜3652步完整恢复｜20261102"
+    },
+    {
+      "source": "owac-j5-act2-normal-mse-20261101",
+      "target": "owac-j5-act2-normal-unified-20261101",
+      "kind": "continuation",
+      "step": null,
+      "namespace": null,
+      "reason": "Documented monitoring migration of same training trajectory. Verify identical points; preserve any nonidentical or late historical columns separately.",
+      "source_name": "J5-ACT2｜迁移历史｜LIBERO正常光｜动作MSE监测｜原日志至616步｜20261101",
+      "target_name": "J5-ACT2｜RAW后端适配｜LIBERO正常光｜动作MSE监测｜771步完整续接｜20261101"
+    },
+    {
+      "source": "owac-j5-act2-normal-20261101",
+      "target": "owac-j5-act2-normal-unified-20261101",
+      "kind": "continuation",
+      "step": null,
+      "namespace": null,
+      "reason": "Documented monitoring migration of same training trajectory. Verify identical points; preserve any nonidentical or late historical columns separately.",
+      "source_name": "J5-ACT2｜RAW后端适配｜LIBERO正常光｜旧MAE监测｜截至477步｜20261101",
+      "target_name": "J5-ACT2｜RAW后端适配｜LIBERO正常光｜动作MSE监测｜771步完整续接｜20261101"
+    }
+  ],
+  "cleanup_at": "2026-11-04T04:53:05.297125+00:00",
+  "config_verified_at": "2026-11-04T04:59:03.517286+00:00"
+}

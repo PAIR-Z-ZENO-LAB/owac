@@ -1,7 +1,138 @@
 {
   "schema_version": 1,
-  "reviewed_at": "2026-10-27",
+  "reviewed_at": "2026-10-29",
   "routes": [
+    {
+      "id": "J",
+      "name": "RAW稠密语义编码器",
+      "short": "RAW测量适配＋完整视觉主干 → DINOv3语义迁移",
+      "color": "green",
+      "checkout": "repo",
+      "branch": "main",
+      "version": "J v2 · 2026-10-29",
+      "lifecycle": "active",
+      "status": "J2S已暂停 · 64366步完整保存",
+      "current_stage": "J2S",
+      "question": "有限RAW数据能否通过独立视觉学习形成可迁移表示？",
+      "summary": "427M参数全训练；双响应stem、局部因果门控、多层融合；最终1024维稠密语义。",
+      "next": "保留训练结果，等待用户新指令，不自动恢复。",
+      "boundary": "训练期配对正常光RGB DINOv3；部署仅RAW；LIBERO原拆分；不宣称开放域等同。",
+      "primary_document": "research/experiments/j2s_raw_semantic_20261029.md",
+      "evidence_document": "research/experiments/j2s_continue_decision_20261029.md",
+      "documents": [
+        "research/experiments/j1_raw_jepa_20261028.md",
+        "research/experiments/j2_raw_encoder_20261029.md",
+        "research/experiments/j2s_raw_semantic_20261029.md"
+      ],
+      "stages": [
+        {
+          "id": "J1",
+          "title": "JEPA · RAW视觉预训练",
+          "state": "paused",
+          "label": "已停止",
+          "description": "82000步完整保存/native0；177验证源对照表明第9层空间对应改善但同任务检索未改善。旧训练不恢复。",
+          "document": "research/experiments/j1_raw_jepa_20261028.md",
+          "prompt_kind": "review",
+          "prompt_sources": [
+            "research/experiments/j1_raw_jepa_20261028.md"
+          ],
+          "codename": "JEPA"
+        },
+        {
+          "id": "J2S",
+          "title": "SEMANTIC · 完整RAW稠密语义编码",
+          "state": "paused",
+          "label": "已暂停",
+          "description": "用户要求暂停；64366步完整恢复状态和独立编码器保存，训练native0退出。",
+          "document": "research/experiments/j2s_raw_semantic_20261029.md",
+          "prompt_kind": "review",
+          "prompt_sources": [
+            "research/experiments/j2s_raw_semantic_20261029.md"
+          ],
+          "codename": "SEMANTIC"
+        }
+      ]
+    },
+    {
+      "id": "R",
+      "name": "动作监督与适应性RAW编码",
+      "short": "无蒸馏训练 → 短动作监督 → 生物学启发聚合",
+      "color": "green",
+      "checkout": "repo",
+      "branch": "main",
+      "version": "R v1 · 2026-10-27",
+      "lifecycle": "paused",
+      "status": "R1暂停 · 29,071/100,000 · 中期闭环0/60",
+      "current_stage": "R1",
+      "question": "短动作监督与适应性RAW计算如何改善弱光控制？",
+      "summary": "原LIBERO分区1421/177/173；整个视觉头仅真实动作flow-matching训练，冻结原后端。",
+      "next": "保持R1暂停；当前转向J1独立视觉自监督预训练。",
+      "boundary": "继承五照明数据、因果历史、冻结后端及380GiB磁盘约束。",
+      "primary_document": "docs/plans/R_RAW_ACTION_ADAPTATION_2026-10-27.md",
+      "evidence_document": "research/experiments/r1_raw_action_20261027.md",
+      "documents": [
+        "docs/plans/R_RAW_ACTION_ADAPTATION_2026-10-27.md",
+        "docs/prompts/R/R1.md",
+        "docs/prompts/R/R2.md",
+        "docs/prompts/R/R3.md",
+        "docs/prompts/R/R4.md",
+        "research/experiments/r1_raw_action_20261027.md"
+      ],
+      "stages": [
+        {
+          "id": "R1",
+          "title": "ACT · 纯动作学习",
+          "state": "paused",
+          "label": "暂停",
+          "description": "执行R1：保持当前RAW编码器，从原始预训练视觉骨干/投影初始化并重置stem/gate，仅用真实示范动作的原生flow-matching损失训练整个视觉头100,000次优化器更新。复用共享盘五照明数据及原源轨迹拆分；保存最终权重和训练/验证曲线，闭环由R2执行。 用户已确认R1仅使用原拆分中的LIBERO数据；实际首批更新和完整检查点已产生。",
+          "document": "docs/plans/R_RAW_ACTION_ADAPTATION_2026-10-27.md",
+          "prompt_kind": "complete",
+          "prompt_sources": [
+            "docs/prompts/R/R1.md"
+          ],
+          "codename": "ACT"
+        },
+        {
+          "id": "R2",
+          "title": "LOOP · 动作基线闭环",
+          "state": "planned",
+          "label": "待执行",
+          "description": "执行R2：加载R1最终100k权重，沿用LOWLIGHT入口，对task6历史20初态的Normal/Low/ExtremeLow运行60场纯策略闭环。复用旧教师和84768学生结果，不重跑它们。报告完整成功率、配对退化/恢复、失败原因和并排视频。无需成功率准入门槛。",
+          "document": "docs/plans/R_RAW_ACTION_ADAPTATION_2026-10-27.md",
+          "prompt_kind": "complete",
+          "prompt_sources": [
+            "docs/prompts/R/R2.md"
+          ],
+          "codename": "LOOP"
+        },
+        {
+          "id": "R3",
+          "title": "CAUX · 因果动作辅助",
+          "state": "planned",
+          "label": "待执行",
+          "description": "执行R3：增加训练期轻量因果动作辅助头，读取视觉tokens、当前状态、语言、带噪动作及flow时间，不读取未来观测。保留主动作flow-matching损失，辅助头使用同类真实示范目标。独立从R1相同原始初始化训练100,000更新，不续训R1；记录辅助系数和结构。部署移除辅助头，以最终权重沿用R2的60场闭环，与R2比较。",
+          "document": "docs/plans/R_RAW_ACTION_ADAPTATION_2026-10-27.md",
+          "prompt_kind": "complete",
+          "prompt_sources": [
+            "docs/prompts/R/R3.md"
+          ],
+          "codename": "CAUX"
+        },
+        {
+          "id": "R4",
+          "title": "DUAL · 双路适应聚合",
+          "state": "planned",
+          "label": "待执行",
+          "description": "执行R4：保留R3短动作辅助目标，替换简单聚合为快速细节与稳定证据双支路。根据局部信号强度、噪声估计、帧间变化和历史有效性，连续学习每patch组合；利用现有六帧/局部邻域，处理运动与陈旧历史，不增加曝光或观测。独立从共同原始初始化训练100,000更新，不续训R3；以最终权重完成同样60场闭环，与R3比较。",
+          "document": "docs/plans/R_RAW_ACTION_ADAPTATION_2026-10-27.md",
+          "prompt_kind": "complete",
+          "prompt_sources": [
+            "docs/prompts/R/R4.md"
+          ],
+          "codename": "DUAL"
+        }
+      ]
+    },
     {
       "id": "DISTILL",
       "name": "RAW stem 与 SigLIP 蒸馏",
@@ -10,12 +141,12 @@
       "checkout": "repo",
       "branch": "main",
       "version": "OWAC-D1.1 · RAW 教师与因果时序",
-      "lifecycle": "active",
-      "status": "蒸馏成功 · 下一阶段探索准备",
+      "lifecycle": "archived",
+      "status": "蒸馏成功 · 结果归档",
       "current_stage": "EXPLORE",
       "question": "直接 RAW 编码能否保住已有策略的控制能力，再利用 RAW 测量超越教师？",
       "summary": "最后学生84768：Normal20/20、Low9/20、ExtremeLow0/20；完整本地RAW教师对应20/20、11/20、0/20。120场全部native0，Low退化2对、恢复0，弱光适配尚未训练。",
-      "next": "比较弱光诊断、Normal RAW教师配对监督及同信息时序机制候选，形成下一阶段具体工作单；尚未启动新实验。",
+      "next": "接续R路线：动作监督、短动作辅助与适应性RAW聚合。",
       "boundary": "成功范围为RAW学生因果token链路与task6正常光控制复刻。完整三照明评价使用历史固定20初态；Low与ExtremeLow负结果保留，不外推其他任务、原生Bayer或实机。本地init0教师非作者训练后前端权重。",
       "primary_document": "docs/plans/RAW_POST_DISTILLATION_EXPLORATION_2026-10-27.md",
       "evidence_document": "research/experiments/raw_stem_siglip_20261020/lowlight-server-20261027.md",
@@ -100,7 +231,7 @@
           "label": "因果时序／缓存／真实梯度／纯部署工程通过",
           "description": "真实RAW教师首/后/reset阶段零及独立纯学生重载通过；45源969缓存、164测试、make check通过。仅零优化预检，学习与控制未验收。",
           "document": "research/experiments/raw_stem_siglip_20261020/align-independent-review.md",
-          "prompt_kind": "complete",
+          "prompt_kind": "none",
           "prompt_sources": [
             "docs/prompts/GPT61_SOL_RAW_STEM_SIGLIP_DISTILLATION.md"
           ],
@@ -146,7 +277,7 @@
           "label": "对照评价已完成 · 弱光边界已记录",
           "description": "Normal教师/学生20/20；Low11/20与9/20，学生退化2、恢复0；ExtremeLow均0/20。120场无错误/重试，120原片及60并排视频，配对审计通过；训练0。",
           "document": "research/experiments/raw_stem_siglip_20261020/lowlight-server-20261027.md",
-          "prompt_kind": "complete",
+          "prompt_kind": "none",
           "prompt_sources": [
             "docs/prompts/RAW_DISTILLATION_LOWLIGHT.md"
           ]
@@ -154,11 +285,11 @@
         {
           "id": "EXPLORE",
           "title": "蒸馏成功后的研究探索",
-          "state": "current",
-          "label": "当前阶段 · 候选与工作单准备",
-          "description": "用户确认蒸馏路线走通并要求准备下一阶段。正常光验收与弱光负结果冻结；下一轮问题/对照/训练范围待具体制定，未启动新实验。",
-          "document": "docs/plans/RAW_POST_DISTILLATION_EXPLORATION_2026-10-27.md",
-          "prompt_kind": "complete",
+          "state": "recorded",
+          "label": "路线讨论完成 · 转入R",
+          "description": "已选定R1—R4路线，见R路线文档。",
+          "document": "docs/plans/R_RAW_ACTION_ADAPTATION_2026-10-27.md",
+          "prompt_kind": "none",
           "prompt_sources": [
             "docs/prompts/RAW_POST_DISTILLATION_EXPLORE.md"
           ]
@@ -755,20 +886,20 @@
     "research/experiments/raw_stem_siglip_20261020/closed-loop-final84768-20261026.md"
   ],
   "strategy": {
-    "active_route": "DISTILL",
-    "title": "先恢复控制，再研究 RAW 的额外价值",
-    "description": "OWAC-D1.1：完整教师策略接收 RAW，内部可经 Neural ISP；学生按效果选择因果时序，部署直接产生 RAW 表征。",
+    "active_route": "J",
+    "title": "J：完整RAW稠密语义编码器",
+    "description": "当前J2S：DINOv3训练监督，RAW独立部署",
     "facts": [
-      "正常光单任务 · 单帧／burst／递归按效果选择",
-      "完整 RAW 输入教师 · 学生无 ISP 中间图像",
-      "Sol 统筹验收 · Harness V41-Flash Max 编码"
+      "J1保留82000停止，R1保留29071暂停",
+      "J2S完整427M参数，目标100000优化更新",
+      "LIBERO原拆分，双卡global32；训练验证与资源同步SwanLab"
     ],
-    "boundary": "本地init0 RAW教师的前阶段20/20仅开发筛查，非作者训练权重／非学习收益；本轮仅pseudo-RAW3单任务，闭环0场。C原生退出码不可得，真实50权重及最终日志独立审计；不伪造exit0。"
+    "boundary": "部署无RGB/教师/动作后端；未证明达到DINOv3。"
   },
   "lineage": {
     "title": "路线怎样分支，又为什么收敛",
     "description": "实线表示研究选择的演进与暂停收敛；虚线表示满足条件后的计划。连线不表示算法验收通过或旧机制融合。",
-    "selected": "extend",
+    "selected": "j",
     "nodes": [
       {
         "id": "pool",
@@ -880,14 +1011,42 @@
       {
         "id": "extend",
         "title": "弱光与后续扩展",
-        "date": "10/27 当前",
-        "state": "current",
+        "date": "10/27 已完成",
+        "state": "history",
         "column": 5,
         "row": 1,
-        "status": "LOWLIGHT 已开启 · 方案与评价准备",
-        "description": "正常光恢复阶段已通过，下一步讨论弱光收益及评价方案；尚未启动。",
+        "status": "LOWLIGHT完整评价完成",
+        "description": "教师Normal/Low/ExtremeLow为20/20、11/20、0/20；学生为20/20、9/20、0/20。",
         "documents": [
-          "docs/plans/RAW_STEM_SIGLIP_DISTILLATION_2026-10-20.md"
+          "research/experiments/raw_stem_siglip_20261020/lowlight-server-20261027.md"
+        ]
+      },
+      {
+        "id": "r",
+        "title": "R 动作监督与适应性RAW编码",
+        "date": "10/27 路线确定",
+        "state": "paused",
+        "column": 6,
+        "row": 1,
+        "status": "R1暂停 · 29,071/100,000 · 中期闭环0/60",
+        "description": "R1/R3/R4各独立训练100k；R2/R3/R4沿用现有60场闭环。GPT直接实现。",
+        "route_id": "R",
+        "documents": [
+          "docs/plans/R_RAW_ACTION_ADAPTATION_2026-10-27.md"
+        ]
+      },
+      {
+        "id": "j",
+        "title": "J RAW视觉自监督预训练",
+        "date": "10/28 已启动",
+        "state": "current",
+        "column": 7,
+        "row": 1,
+        "status": "81000步诊断 · 中层改善、后段空间匹配退化",
+        "description": "公开pi05视觉初始化＋新RAW stem/时序模块＋JEPA空间遮挡预测，不继承RAW教师知识。",
+        "route_id": "J",
+        "documents": [
+          "research/experiments/j1_raw_jepa_20261028.md"
         ]
       }
     ],
@@ -936,6 +1095,16 @@
         "from": "distill",
         "to": "extend",
         "kind": "conditional"
+      },
+      {
+        "from": "extend",
+        "to": "r",
+        "kind": "adopt"
+      },
+      {
+        "from": "r",
+        "to": "j",
+        "kind": "adopt"
       }
     ]
   }

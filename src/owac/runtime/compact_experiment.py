@@ -84,6 +84,14 @@ def main():
                     "5",
                     "--lighting",
                     *stage["lighting"],
+                    "--evaluation-kind",
+                    "development"
+                    if len(cfg["closed_loop"]["suites"])
+                    * len(cfg["closed_loop"]["task_ids"])
+                    * stage["episodes"]
+                    * len(stage["lighting"])
+                    == cfg["research"]["selection_episodes"]
+                    else "screening",
                 ],
                 f"eval-{step:06d}",
             )
@@ -120,6 +128,8 @@ def main():
                 str(final["initial_offset"]),
                 "--lighting",
                 *final["lighting"],
+                "--evaluation-kind",
+                "independent-final",
             ],
             "independent-final",
         )

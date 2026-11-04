@@ -3,74 +3,67 @@
   "name_format": "阶段｜目标｜数据/照明｜训练范围或尝试｜规模或恢复点｜YYYYMMDD",
   "runs": [
     {
+      "id": "owac-raw-compact-j5-20261104",
+      "name": "C1｜紧凑动作联合训练｜LIBERO五照明RAW｜J5+本体+任务语言｜全训练集80k｜20261104",
+      "group": "C-raw-compact",
+      "job_type": "raw-proprio-language-flow",
+      "description": "首轮已完成80,000更新，run为FINISHED；选定20,000步EMA最终1513/2000＝75.65%，末80k开发72.5%。训练与闭环共用此run；05 闭环评估按checkpoint训练步数记录。success/*为200场开发验证，success/screening/*为40场初筛，success/independent-final/*为独立最终评价。1000/5000/10000/20000四个独立闭环run的24个指标值已核对合入并删除重复云端run，原始评估与云端快照保留在本地及服务器。"
+    },
+    {
+      "id": "owac-j5-readout-fit-20261103",
+      "name": "J5-动作读出｜解析校准｜LIBERO正常光训练集｜仅7维输出行｜冻结其余权重｜20261103",
+      "group": "01 动作训练",
+      "job_type": "readout-fit",
+      "description": "冻结其余权重，仅解析拟合7维动作输出；readout_ridge闭环合入05 闭环评估。横轴2224表示拟合anchors数量，不是优化器更新或4000步训练。"
+    },
+    {
+      "id": "owac-j5-unfreeze-3000-20261103",
+      "name": "J5-解冻视觉｜动作续训｜LIBERO正常光｜视觉全量与后端LoRA｜3000至6000步｜20261103",
+      "group": "01 动作训练",
+      "job_type": "lora-finetune",
+      "description": "视觉全量与后端LoRA；4000步开发闭环及七项权重干预诊断合入05 闭环评估，开发与holdout初态分开记录。"
+    },
+    {
+      "id": "owac-j5-deterministic-3000-20261103",
+      "name": "J5-视觉确定性｜动作续训｜LIBERO正常光｜关闭随机位置与drop-path｜3000至4000步｜20261103",
+      "group": "01 动作训练",
+      "job_type": "lora-finetune",
+      "description": "关闭随机位置与drop-path；4000步开发闭环、half_corrected开发诊断及corrected_half_holdout独立初态诊断合入05 闭环评估，保留各自指标。"
+    },
+    {
+      "id": "owac-j5-proprio-3000-20261103",
+      "name": "J5-本体感知｜动作续训｜LIBERO正常光｜RAW+关节角+夹爪+文字｜3000至6000步｜20261103",
+      "group": "01 动作训练",
+      "job_type": "lora-finetune",
+      "description": "RAW+关节角+夹爪+文字的3000至6000步训练；4000/5000/6000步完整开发闭环合入05 闭环评估，3003步工程验证单列。"
+    },
+    {
       "id": "owac-j5-libero-live-3652-20261102",
       "name": "J5-LIBERO｜相同后端对照｜LIBERO正常光｜监测修复续训｜3652步完整恢复｜20261102",
       "group": "01 动作训练",
       "job_type": "lora-finetune",
-      "description": "原run续写后云端仅显示至3000；3652完整保存/native0后独立续写，全历史按原step回填，权重/Adam/选择状态不重置。"
-    },
-    {
-      "id": "owac-j5-libero-normal-20261102",
-      "name": "J5-LIBERO｜相同后端对照｜LIBERO正常光｜新桥接与LoRA｜6000步｜20261102",
-      "group": "01 动作训练",
-      "job_type": "lora-finetune",
-      "description": "历史监测：本地训练至3652，云端续写查询停在3000。完整状态与日志保留；后续见owac-j5-libero-live-3652-20261102。"
-    },
-    {
-      "id": "owac-j5-act2-dev1000-rgb-20261101",
-      "name": "J5-ACT2｜配对RGB基线｜LIBERO正常光｜官方LIBERO权重｜初态5至9共20场｜20261101",
-      "group": "05 闭环评估",
-      "job_type": "closed-loop",
-      "description": "与RAW1000步同初态/噪声配对：RGB20/20、RAW0/20。32条Normal同源验证轨迹256anchors，RGB动作MSE0.018424；不同初始化和官方训练数据暴露范围限制公平比较。"
+      "description": "3652步完整状态续训的主run；原监测run的相同历史已核验去重，1000/3000/6000步开发闭环按checkpoint步数合入05 闭环评估。"
     },
     {
       "id": "owac-j5-act2-normal-unified-20261101",
       "name": "J5-ACT2｜RAW后端适配｜LIBERO正常光｜动作MSE监测｜771步完整续接｜20261101",
       "group": "01 动作训练",
       "job_type": "lora-finetune",
-      "description": "当前正式运行；771步完整状态恢复，按原step回填训练目标、优化器、资源及477/500步动作MSE。旧MAE不冒充MSE；保留两个历史监测运行。"
-    },
-    {
-      "id": "owac-j5-act2-normal-mse-20261101",
-      "name": "J5-ACT2｜迁移历史｜LIBERO正常光｜动作MSE监测｜原日志至616步｜20261101",
-      "group": "01 动作训练",
-      "job_type": "lora-finetune",
-      "description": "原生MOVE保留的历史运行，读取旧根数据至616步。迁移后续写指标未被网页显示，616至771步已完整保存并回填至owac-j5-act2-normal-unified-20261101；正式训练与完整曲线请查看该运行。"
-    },
-    {
-      "id": "owac-j5-act2-normal-20261101",
-      "name": "J5-ACT2｜RAW后端适配｜LIBERO正常光｜旧MAE监测｜截至477步｜20261101",
-      "group": "01 动作训练",
-      "job_type": "lora-finetune",
-      "description": "监测切换前的历史运行，训练从expert5000适配；后续记录见owac-j5-act2-normal-mse-20261101。历史MAE与新有效动作MSE口径不同。"
-    },
-    {
-      "id": "owac-j5-act2-engineering-eval-20261101",
-      "name": "J5-ACT2｜工程闭环验证｜LIBERO goal6正常光｜初态5｜第7步检查点｜20261101",
-      "group": "05 闭环评估",
-      "job_type": "closed-loop",
-      "description": "工程恢复后完整原生闭环连通验证；仅是该检查点和初态的工程记录，不代表正式模型成功率。"
+      "description": "771步完整状态续训并保存完整训练历史；两条旧监测run已核验去重。1000/3000/6000步RAW闭环与1000步官方RGB配对基线合入05 闭环评估，RGB指标及验证动作MSE单列，历史MAE不冒充MSE。"
     },
     {
       "id": "owac-j5-act2-engineering-20261101",
       "name": "J5-ACT2｜工程恢复｜LIBERO正常光｜残差桥接与语言LoRA｜3到7步｜20261101",
       "group": "04 工程检查",
       "job_type": "lora-finetune",
-      "description": "完整训练状态的恢复与更新检查，3到7步；不作为正式训练能力结论。"
-    },
-    {
-      "id": "owac-j5-bridge-eval-20261031",
-      "name": "J5-ACT｜闭环与RGB对照｜LIBERO五照明｜冻结视觉与选择性动作LoRA｜6k检查点｜20261031",
-      "group": "05 闭环评估",
-      "job_type": "closed-loop",
-      "description": "历史RAW策略闭环及官方RGB策略对照；保留原始已执行回合及停止状态，成功率以实际回合分母为准。"
+      "description": "完整训练状态恢复与3至7步更新检查；第7步工程闭环合入success/engineering/*，不作为正式训练能力结论。"
     },
     {
       "id": "owac-j5-selective-expert-20261031",
       "name": "J5-ACT｜冻结视觉选择性动作LoRA｜LIBERO五照明｜V/O/MLP-r8｜计划6k｜20261031",
       "group": "01 动作训练",
       "job_type": "lora-finetune",
-      "description": "桥接阶段之后的选择性动作专家适配；视觉编码器冻结，动作专家V/O/MLP rank8 LoRA。"
+      "description": "桥接之后的选择性动作专家适配；视觉冻结，V/O/MLP rank8 LoRA。best5000检查点的中止RAW/RGB闭环保留完整过程，closed_loop_partial/*标记已记录场数和未完成状态，不冒充完整成功率。"
     },
     {
       "id": "owac-j5-bridge-20261031",
@@ -214,5 +207,6 @@
     "05 闭环评估",
     "06 视觉诊断",
     "07 Token与Query"
-  ]
+  ],
+  "merged_runs_manifest": "configs/research/swanlab_merges_20261104.json"
 }

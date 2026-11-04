@@ -1,0 +1,218 @@
+{
+  "schema": "owac.raw-compact.official-comparison.v1",
+  "source": "https://arxiv.org/html/2609.37530v1#S4.T1",
+  "source_version": "RawVLA arXiv:2609.37530v1, Table 1, accessed 2026-11-04",
+  "units": "percent; differences are percentage points",
+  "columns": [
+    "SOG",
+    "Long",
+    "Avg"
+  ],
+  "averaging": "SOG = mean(Spatial,Object,Goal); Avg = 0.75*SOG + 0.25*Long; Overall = mean(five lighting conditions)",
+  "C1_measured": {
+    "Normal": [
+      83.33333333333333,
+      59.0,
+      77.25
+    ],
+    "Low": [
+      86.66666666666667,
+      59.0,
+      79.75
+    ],
+    "ExtremeLow": [
+      78.0,
+      32.0,
+      66.5
+    ],
+    "Over": [
+      89.33333333333333,
+      52.0,
+      80.0
+    ],
+    "ExtremeOver": [
+      82.66666666666667,
+      51.0,
+      74.75
+    ],
+    "Overall": [
+      84.0,
+      50.6,
+      75.65
+    ]
+  },
+  "official_reported": {
+    "RawVLA + PI-0.5": {
+      "Normal": [
+        98.4,
+        89.2,
+        96.1
+      ],
+      "Low": [
+        91.67,
+        81.8,
+        89.2
+      ],
+      "ExtremeLow": [
+        41.63,
+        30.0,
+        38.72
+      ],
+      "Over": [
+        89.0,
+        59.0,
+        81.5
+      ],
+      "ExtremeOver": [
+        78.4,
+        31.4,
+        66.65
+      ],
+      "Overall": [
+        79.82,
+        58.28,
+        74.44
+      ]
+    },
+    "RawVLA + PI-0": {
+      "Normal": [
+        95.0,
+        76.2,
+        90.3
+      ],
+      "Low": [
+        90.47,
+        66.0,
+        84.35
+      ],
+      "ExtremeLow": [
+        46.0,
+        24.8,
+        40.7
+      ],
+      "Over": [
+        81.93,
+        55.4,
+        75.3
+      ],
+      "ExtremeOver": [
+        68.27,
+        28.2,
+        58.25
+      ],
+      "Overall": [
+        76.33,
+        50.12,
+        69.78
+      ]
+    },
+    "RawVLA + Qwen3-OFT": {
+      "Normal": [
+        98.53,
+        92.2,
+        96.95
+      ],
+      "Low": [
+        87.13,
+        64.0,
+        81.35
+      ],
+      "ExtremeLow": [
+        15.2,
+        10.6,
+        14.05
+      ],
+      "Over": [
+        91.67,
+        55.0,
+        82.5
+      ],
+      "ExtremeOver": [
+        47.8,
+        2.0,
+        36.35
+      ],
+      "Overall": [
+        68.07,
+        44.76,
+        62.24
+      ]
+    },
+    "Default ISP + PI-0.5": {
+      "Normal": [
+        98.4,
+        91.8,
+        96.75
+      ],
+      "Low": [
+        62.47,
+        50.8,
+        59.55
+      ],
+      "ExtremeLow": [
+        2.6,
+        6.6,
+        3.6
+      ],
+      "Over": [
+        85.2,
+        48.2,
+        75.95
+      ],
+      "ExtremeOver": [
+        20.93,
+        24.2,
+        21.75
+      ],
+      "Overall": [
+        53.92,
+        44.32,
+        51.52
+      ]
+    }
+  },
+  "C1_minus_RawVLA_PI05_pp": {
+    "Normal": [
+      -15.066666666666677,
+      -30.200000000000003,
+      -18.849999999999994
+    ],
+    "Low": [
+      -5.00333333333333,
+      -22.799999999999997,
+      -9.450000000000003
+    ],
+    "ExtremeLow": [
+      36.37,
+      2.0,
+      27.78
+    ],
+    "Over": [
+      0.3333333333333286,
+      -7.0,
+      -1.5
+    ],
+    "ExtremeOver": [
+      4.266666666666666,
+      19.6,
+      8.099999999999994
+    ],
+    "Overall": [
+      4.180000000000007,
+      -7.68,
+      1.210000000000008
+    ]
+  },
+  "evaluation": {
+    "C1": "40 tasks x 10 initial states (20-29) x 5 lights = 2000; one selected 20k EMA checkpoint",
+    "official": "40 tasks x 50 initial states x 5 lights = 10000 per model, main paper protocol",
+    "comparison_kind": "Reported-score comparison, not a paired reproduction or significance claim",
+    "official_individual_Spatial_Object_Goal": "Not separately reported in main Table 1; do not infer from SOG"
+  },
+  "source_discrepancy": {
+    "paper_three_backbone_mean": 68.82,
+    "project_homepage_three_backbone_mean": 65.18,
+    "homepage": "https://shuhongll.github.io/rawvla/",
+    "decision": "Use the versioned paper's main Table 1 consistently; do not mix homepage or appendix values"
+  }
+}

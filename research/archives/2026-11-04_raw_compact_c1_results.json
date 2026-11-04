@@ -1,0 +1,2136 @@
+{
+  "schema": "owac.raw-compact.results.v1",
+  "completed_at": "2026-11-04T17:24:03.413124+08:00",
+  "training_step": 80000,
+  "selected_step": 20000,
+  "parameters": {
+    "parameters": 48850866,
+    "trainable_parameters": 48850482
+  },
+  "data": {
+    "training_sources": 1421,
+    "training_frames": 211114
+  },
+  "development": [
+    {
+      "step": 1000,
+      "kind": "screening",
+      "successes": 1,
+      "episodes": 40,
+      "rate": 0.025,
+      "suites": {
+        "libero_spatial": {
+          "successes": 0,
+          "episodes": 10,
+          "rate": 0.0
+        },
+        "libero_object": {
+          "successes": 0,
+          "episodes": 10,
+          "rate": 0.0
+        },
+        "libero_goal": {
+          "successes": 1,
+          "episodes": 10,
+          "rate": 0.1
+        },
+        "libero_10": {
+          "successes": 0,
+          "episodes": 10,
+          "rate": 0.0
+        }
+      },
+      "validation_action_mse": 0.2785685653122438,
+      "validation_executed_action_mse": 0.2776437463555707,
+      "train_flow_loss": 0.2180328369140625
+    },
+    {
+      "step": 5000,
+      "kind": "development",
+      "successes": 128,
+      "episodes": 200,
+      "rate": 0.64,
+      "suites": {
+        "libero_spatial": {
+          "successes": 39,
+          "episodes": 50,
+          "rate": 0.78
+        },
+        "libero_object": {
+          "successes": 42,
+          "episodes": 50,
+          "rate": 0.84
+        },
+        "libero_goal": {
+          "successes": 34,
+          "episodes": 50,
+          "rate": 0.68
+        },
+        "libero_10": {
+          "successes": 13,
+          "episodes": 50,
+          "rate": 0.26
+        }
+      },
+      "validation_action_mse": 0.07401982249066141,
+      "validation_executed_action_mse": 0.07376888003337681,
+      "train_flow_loss": 0.09886632114648819
+    },
+    {
+      "step": 10000,
+      "kind": "development",
+      "successes": 152,
+      "episodes": 200,
+      "rate": 0.76,
+      "suites": {
+        "libero_spatial": {
+          "successes": 42,
+          "episodes": 50,
+          "rate": 0.84
+        },
+        "libero_object": {
+          "successes": 44,
+          "episodes": 50,
+          "rate": 0.88
+        },
+        "libero_goal": {
+          "successes": 42,
+          "episodes": 50,
+          "rate": 0.84
+        },
+        "libero_10": {
+          "successes": 24,
+          "episodes": 50,
+          "rate": 0.48
+        }
+      },
+      "validation_action_mse": 0.0701801421864342,
+      "validation_executed_action_mse": 0.06896466840683163,
+      "train_flow_loss": 0.07285869866609573
+    },
+    {
+      "step": 20000,
+      "kind": "development",
+      "successes": 157,
+      "episodes": 200,
+      "rate": 0.785,
+      "suites": {
+        "libero_spatial": {
+          "successes": 43,
+          "episodes": 50,
+          "rate": 0.86
+        },
+        "libero_object": {
+          "successes": 44,
+          "episodes": 50,
+          "rate": 0.88
+        },
+        "libero_goal": {
+          "successes": 44,
+          "episodes": 50,
+          "rate": 0.88
+        },
+        "libero_10": {
+          "successes": 26,
+          "episodes": 50,
+          "rate": 0.52
+        }
+      },
+      "validation_action_mse": 0.0674818654251843,
+      "validation_executed_action_mse": 0.06580386931429744,
+      "train_flow_loss": 0.05094946548342705
+    },
+    {
+      "step": 40000,
+      "kind": "development",
+      "successes": 154,
+      "episodes": 200,
+      "rate": 0.77,
+      "suites": {
+        "libero_spatial": {
+          "successes": 45,
+          "episodes": 50,
+          "rate": 0.9
+        },
+        "libero_object": {
+          "successes": 41,
+          "episodes": 50,
+          "rate": 0.82
+        },
+        "libero_goal": {
+          "successes": 41,
+          "episodes": 50,
+          "rate": 0.82
+        },
+        "libero_10": {
+          "successes": 27,
+          "episodes": 50,
+          "rate": 0.54
+        }
+      },
+      "validation_action_mse": 0.0653034226045288,
+      "validation_executed_action_mse": 0.06401227673186048,
+      "train_flow_loss": 0.030222540721297264
+    },
+    {
+      "step": 60000,
+      "kind": "development",
+      "successes": 147,
+      "episodes": 200,
+      "rate": 0.735,
+      "suites": {
+        "libero_spatial": {
+          "successes": 42,
+          "episodes": 50,
+          "rate": 0.84
+        },
+        "libero_object": {
+          "successes": 36,
+          "episodes": 50,
+          "rate": 0.72
+        },
+        "libero_goal": {
+          "successes": 41,
+          "episodes": 50,
+          "rate": 0.82
+        },
+        "libero_10": {
+          "successes": 28,
+          "episodes": 50,
+          "rate": 0.56
+        }
+      },
+      "validation_action_mse": 0.06443719869494847,
+      "validation_executed_action_mse": 0.06255120600229212,
+      "train_flow_loss": 0.023646602407097816
+    },
+    {
+      "step": 80000,
+      "kind": "development",
+      "successes": 145,
+      "episodes": 200,
+      "rate": 0.725,
+      "suites": {
+        "libero_spatial": {
+          "successes": 45,
+          "episodes": 50,
+          "rate": 0.9
+        },
+        "libero_object": {
+          "successes": 40,
+          "episodes": 50,
+          "rate": 0.8
+        },
+        "libero_goal": {
+          "successes": 38,
+          "episodes": 50,
+          "rate": 0.76
+        },
+        "libero_10": {
+          "successes": 22,
+          "episodes": 50,
+          "rate": 0.44
+        }
+      },
+      "validation_action_mse": 0.06437021270135809,
+      "validation_executed_action_mse": 0.06274866136139845,
+      "train_flow_loss": 0.019383912906050682
+    }
+  ],
+  "independent_final": {
+    "successes": 1513,
+    "episodes": 2000,
+    "rate": 0.7565,
+    "by_suite": {
+      "libero_spatial": {
+        "successes": 421,
+        "episodes": 500,
+        "rate": 0.842
+      },
+      "libero_object": {
+        "successes": 446,
+        "episodes": 500,
+        "rate": 0.892
+      },
+      "libero_goal": {
+        "successes": 393,
+        "episodes": 500,
+        "rate": 0.786
+      },
+      "libero_10": {
+        "successes": 253,
+        "episodes": 500,
+        "rate": 0.506
+      }
+    },
+    "by_lighting": {
+      "Normal": {
+        "successes": 309,
+        "episodes": 400,
+        "rate": 0.7725
+      },
+      "Low": {
+        "successes": 319,
+        "episodes": 400,
+        "rate": 0.7975
+      },
+      "ExtremeLow": {
+        "successes": 266,
+        "episodes": 400,
+        "rate": 0.665
+      },
+      "Over": {
+        "successes": 320,
+        "episodes": 400,
+        "rate": 0.8
+      },
+      "ExtremeOver": {
+        "successes": 299,
+        "episodes": 400,
+        "rate": 0.7475
+      }
+    }
+  },
+  "tasks": [
+    {
+      "suite": "libero_spatial",
+      "task": 0,
+      "name": "pick_up_the_black_bowl_between_the_plate_and_the_ramekin_and_place_it_on_the_plate",
+      "successes": 46,
+      "episodes": 50,
+      "rate": 0.92,
+      "lighting": {
+        "Normal": {
+          "successes": 8,
+          "episodes": 10,
+          "rate": 0.8
+        },
+        "Low": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "ExtremeLow": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "Over": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "ExtremeOver": {
+          "successes": 8,
+          "episodes": 10,
+          "rate": 0.8
+        }
+      }
+    },
+    {
+      "suite": "libero_spatial",
+      "task": 1,
+      "name": "pick_up_the_black_bowl_next_to_the_ramekin_and_place_it_on_the_plate",
+      "successes": 41,
+      "episodes": 50,
+      "rate": 0.82,
+      "lighting": {
+        "Normal": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "Low": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "ExtremeLow": {
+          "successes": 4,
+          "episodes": 10,
+          "rate": 0.4
+        },
+        "Over": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "ExtremeOver": {
+          "successes": 7,
+          "episodes": 10,
+          "rate": 0.7
+        }
+      }
+    },
+    {
+      "suite": "libero_spatial",
+      "task": 2,
+      "name": "pick_up_the_black_bowl_from_table_center_and_place_it_on_the_plate",
+      "successes": 48,
+      "episodes": 50,
+      "rate": 0.96,
+      "lighting": {
+        "Normal": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "Low": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "ExtremeLow": {
+          "successes": 8,
+          "episodes": 10,
+          "rate": 0.8
+        },
+        "Over": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "ExtremeOver": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        }
+      }
+    },
+    {
+      "suite": "libero_spatial",
+      "task": 3,
+      "name": "pick_up_the_black_bowl_on_the_cookie_box_and_place_it_on_the_plate",
+      "successes": 49,
+      "episodes": 50,
+      "rate": 0.98,
+      "lighting": {
+        "Normal": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "Low": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "ExtremeLow": {
+          "successes": 9,
+          "episodes": 10,
+          "rate": 0.9
+        },
+        "Over": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "ExtremeOver": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        }
+      }
+    },
+    {
+      "suite": "libero_spatial",
+      "task": 4,
+      "name": "pick_up_the_black_bowl_in_the_top_drawer_of_the_wooden_cabinet_and_place_it_on_the_plate",
+      "successes": 34,
+      "episodes": 50,
+      "rate": 0.68,
+      "lighting": {
+        "Normal": {
+          "successes": 6,
+          "episodes": 10,
+          "rate": 0.6
+        },
+        "Low": {
+          "successes": 8,
+          "episodes": 10,
+          "rate": 0.8
+        },
+        "ExtremeLow": {
+          "successes": 6,
+          "episodes": 10,
+          "rate": 0.6
+        },
+        "Over": {
+          "successes": 7,
+          "episodes": 10,
+          "rate": 0.7
+        },
+        "ExtremeOver": {
+          "successes": 7,
+          "episodes": 10,
+          "rate": 0.7
+        }
+      }
+    },
+    {
+      "suite": "libero_spatial",
+      "task": 5,
+      "name": "pick_up_the_black_bowl_on_the_ramekin_and_place_it_on_the_plate",
+      "successes": 30,
+      "episodes": 50,
+      "rate": 0.6,
+      "lighting": {
+        "Normal": {
+          "successes": 5,
+          "episodes": 10,
+          "rate": 0.5
+        },
+        "Low": {
+          "successes": 8,
+          "episodes": 10,
+          "rate": 0.8
+        },
+        "ExtremeLow": {
+          "successes": 7,
+          "episodes": 10,
+          "rate": 0.7
+        },
+        "Over": {
+          "successes": 7,
+          "episodes": 10,
+          "rate": 0.7
+        },
+        "ExtremeOver": {
+          "successes": 3,
+          "episodes": 10,
+          "rate": 0.3
+        }
+      }
+    },
+    {
+      "suite": "libero_spatial",
+      "task": 6,
+      "name": "pick_up_the_black_bowl_next_to_the_cookie_box_and_place_it_on_the_plate",
+      "successes": 49,
+      "episodes": 50,
+      "rate": 0.98,
+      "lighting": {
+        "Normal": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "Low": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "ExtremeLow": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "Over": {
+          "successes": 9,
+          "episodes": 10,
+          "rate": 0.9
+        },
+        "ExtremeOver": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        }
+      }
+    },
+    {
+      "suite": "libero_spatial",
+      "task": 7,
+      "name": "pick_up_the_black_bowl_on_the_stove_and_place_it_on_the_plate",
+      "successes": 41,
+      "episodes": 50,
+      "rate": 0.82,
+      "lighting": {
+        "Normal": {
+          "successes": 8,
+          "episodes": 10,
+          "rate": 0.8
+        },
+        "Low": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "ExtremeLow": {
+          "successes": 7,
+          "episodes": 10,
+          "rate": 0.7
+        },
+        "Over": {
+          "successes": 8,
+          "episodes": 10,
+          "rate": 0.8
+        },
+        "ExtremeOver": {
+          "successes": 8,
+          "episodes": 10,
+          "rate": 0.8
+        }
+      }
+    },
+    {
+      "suite": "libero_spatial",
+      "task": 8,
+      "name": "pick_up_the_black_bowl_next_to_the_plate_and_place_it_on_the_plate",
+      "successes": 44,
+      "episodes": 50,
+      "rate": 0.88,
+      "lighting": {
+        "Normal": {
+          "successes": 8,
+          "episodes": 10,
+          "rate": 0.8
+        },
+        "Low": {
+          "successes": 9,
+          "episodes": 10,
+          "rate": 0.9
+        },
+        "ExtremeLow": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "Over": {
+          "successes": 9,
+          "episodes": 10,
+          "rate": 0.9
+        },
+        "ExtremeOver": {
+          "successes": 8,
+          "episodes": 10,
+          "rate": 0.8
+        }
+      }
+    },
+    {
+      "suite": "libero_spatial",
+      "task": 9,
+      "name": "pick_up_the_black_bowl_on_the_wooden_cabinet_and_place_it_on_the_plate",
+      "successes": 39,
+      "episodes": 50,
+      "rate": 0.78,
+      "lighting": {
+        "Normal": {
+          "successes": 7,
+          "episodes": 10,
+          "rate": 0.7
+        },
+        "Low": {
+          "successes": 9,
+          "episodes": 10,
+          "rate": 0.9
+        },
+        "ExtremeLow": {
+          "successes": 8,
+          "episodes": 10,
+          "rate": 0.8
+        },
+        "Over": {
+          "successes": 7,
+          "episodes": 10,
+          "rate": 0.7
+        },
+        "ExtremeOver": {
+          "successes": 8,
+          "episodes": 10,
+          "rate": 0.8
+        }
+      }
+    },
+    {
+      "suite": "libero_object",
+      "task": 0,
+      "name": "pick_up_the_alphabet_soup_and_place_it_in_the_basket",
+      "successes": 44,
+      "episodes": 50,
+      "rate": 0.88,
+      "lighting": {
+        "Normal": {
+          "successes": 8,
+          "episodes": 10,
+          "rate": 0.8
+        },
+        "Low": {
+          "successes": 9,
+          "episodes": 10,
+          "rate": 0.9
+        },
+        "ExtremeLow": {
+          "successes": 9,
+          "episodes": 10,
+          "rate": 0.9
+        },
+        "Over": {
+          "successes": 8,
+          "episodes": 10,
+          "rate": 0.8
+        },
+        "ExtremeOver": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        }
+      }
+    },
+    {
+      "suite": "libero_object",
+      "task": 1,
+      "name": "pick_up_the_cream_cheese_and_place_it_in_the_basket",
+      "successes": 45,
+      "episodes": 50,
+      "rate": 0.9,
+      "lighting": {
+        "Normal": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "Low": {
+          "successes": 9,
+          "episodes": 10,
+          "rate": 0.9
+        },
+        "ExtremeLow": {
+          "successes": 8,
+          "episodes": 10,
+          "rate": 0.8
+        },
+        "Over": {
+          "successes": 9,
+          "episodes": 10,
+          "rate": 0.9
+        },
+        "ExtremeOver": {
+          "successes": 9,
+          "episodes": 10,
+          "rate": 0.9
+        }
+      }
+    },
+    {
+      "suite": "libero_object",
+      "task": 2,
+      "name": "pick_up_the_salad_dressing_and_place_it_in_the_basket",
+      "successes": 48,
+      "episodes": 50,
+      "rate": 0.96,
+      "lighting": {
+        "Normal": {
+          "successes": 9,
+          "episodes": 10,
+          "rate": 0.9
+        },
+        "Low": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "ExtremeLow": {
+          "successes": 9,
+          "episodes": 10,
+          "rate": 0.9
+        },
+        "Over": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "ExtremeOver": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        }
+      }
+    },
+    {
+      "suite": "libero_object",
+      "task": 3,
+      "name": "pick_up_the_bbq_sauce_and_place_it_in_the_basket",
+      "successes": 48,
+      "episodes": 50,
+      "rate": 0.96,
+      "lighting": {
+        "Normal": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "Low": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "ExtremeLow": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "Over": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "ExtremeOver": {
+          "successes": 8,
+          "episodes": 10,
+          "rate": 0.8
+        }
+      }
+    },
+    {
+      "suite": "libero_object",
+      "task": 4,
+      "name": "pick_up_the_ketchup_and_place_it_in_the_basket",
+      "successes": 49,
+      "episodes": 50,
+      "rate": 0.98,
+      "lighting": {
+        "Normal": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "Low": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "ExtremeLow": {
+          "successes": 9,
+          "episodes": 10,
+          "rate": 0.9
+        },
+        "Over": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "ExtremeOver": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        }
+      }
+    },
+    {
+      "suite": "libero_object",
+      "task": 5,
+      "name": "pick_up_the_tomato_sauce_and_place_it_in_the_basket",
+      "successes": 35,
+      "episodes": 50,
+      "rate": 0.7,
+      "lighting": {
+        "Normal": {
+          "successes": 6,
+          "episodes": 10,
+          "rate": 0.6
+        },
+        "Low": {
+          "successes": 8,
+          "episodes": 10,
+          "rate": 0.8
+        },
+        "ExtremeLow": {
+          "successes": 6,
+          "episodes": 10,
+          "rate": 0.6
+        },
+        "Over": {
+          "successes": 8,
+          "episodes": 10,
+          "rate": 0.8
+        },
+        "ExtremeOver": {
+          "successes": 7,
+          "episodes": 10,
+          "rate": 0.7
+        }
+      }
+    },
+    {
+      "suite": "libero_object",
+      "task": 6,
+      "name": "pick_up_the_butter_and_place_it_in_the_basket",
+      "successes": 40,
+      "episodes": 50,
+      "rate": 0.8,
+      "lighting": {
+        "Normal": {
+          "successes": 4,
+          "episodes": 10,
+          "rate": 0.4
+        },
+        "Low": {
+          "successes": 9,
+          "episodes": 10,
+          "rate": 0.9
+        },
+        "ExtremeLow": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "Over": {
+          "successes": 9,
+          "episodes": 10,
+          "rate": 0.9
+        },
+        "ExtremeOver": {
+          "successes": 8,
+          "episodes": 10,
+          "rate": 0.8
+        }
+      }
+    },
+    {
+      "suite": "libero_object",
+      "task": 7,
+      "name": "pick_up_the_milk_and_place_it_in_the_basket",
+      "successes": 45,
+      "episodes": 50,
+      "rate": 0.9,
+      "lighting": {
+        "Normal": {
+          "successes": 9,
+          "episodes": 10,
+          "rate": 0.9
+        },
+        "Low": {
+          "successes": 9,
+          "episodes": 10,
+          "rate": 0.9
+        },
+        "ExtremeLow": {
+          "successes": 9,
+          "episodes": 10,
+          "rate": 0.9
+        },
+        "Over": {
+          "successes": 9,
+          "episodes": 10,
+          "rate": 0.9
+        },
+        "ExtremeOver": {
+          "successes": 9,
+          "episodes": 10,
+          "rate": 0.9
+        }
+      }
+    },
+    {
+      "suite": "libero_object",
+      "task": 8,
+      "name": "pick_up_the_chocolate_pudding_and_place_it_in_the_basket",
+      "successes": 46,
+      "episodes": 50,
+      "rate": 0.92,
+      "lighting": {
+        "Normal": {
+          "successes": 8,
+          "episodes": 10,
+          "rate": 0.8
+        },
+        "Low": {
+          "successes": 9,
+          "episodes": 10,
+          "rate": 0.9
+        },
+        "ExtremeLow": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "Over": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "ExtremeOver": {
+          "successes": 9,
+          "episodes": 10,
+          "rate": 0.9
+        }
+      }
+    },
+    {
+      "suite": "libero_object",
+      "task": 9,
+      "name": "pick_up_the_orange_juice_and_place_it_in_the_basket",
+      "successes": 46,
+      "episodes": 50,
+      "rate": 0.92,
+      "lighting": {
+        "Normal": {
+          "successes": 9,
+          "episodes": 10,
+          "rate": 0.9
+        },
+        "Low": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "ExtremeLow": {
+          "successes": 8,
+          "episodes": 10,
+          "rate": 0.8
+        },
+        "Over": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "ExtremeOver": {
+          "successes": 9,
+          "episodes": 10,
+          "rate": 0.9
+        }
+      }
+    },
+    {
+      "suite": "libero_goal",
+      "task": 0,
+      "name": "open_the_middle_drawer_of_the_cabinet",
+      "successes": 34,
+      "episodes": 50,
+      "rate": 0.68,
+      "lighting": {
+        "Normal": {
+          "successes": 8,
+          "episodes": 10,
+          "rate": 0.8
+        },
+        "Low": {
+          "successes": 4,
+          "episodes": 10,
+          "rate": 0.4
+        },
+        "ExtremeLow": {
+          "successes": 4,
+          "episodes": 10,
+          "rate": 0.4
+        },
+        "Over": {
+          "successes": 9,
+          "episodes": 10,
+          "rate": 0.9
+        },
+        "ExtremeOver": {
+          "successes": 9,
+          "episodes": 10,
+          "rate": 0.9
+        }
+      }
+    },
+    {
+      "suite": "libero_goal",
+      "task": 1,
+      "name": "put_the_bowl_on_the_stove",
+      "successes": 47,
+      "episodes": 50,
+      "rate": 0.94,
+      "lighting": {
+        "Normal": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "Low": {
+          "successes": 8,
+          "episodes": 10,
+          "rate": 0.8
+        },
+        "ExtremeLow": {
+          "successes": 9,
+          "episodes": 10,
+          "rate": 0.9
+        },
+        "Over": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "ExtremeOver": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        }
+      }
+    },
+    {
+      "suite": "libero_goal",
+      "task": 2,
+      "name": "put_the_wine_bottle_on_top_of_the_cabinet",
+      "successes": 45,
+      "episodes": 50,
+      "rate": 0.9,
+      "lighting": {
+        "Normal": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "Low": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "ExtremeLow": {
+          "successes": 8,
+          "episodes": 10,
+          "rate": 0.8
+        },
+        "Over": {
+          "successes": 9,
+          "episodes": 10,
+          "rate": 0.9
+        },
+        "ExtremeOver": {
+          "successes": 8,
+          "episodes": 10,
+          "rate": 0.8
+        }
+      }
+    },
+    {
+      "suite": "libero_goal",
+      "task": 3,
+      "name": "open_the_top_drawer_and_put_the_bowl_inside",
+      "successes": 31,
+      "episodes": 50,
+      "rate": 0.62,
+      "lighting": {
+        "Normal": {
+          "successes": 9,
+          "episodes": 10,
+          "rate": 0.9
+        },
+        "Low": {
+          "successes": 5,
+          "episodes": 10,
+          "rate": 0.5
+        },
+        "ExtremeLow": {
+          "successes": 2,
+          "episodes": 10,
+          "rate": 0.2
+        },
+        "Over": {
+          "successes": 7,
+          "episodes": 10,
+          "rate": 0.7
+        },
+        "ExtremeOver": {
+          "successes": 8,
+          "episodes": 10,
+          "rate": 0.8
+        }
+      }
+    },
+    {
+      "suite": "libero_goal",
+      "task": 4,
+      "name": "put_the_bowl_on_top_of_the_cabinet",
+      "successes": 49,
+      "episodes": 50,
+      "rate": 0.98,
+      "lighting": {
+        "Normal": {
+          "successes": 9,
+          "episodes": 10,
+          "rate": 0.9
+        },
+        "Low": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "ExtremeLow": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "Over": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "ExtremeOver": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        }
+      }
+    },
+    {
+      "suite": "libero_goal",
+      "task": 5,
+      "name": "push_the_plate_to_the_front_of_the_stove",
+      "successes": 27,
+      "episodes": 50,
+      "rate": 0.54,
+      "lighting": {
+        "Normal": {
+          "successes": 9,
+          "episodes": 10,
+          "rate": 0.9
+        },
+        "Low": {
+          "successes": 2,
+          "episodes": 10,
+          "rate": 0.2
+        },
+        "ExtremeLow": {
+          "successes": 3,
+          "episodes": 10,
+          "rate": 0.3
+        },
+        "Over": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "ExtremeOver": {
+          "successes": 3,
+          "episodes": 10,
+          "rate": 0.3
+        }
+      }
+    },
+    {
+      "suite": "libero_goal",
+      "task": 6,
+      "name": "put_the_cream_cheese_in_the_bowl",
+      "successes": 40,
+      "episodes": 50,
+      "rate": 0.8,
+      "lighting": {
+        "Normal": {
+          "successes": 9,
+          "episodes": 10,
+          "rate": 0.9
+        },
+        "Low": {
+          "successes": 7,
+          "episodes": 10,
+          "rate": 0.7
+        },
+        "ExtremeLow": {
+          "successes": 6,
+          "episodes": 10,
+          "rate": 0.6
+        },
+        "Over": {
+          "successes": 9,
+          "episodes": 10,
+          "rate": 0.9
+        },
+        "ExtremeOver": {
+          "successes": 9,
+          "episodes": 10,
+          "rate": 0.9
+        }
+      }
+    },
+    {
+      "suite": "libero_goal",
+      "task": 7,
+      "name": "turn_on_the_stove",
+      "successes": 48,
+      "episodes": 50,
+      "rate": 0.96,
+      "lighting": {
+        "Normal": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "Low": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "ExtremeLow": {
+          "successes": 9,
+          "episodes": 10,
+          "rate": 0.9
+        },
+        "Over": {
+          "successes": 9,
+          "episodes": 10,
+          "rate": 0.9
+        },
+        "ExtremeOver": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        }
+      }
+    },
+    {
+      "suite": "libero_goal",
+      "task": 8,
+      "name": "put_the_bowl_on_the_plate",
+      "successes": 49,
+      "episodes": 50,
+      "rate": 0.98,
+      "lighting": {
+        "Normal": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "Low": {
+          "successes": 9,
+          "episodes": 10,
+          "rate": 0.9
+        },
+        "ExtremeLow": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "Over": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        },
+        "ExtremeOver": {
+          "successes": 10,
+          "episodes": 10,
+          "rate": 1.0
+        }
+      }
+    },
+    {
+      "suite": "libero_goal",
+      "task": 9,
+      "name": "put_the_wine_bottle_on_the_rack",
+      "successes": 23,
+      "episodes": 50,
+      "rate": 0.46,
+      "lighting": {
+        "Normal": {
+          "successes": 1,
+          "episodes": 10,
+          "rate": 0.1
+        },
+        "Low": {
+          "successes": 8,
+          "episodes": 10,
+          "rate": 0.8
+        },
+        "ExtremeLow": {
+          "successes": 6,
+          "episodes": 10,
+          "rate": 0.6
+        },
+        "Over": {
+          "successes": 5,
+          "episodes": 10,
+          "rate": 0.5
+        },
+        "ExtremeOver": {
+          "successes": 3,
+          "episodes": 10,
+          "rate": 0.3
+        }
+      }
+    },
+    {
+      "suite": "libero_10",
+      "task": 0,
+      "name": "LIVING_ROOM_SCENE2_put_both_the_alphabet_soup_and_the_tomato_sauce_in_the_basket",
+      "successes": 19,
+      "episodes": 50,
+      "rate": 0.38,
+      "lighting": {
+        "Normal": {
+          "successes": 5,
+          "episodes": 10,
+          "rate": 0.5
+        },
+        "Low": {
+          "successes": 4,
+          "episodes": 10,
+          "rate": 0.4
+        },
+        "ExtremeLow": {
+          "successes": 2,
+          "episodes": 10,
+          "rate": 0.2
+        },
+        "Over": {
+          "successes": 4,
+          "episodes": 10,
+          "rate": 0.4
+        },
+        "ExtremeOver": {
+          "successes": 4,
+          "episodes": 10,
+          "rate": 0.4
+        }
+      }
+    },
+    {
+      "suite": "libero_10",
+      "task": 1,
+      "name": "LIVING_ROOM_SCENE2_put_both_the_cream_cheese_box_and_the_butter_in_the_basket",
+      "successes": 35,
+      "episodes": 50,
+      "rate": 0.7,
+      "lighting": {
+        "Normal": {
+          "successes": 9,
+          "episodes": 10,
+          "rate": 0.9
+        },
+        "Low": {
+          "successes": 7,
+          "episodes": 10,
+          "rate": 0.7
+        },
+        "ExtremeLow": {
+          "successes": 5,
+          "episodes": 10,
+          "rate": 0.5
+        },
+        "Over": {
+          "successes": 8,
+          "episodes": 10,
+          "rate": 0.8
+        },
+        "ExtremeOver": {
+          "successes": 6,
+          "episodes": 10,
+          "rate": 0.6
+        }
+      }
+    },
+    {
+      "suite": "libero_10",
+      "task": 2,
+      "name": "KITCHEN_SCENE3_turn_on_the_stove_and_put_the_moka_pot_on_it",
+      "successes": 38,
+      "episodes": 50,
+      "rate": 0.76,
+      "lighting": {
+        "Normal": {
+          "successes": 8,
+          "episodes": 10,
+          "rate": 0.8
+        },
+        "Low": {
+          "successes": 7,
+          "episodes": 10,
+          "rate": 0.7
+        },
+        "ExtremeLow": {
+          "successes": 7,
+          "episodes": 10,
+          "rate": 0.7
+        },
+        "Over": {
+          "successes": 8,
+          "episodes": 10,
+          "rate": 0.8
+        },
+        "ExtremeOver": {
+          "successes": 8,
+          "episodes": 10,
+          "rate": 0.8
+        }
+      }
+    },
+    {
+      "suite": "libero_10",
+      "task": 3,
+      "name": "KITCHEN_SCENE4_put_the_black_bowl_in_the_bottom_drawer_of_the_cabinet_and_close_it",
+      "successes": 32,
+      "episodes": 50,
+      "rate": 0.64,
+      "lighting": {
+        "Normal": {
+          "successes": 9,
+          "episodes": 10,
+          "rate": 0.9
+        },
+        "Low": {
+          "successes": 8,
+          "episodes": 10,
+          "rate": 0.8
+        },
+        "ExtremeLow": {
+          "successes": 3,
+          "episodes": 10,
+          "rate": 0.3
+        },
+        "Over": {
+          "successes": 6,
+          "episodes": 10,
+          "rate": 0.6
+        },
+        "ExtremeOver": {
+          "successes": 6,
+          "episodes": 10,
+          "rate": 0.6
+        }
+      }
+    },
+    {
+      "suite": "libero_10",
+      "task": 4,
+      "name": "LIVING_ROOM_SCENE5_put_the_white_mug_on_the_left_plate_and_put_the_yellow_and_white_mug_on_the_right_plate",
+      "successes": 25,
+      "episodes": 50,
+      "rate": 0.5,
+      "lighting": {
+        "Normal": {
+          "successes": 6,
+          "episodes": 10,
+          "rate": 0.6
+        },
+        "Low": {
+          "successes": 7,
+          "episodes": 10,
+          "rate": 0.7
+        },
+        "ExtremeLow": {
+          "successes": 2,
+          "episodes": 10,
+          "rate": 0.2
+        },
+        "Over": {
+          "successes": 5,
+          "episodes": 10,
+          "rate": 0.5
+        },
+        "ExtremeOver": {
+          "successes": 5,
+          "episodes": 10,
+          "rate": 0.5
+        }
+      }
+    },
+    {
+      "suite": "libero_10",
+      "task": 5,
+      "name": "STUDY_SCENE1_pick_up_the_book_and_place_it_in_the_back_compartment_of_the_caddy",
+      "successes": 38,
+      "episodes": 50,
+      "rate": 0.76,
+      "lighting": {
+        "Normal": {
+          "successes": 9,
+          "episodes": 10,
+          "rate": 0.9
+        },
+        "Low": {
+          "successes": 9,
+          "episodes": 10,
+          "rate": 0.9
+        },
+        "ExtremeLow": {
+          "successes": 3,
+          "episodes": 10,
+          "rate": 0.3
+        },
+        "Over": {
+          "successes": 8,
+          "episodes": 10,
+          "rate": 0.8
+        },
+        "ExtremeOver": {
+          "successes": 9,
+          "episodes": 10,
+          "rate": 0.9
+        }
+      }
+    },
+    {
+      "suite": "libero_10",
+      "task": 6,
+      "name": "LIVING_ROOM_SCENE6_put_the_white_mug_on_the_plate_and_put_the_chocolate_pudding_to_the_right_of_the_plate",
+      "successes": 8,
+      "episodes": 50,
+      "rate": 0.16,
+      "lighting": {
+        "Normal": {
+          "successes": 2,
+          "episodes": 10,
+          "rate": 0.2
+        },
+        "Low": {
+          "successes": 1,
+          "episodes": 10,
+          "rate": 0.1
+        },
+        "ExtremeLow": {
+          "successes": 1,
+          "episodes": 10,
+          "rate": 0.1
+        },
+        "Over": {
+          "successes": 4,
+          "episodes": 10,
+          "rate": 0.4
+        },
+        "ExtremeOver": {
+          "successes": 0,
+          "episodes": 10,
+          "rate": 0.0
+        }
+      }
+    },
+    {
+      "suite": "libero_10",
+      "task": 7,
+      "name": "LIVING_ROOM_SCENE1_put_both_the_alphabet_soup_and_the_cream_cheese_box_in_the_basket",
+      "successes": 35,
+      "episodes": 50,
+      "rate": 0.7,
+      "lighting": {
+        "Normal": {
+          "successes": 6,
+          "episodes": 10,
+          "rate": 0.6
+        },
+        "Low": {
+          "successes": 7,
+          "episodes": 10,
+          "rate": 0.7
+        },
+        "ExtremeLow": {
+          "successes": 6,
+          "episodes": 10,
+          "rate": 0.6
+        },
+        "Over": {
+          "successes": 7,
+          "episodes": 10,
+          "rate": 0.7
+        },
+        "ExtremeOver": {
+          "successes": 9,
+          "episodes": 10,
+          "rate": 0.9
+        }
+      }
+    },
+    {
+      "suite": "libero_10",
+      "task": 8,
+      "name": "KITCHEN_SCENE8_put_both_moka_pots_on_the_stove",
+      "successes": 7,
+      "episodes": 50,
+      "rate": 0.14,
+      "lighting": {
+        "Normal": {
+          "successes": 2,
+          "episodes": 10,
+          "rate": 0.2
+        },
+        "Low": {
+          "successes": 3,
+          "episodes": 10,
+          "rate": 0.3
+        },
+        "ExtremeLow": {
+          "successes": 2,
+          "episodes": 10,
+          "rate": 0.2
+        },
+        "Over": {
+          "successes": 0,
+          "episodes": 10,
+          "rate": 0.0
+        },
+        "ExtremeOver": {
+          "successes": 0,
+          "episodes": 10,
+          "rate": 0.0
+        }
+      }
+    },
+    {
+      "suite": "libero_10",
+      "task": 9,
+      "name": "KITCHEN_SCENE6_put_the_yellow_and_white_mug_in_the_microwave_and_close_it",
+      "successes": 16,
+      "episodes": 50,
+      "rate": 0.32,
+      "lighting": {
+        "Normal": {
+          "successes": 3,
+          "episodes": 10,
+          "rate": 0.3
+        },
+        "Low": {
+          "successes": 6,
+          "episodes": 10,
+          "rate": 0.6
+        },
+        "ExtremeLow": {
+          "successes": 1,
+          "episodes": 10,
+          "rate": 0.1
+        },
+        "Over": {
+          "successes": 2,
+          "episodes": 10,
+          "rate": 0.2
+        },
+        "ExtremeOver": {
+          "successes": 4,
+          "episodes": 10,
+          "rate": 0.4
+        }
+      }
+    }
+  ],
+  "old_baseline_overlap": {
+    "5000": {
+      "episodes": 20,
+      "before_successes": 6,
+      "after_successes": 13,
+      "gained": 7,
+      "lost": 0,
+      "same_seed": true,
+      "same_lighting_parameters": true
+    },
+    "20000": {
+      "episodes": 20,
+      "before_successes": 6,
+      "after_successes": 15,
+      "gained": 10,
+      "lost": 1,
+      "same_seed": true,
+      "same_lighting_parameters": true
+    },
+    "80000": {
+      "episodes": 20,
+      "before_successes": 6,
+      "after_successes": 10,
+      "gained": 6,
+      "lost": 2,
+      "same_seed": true,
+      "same_lighting_parameters": true
+    }
+  },
+  "development_20k_to_80k_paired": {
+    "episodes": 200,
+    "before_successes": 157,
+    "after_successes": 145,
+    "gained": 10,
+    "lost": 22,
+    "same_seed": true,
+    "same_lighting_parameters": true
+  },
+  "final_lighting_vs_normal_paired": {
+    "Low": {
+      "episodes": 400,
+      "before_successes": 309,
+      "after_successes": 319,
+      "gained": 60,
+      "lost": 50,
+      "same_seed": true,
+      "same_lighting_parameters": false
+    },
+    "ExtremeLow": {
+      "episodes": 400,
+      "before_successes": 309,
+      "after_successes": 266,
+      "gained": 41,
+      "lost": 84,
+      "same_seed": true,
+      "same_lighting_parameters": false
+    },
+    "Over": {
+      "episodes": 400,
+      "before_successes": 309,
+      "after_successes": 320,
+      "gained": 56,
+      "lost": 45,
+      "same_seed": true,
+      "same_lighting_parameters": false
+    },
+    "ExtremeOver": {
+      "episodes": 400,
+      "before_successes": 309,
+      "after_successes": 299,
+      "gained": 44,
+      "lost": 54,
+      "same_seed": true,
+      "same_lighting_parameters": false
+    }
+  },
+  "failure_counts": {
+    "libero_spatial": 79,
+    "libero_object": 54,
+    "libero_goal": 107,
+    "libero_10": 247
+  },
+  "offline_validation": {
+    "sources": 177,
+    "anchors": 1416,
+    "action_steps": 15042.0,
+    "best_mse_step": 65000,
+    "curve": [
+      {
+        "step": 1000,
+        "mse": 0.2785685653122438
+      },
+      {
+        "step": 2000,
+        "mse": 0.11459312530290428
+      },
+      {
+        "step": 3000,
+        "mse": 0.0872302076455916
+      },
+      {
+        "step": 4000,
+        "mse": 0.07704527417819466
+      },
+      {
+        "step": 5000,
+        "mse": 0.07401982249066141
+      },
+      {
+        "step": 6000,
+        "mse": 0.07296186943754189
+      },
+      {
+        "step": 7000,
+        "mse": 0.07169695378861476
+      },
+      {
+        "step": 8000,
+        "mse": 0.07148874394933652
+      },
+      {
+        "step": 9000,
+        "mse": 0.07094825241628928
+      },
+      {
+        "step": 10000,
+        "mse": 0.0701801421864342
+      },
+      {
+        "step": 11000,
+        "mse": 0.06969616895232178
+      },
+      {
+        "step": 12000,
+        "mse": 0.06955074830839834
+      },
+      {
+        "step": 13000,
+        "mse": 0.06921987802099351
+      },
+      {
+        "step": 14000,
+        "mse": 0.06857301048098641
+      },
+      {
+        "step": 15000,
+        "mse": 0.0681333101988609
+      },
+      {
+        "step": 16000,
+        "mse": 0.06784070686151036
+      },
+      {
+        "step": 17000,
+        "mse": 0.06765100758180387
+      },
+      {
+        "step": 18000,
+        "mse": 0.06780078077175247
+      },
+      {
+        "step": 19000,
+        "mse": 0.06755304996901254
+      },
+      {
+        "step": 20000,
+        "mse": 0.0674818654251843
+      },
+      {
+        "step": 21000,
+        "mse": 0.0676211028719007
+      },
+      {
+        "step": 22000,
+        "mse": 0.06747765397235554
+      },
+      {
+        "step": 23000,
+        "mse": 0.06715306494332059
+      },
+      {
+        "step": 24000,
+        "mse": 0.06715481024267785
+      },
+      {
+        "step": 25000,
+        "mse": 0.06698113895609888
+      },
+      {
+        "step": 26000,
+        "mse": 0.06663024701400312
+      },
+      {
+        "step": 27000,
+        "mse": 0.06625075258634455
+      },
+      {
+        "step": 28000,
+        "mse": 0.0662397957378444
+      },
+      {
+        "step": 29000,
+        "mse": 0.06591352291488273
+      },
+      {
+        "step": 30000,
+        "mse": 0.06592274117915087
+      },
+      {
+        "step": 31000,
+        "mse": 0.06630861756567347
+      },
+      {
+        "step": 32000,
+        "mse": 0.06553932486381879
+      },
+      {
+        "step": 33000,
+        "mse": 0.06523860737553518
+      },
+      {
+        "step": 34000,
+        "mse": 0.06538816233075578
+      },
+      {
+        "step": 35000,
+        "mse": 0.0654333793029304
+      },
+      {
+        "step": 36000,
+        "mse": 0.06510705001651657
+      },
+      {
+        "step": 37000,
+        "mse": 0.0653784565858756
+      },
+      {
+        "step": 38000,
+        "mse": 0.06534942879270977
+      },
+      {
+        "step": 39000,
+        "mse": 0.06521676942617778
+      },
+      {
+        "step": 40000,
+        "mse": 0.0653034226045288
+      },
+      {
+        "step": 41000,
+        "mse": 0.06518144841314964
+      },
+      {
+        "step": 42000,
+        "mse": 0.0649159254682451
+      },
+      {
+        "step": 43000,
+        "mse": 0.06458726717728644
+      },
+      {
+        "step": 44000,
+        "mse": 0.06465633287434172
+      },
+      {
+        "step": 45000,
+        "mse": 0.06464748322822182
+      },
+      {
+        "step": 46000,
+        "mse": 0.06471089590386979
+      },
+      {
+        "step": 47000,
+        "mse": 0.06438452075350641
+      },
+      {
+        "step": 48000,
+        "mse": 0.0646058930549932
+      },
+      {
+        "step": 49000,
+        "mse": 0.0643749279893876
+      },
+      {
+        "step": 50000,
+        "mse": 0.0643386448419868
+      },
+      {
+        "step": 51000,
+        "mse": 0.06432231919142588
+      },
+      {
+        "step": 52000,
+        "mse": 0.06446124382679595
+      },
+      {
+        "step": 53000,
+        "mse": 0.06445864872181359
+      },
+      {
+        "step": 54000,
+        "mse": 0.0643807832294197
+      },
+      {
+        "step": 55000,
+        "mse": 0.06441384437992505
+      },
+      {
+        "step": 56000,
+        "mse": 0.06425470386178773
+      },
+      {
+        "step": 57000,
+        "mse": 0.06433638028459886
+      },
+      {
+        "step": 58000,
+        "mse": 0.0643846725535845
+      },
+      {
+        "step": 59000,
+        "mse": 0.06429907373373032
+      },
+      {
+        "step": 60000,
+        "mse": 0.06443719869494847
+      },
+      {
+        "step": 61000,
+        "mse": 0.06440088488767644
+      },
+      {
+        "step": 62000,
+        "mse": 0.06434623539017331
+      },
+      {
+        "step": 63000,
+        "mse": 0.06441697247371037
+      },
+      {
+        "step": 64000,
+        "mse": 0.06423042917699148
+      },
+      {
+        "step": 65000,
+        "mse": 0.06417541681440732
+      },
+      {
+        "step": 66000,
+        "mse": 0.0643701582967757
+      },
+      {
+        "step": 67000,
+        "mse": 0.06421750061664569
+      },
+      {
+        "step": 68000,
+        "mse": 0.06417641622340567
+      },
+      {
+        "step": 69000,
+        "mse": 0.06428923669813916
+      },
+      {
+        "step": 70000,
+        "mse": 0.06424633681374319
+      },
+      {
+        "step": 71000,
+        "mse": 0.06438192284473399
+      },
+      {
+        "step": 72000,
+        "mse": 0.06418311433857164
+      },
+      {
+        "step": 73000,
+        "mse": 0.06430007270373884
+      },
+      {
+        "step": 74000,
+        "mse": 0.06439522516066855
+      },
+      {
+        "step": 75000,
+        "mse": 0.06447769635062858
+      },
+      {
+        "step": 76000,
+        "mse": 0.06434787942475063
+      },
+      {
+        "step": 77000,
+        "mse": 0.06441998481666904
+      },
+      {
+        "step": 78000,
+        "mse": 0.06439874152136442
+      },
+      {
+        "step": 79000,
+        "mse": 0.06430396769877342
+      },
+      {
+        "step": 80000,
+        "mse": 0.06437021270135809
+      }
+    ]
+  },
+  "native_exits": {
+    "train-001000.exit.json": 0,
+    "eval-005000.exit.json": 0,
+    "train-080000.exit.json": 0,
+    "train-005000.exit.json": 0,
+    "train-020000.exit.json": 0,
+    "eval-060000.exit.json": 0,
+    "eval-020000.exit.json": 0,
+    "independent-final.exit.json": 0,
+    "eval-010000.exit.json": 0,
+    "train-040000.exit.json": 0,
+    "eval-040000.exit.json": 0,
+    "train-010000.exit.json": 0,
+    "train-060000.exit.json": 0,
+    "eval-001000.exit.json": 0,
+    "eval-080000.exit.json": 0
+  },
+  "protocol_integrity": {
+    "final_unique_episodes": 2000,
+    "expected_final_episodes": 2000,
+    "total_native_episodes": 3240,
+    "same_model_across_final_lighting": true
+  },
+  "limitations": [
+    "One training seed",
+    "Pseudo-RAW simulation, not native Bayer or real robot",
+    "Final initial states excluded from checkpoint selection, not unseen tasks or a guarantee of unseen demonstration states",
+    "Old baseline comparison only on the 20 overlapping development episodes; training coverage and architecture both changed",
+    "No phase annotation for all failed rollouts"
+  ]
+}

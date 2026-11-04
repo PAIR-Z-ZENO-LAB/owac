@@ -1,4 +1,28 @@
+2026-11-04 **v1.0：视觉编码器与动作训练成功**。用户确认本轮成功里程碑；RAW＋本体＋任务语言紧凑策略完成80,000更新，选定20,000步EMA，40任务五照明平均成功率75.65%（1513/2000）。[v1.0发布说明](docs/releases/v1.0.md) · [完整结果](research/experiments/raw_compact_c1_results_20261104.md)。
+
+2026-11-04 C1首轮已完成：累计80,000更新，选定20,000步EMA；40任务、五照明最终1513/2000＝**75.65%**。光照平均Normal77.25%、Low79.75%、ExtremeLow66.50%、Over80.00%、ExtremeOver74.75%；任务类别平均Spatial84.2%、Object89.2%、Goal78.6%、Long50.6%。RawVLA官方最强RawVLA＋π0.5为74.44%，公开报告值差+1.21个百分点；本轮2000场、官方10000场，尚非同种子超越结论，Normal和长任务仍有明显差距。[完整结果与官方横评](research/experiments/raw_compact_c1_results_20261104.md) · [SwanLab（FINISHED）](https://swanlab.cn/@Jeong/OWAC/runs/owac-raw-compact-j5-20261104)。定时研究跟进保持关闭。
+
+2026-11-04 首轮5000步历史记录：RAW＋连续本体＋任务语言的约4885万参数CoRP式联合策略，纯RAW训练。5000步Normal40任务闭环128/200；同旧20初态13/20，对照旧最佳6/20，新增7场成功、退化0场。长任务仅13/50，继续训练与复核；全1421源/五照明，双5090已恢复向10000步推进。[方案](docs/plans/RAW_COMPACT_POLICY_2026-11-04.md) · [实验](research/experiments/raw_compact_c1_20261104.md)。结果限开发集pseudo-RAW仿真，结构与数据覆盖同时改变。
+
 2026-10-29 J3：用户授权保留DINO蒸馏并独立重建RAW自监督。新分支lzh/raw-self-supervised；旧框架保全086b77e与lzh/dino-distillation-preserved。无外部视觉权重、RGB目标或动作；辐射响应编码＋DINO/iBOT，双卡global192、100k计划已启动，SwanLab记录token/query。工程恢复通过不等于表征成功。见 research/experiments/j3_raw_ssl_20261029.md。
+
+2026-10-29 用户要求暂停并保留：J2S已64366步完整保存、native0退出；latest.pt含完整恢复状态，encoder.pt为独立RAW编码器，均另存attempts/user-pause-64366。训练保持暂停，未经新授权不恢复。
+
+2026-10-29 后续决策：用户授权自主评估；33085完整验证空间对应87.97%（DINO95.47%）、任务检索855/1056，近期验证仍改善，决定从33085完整恢复原100k。保留33085权重与原暂停收据。见 research/experiments/j2s_continue_decision_20261029.md。
+
+2026-10-29：按用户要求，J2S已在33085步完整保存并暂停，训练native0；固定五照明RAW/DINO查询图已生成，未经新授权不恢复训练。见 research/experiments/j2s_pause_display_20261029.md。
+
+2026-10-29 J2S性能修复：global32保持，micro2/accum8改为micro8/accum2、每rank8线程、移除逐微批标量同步；实测更新1.149→0.471秒（2.44倍），GPU均值约79%/80%。原内存增长主要是文件页缓存；新增分层监控并解除恢复时Adam CPU计数器持有的大checkpoint映射。1162/1709完整保存后恢复，100k预算不变。见 [性能记录](research/experiments/j2s_performance_20261029.md)。
+
+2026-10-29：用户授权自主选择完整RAW编码器路线；J2S采用训练期冻结DINOv3-L配对RGB监督，部署只输入RAW。427404532参数全部训练，双响应stem/局部因果门控/9-18-27层融合，LIBERO原拆分、双卡global32、目标100k。正式训练已产生完整step1并继续推进；未宣称达到DINOv3。J1保留82000停止，R1保留29071暂停。见 [J2S记录](research/experiments/j2s_raw_semantic_20261029.md)。
+
+2026-10-29：用户终止旧训练并要求完整RAW稠密语义encoder迭代。远端J1已82000步完整保存/native0暂停，R1保留29071暂停。全177验证源DINOv3-L对照已完成；第9层空间改善不代表语义改善。已按用户授权清理340.914GiB旧教师token缓存，关键权重/日志/视频全保留。空间修复候选已实现但未启动新训练；完整语义监督来源待明确。见 [J2记录](research/experiments/j2_raw_encoder_20261029.md)。
+
+2026-10-28 J1已授权并实际启动：公开π0.5视觉初始化＋新RAW stem/六帧因果门控＋JEPA式空间遮挡特征预测；无RAW教师、历史蒸馏权重或动作专家。LIBERO原1421/177/173拆分，100k更新目标，每500步验证，SwanLab全指标同步。R1保留暂停29,071。设计/监控入口见 [J1记录](research/experiments/j1_raw_jepa_20261028.md)。
+
+2026-10-27 R1已启动：按用户确认仅使用原LIBERO分区1421/177/173及五照明，35,693训练anchors；原始视觉初始化、重置stem/gate，428,579,952视觉参数仅真实动作flow-matching训练，3,201,953,824后端参数冻结。目标100,000优化器更新，双卡global16，实际更新及完整检查点已产生。源码/配置与实测见 `research/experiments/r1_raw_action_20261027.md`。
+
+2026-10-27 最新路线为R：R1纯动作训练100k；R2闭环；R3因果flow-matching辅助头训练100k及闭环；R4快速细节/稳定证据适应性聚合训练100k及闭环。三次训练同源独立初始化，继承现有输入、评价协议及历史结果。GPT直接修改所有代码，不经过DeepSeek/Harness，此要求覆盖旧派工规则。当前R1待执行，路线见 `docs/plans/R_RAW_ACTION_ADAPTATION_2026-10-27.md`，提示词见 `docs/prompts/R/`。
 
 2026-10-27 用户确认蒸馏技术路线走通，授权提交全部修改并创建“蒸馏成功”标签。已验收RAW因果学生→冻结后端闭环及正常光控制复刻；Low11/20教师、9/20学生和ExtremeLow双方0/20负结果保留。统筹台进入EXPLORE（下一阶段候选与工作单准备），不自动启动新训练/实验。交接见docs/plans/RAW_POST_DISTILLATION_EXPLORATION_2026-10-27.md。
 

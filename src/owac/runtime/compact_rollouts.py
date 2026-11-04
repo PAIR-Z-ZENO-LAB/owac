@@ -9,6 +9,7 @@ import sys
 import time
 from pathlib import Path
 
+from owac.runtime.compact_swanlab import publish_results
 from owac.runtime.j5_action_finish import simulation_environment, wait_for_server
 
 
@@ -46,7 +47,21 @@ def wait_for_rollouts(clients, servers, output):
             raise RuntimeError(f"Native evaluation process exited {code}; see {output}")
 
 
-def run(cfg, checkpoint, output, *, episodes=None, initial_offset=None, lighting=None):
+def run(
+    cfg,
+    checkpoint,
+    output,
+    *,
+    episodes=None,
+    initial_offset=None,
+    lighting=None,
+    evaluation_kind=None,
+):
+    import torch
+
+    payload = torch.load(checkpoint, map_location="cpu", weights_only=False, mmap=True)
+    step = int(payload["step"])
+    del payload
     output.mkdir(parents=True, exist_ok=True)
     servers, clients, streams = [], [], []
     shards = []
@@ -142,6 +157,8 @@ def run(cfg, checkpoint, output, *, episodes=None, initial_offset=None, lighting
             "episodes": len(rows),
             "groups": groups,
             "checkpoint": str(checkpoint),
+            "step": step,
+            "evaluation_kind": evaluation_kind,
             "native_exit": 0,
         }
         (output / "summary.json").write_text(json.dumps(result, indent=2))
@@ -159,34 +176,7 @@ def run(cfg, checkpoint, output, *, episodes=None, initial_offset=None, lighting
 
 
 def log_result(cfg, result, output):
-    import swanlab
-
-    swanlab.login(api_key=Path("/root/.config/owac/swanlab-api-key").read_text().strip())
-    swanlab.merge_settings(swanlab.Settings(probe=swanlab.Settings.Probe(monitor=False)))
-    swanlab.init(
-        project="OWAC",
-        workspace="Jeong",
-        id=f"{cfg['swanlab']['id']}-{output.name}",
-        experiment_name=f"C1｜多任务闭环｜LIBERO RAW｜本体+任务语言｜{output.name}｜20261104",
-        group=cfg["swanlab"]["group"],
-        job_type="closed-loop",
-        config=cfg,
-        logdir=str(output / "swanlab"),
-        resume="allow",
-    )
-    swanlab.define_metric("success/*", section_name="05 闭环评估")
-    metrics = {
-        f"success/{key}": value["successes"] / value["episodes"]
-        for key, value in result["groups"].items()
-    }
-    metrics.update(
-        {
-            "success/overall": result["successes"] / result["episodes"],
-            "success/episodes": result["episodes"],
-        }
-    )
-    swanlab.log(metrics, step=result["episodes"])
-    swanlab.finish()
+    publish_results(cfg, [(output, result)], output / "swanlab-training")
 
 
 def main():
@@ -197,6 +187,9 @@ def main():
     parser.add_argument("--episodes", type=int)
     parser.add_argument("--initial-offset", type=int)
     parser.add_argument("--lighting", nargs="+")
+    parser.add_argument(
+        "--evaluation-kind", choices=["screening", "development", "independent-final"]
+    )
     args = parser.parse_args()
     run(
         json.loads(args.config.read_text()),
@@ -205,6 +198,7 @@ def main():
         episodes=args.episodes,
         initial_offset=args.initial_offset,
         lighting=args.lighting,
+        evaluation_kind=args.evaluation_kind,
     )
 
 

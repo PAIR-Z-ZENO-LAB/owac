@@ -213,22 +213,19 @@ def test_accepted_strategy_and_archives_cannot_launch():
     snapshot = build_snapshot(repo)
     routes = {route["id"]: route for route in snapshot["routes"]}
     active = routes[snapshot["strategy"]["active_route"]]
-    assert active["id"] == "DISTILL"
-    assert [route["id"] for route in routes.values() if route["lifecycle"] == "active"] == [
-        "DISTILL"
-    ]
+    assert active["id"] == "J"
+    assert [route["id"] for route in routes.values() if route["lifecycle"] == "active"] == ["J"]
     current = next(s for s in active["stages"] if s["id"] == active["current_stage"])
-    assert current["id"] == "EXPLORE"
+    assert current["id"] == "J2S"
     assert current["prompt"]["available"]
-    assert (
-        current["prompt"]["text"]
-        == (repo / "docs/prompts/RAW_POST_DISTILLATION_EXPLORE.md").read_text()
+    assert current["prompt"]["text"].endswith(
+        (repo / "research/experiments/j2s_raw_semantic_20261029.md").read_text()
     )
-    for stage in active["stages"]:
+    for stage in routes["DISTILL"]["stages"]:
         if stage["id"] in {"STEM", "ADAPT", "CONTROL"}:
             assert stage["acceptance"] == "passed"
             assert stage["state"] == "recorded"
-    lowlight = next(stage for stage in active["stages"] if stage["id"] == "LOWLIGHT")
+    lowlight = next(stage for stage in routes["DISTILL"]["stages"] if stage["id"] == "LOWLIGHT")
     assert lowlight["state"] == "recorded"
     assert lowlight.get("acceptance") != "passed"
     assert not active["summary_stale"]
