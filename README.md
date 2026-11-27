@@ -9,7 +9,7 @@
     <img src="https://img.shields.io/badge/Release-paper--v1.0.1-17695E?style=flat-square&logo=github" alt="Release paper-v1.0.1" />
   </a>
   <a href="https://huggingface.co/Jeong-USYD/owac-j5-raw-encoder">
-    <img src="https://img.shields.io/badge/Encoder-Hugging%20Face-FFD21E?style=flat-square&logo=huggingface&logoColor=black" alt="J5 Encoder on Hugging Face" />
+    <img src="https://img.shields.io/badge/Encoder-Hugging%20Face-FFD21E?style=flat-square&logo=huggingface&logoColor=black" alt="OWAC RAW Encoder on Hugging Face" />
   </a>
   <a href="https://huggingface.co/datasets/ToferFish/RawVLA-Bench">
     <img src="https://img.shields.io/badge/Benchmark-RawVLA--Bench-2B5B84?style=flat-square&logo=huggingface&logoColor=white" alt="RawVLA-Bench Dataset" />
@@ -52,8 +52,8 @@
 
 ## News
 
-- **`2026-11-27` — Release [`paper-v1.0.1`](https://github.com/PAIR-Z-ZENO-LAB/owac/releases/tag/paper-v1.0.1):** Published verified SHA-256 checksums for the public J5 RAW encoder alongside byte-identical Safetensors checkpoints (`owac-regression-10000`, `owac-flow-20000`), full J3/J4/J5 pretraining and policy recipes, 40,000+ scored LIBERO episode records, and native RAW10 NERO hardware code.
-- **`2026-11-09` — Public J5 RAW Encoder:** Released the standalone RAW-only self-supervised ViT-S/16 encoder on [Hugging Face (`Jeong-USYD/owac-j5-raw-encoder`)](https://huggingface.co/Jeong-USYD/owac-j5-raw-encoder).
+- **`2026-11-27` — Release [`paper-v1.0.1`](https://github.com/PAIR-Z-ZENO-LAB/owac/releases/tag/paper-v1.0.1):** Published verified SHA-256 checksums for the public RAW encoder alongside byte-identical Safetensors checkpoints (`owac-regression-10000`, `owac-flow-20000`), full three-stage pretraining and policy recipes, 40,000+ scored LIBERO episode records, and native RAW10 NERO hardware code.
+- **`2026-11-09` — Public RAW Encoder:** Released the standalone RAW-only self-supervised ViT-S/16 encoder on [Hugging Face](https://huggingface.co/Jeong-USYD/owac-j5-raw-encoder).
 
 ---
 
@@ -101,7 +101,7 @@ $$
 
 ### 2. Spatial Discrimination via Reference Relation Anchoring
 
-Because $\mathcal{L}_{\mathrm{exp}}$ alone admits spatially collapsed solutions, OWAC anchors off-diagonal pairwise patch similarities of the online encoder to unit features $r_i$ from a frozen normal-light RAW reference encoder (Stage J3). For unit vectors ($d_{ij}^q = \lVert q_i - q_j \rVert_2^2 = 2 - 2 q_i^\top q_j$), this directly preserves pairwise feature distances over $\mathcal{P} = \{(i, j) \mid i, j \in \mathcal{V},\, i \neq j\}$:
+Because $\mathcal{L}_{\mathrm{exp}}$ alone admits spatially collapsed solutions, OWAC anchors off-diagonal pairwise patch similarities of the online encoder to unit features $r_i$ from a frozen normal-light RAW reference encoder (Stage 1). For unit vectors ($d_{ij}^q = \lVert q_i - q_j \rVert_2^2 = 2 - 2 q_i^\top q_j$), this directly preserves pairwise feature distances over $\mathcal{P} = \{(i, j) \mid i, j \in \mathcal{V},\, i \neq j\}$:
 
 $$
 \mathcal{L}_{\mathrm{rel}} = \frac{1}{|\mathcal{P}|} \sum_{(i, j) \in \mathcal{P}} \bigl[q_i^\top q_j - \operatorname{sg}(r_i^\top r_j)\bigr]^2
@@ -132,15 +132,15 @@ $$
 
 | Pretraining Stage | Init / Reference | Updates | Batch | Active Objectives | Recipe |
 | :--- | :--- | ---: | ---: | :--- | :--- |
-| **J3** (Base RAW SSL) | Random init | 100,000 | 192 | DINO + iBOT + KoLeo ($\mathcal{L}_{\mathrm{SSL}}$) on RAW + response stem | [`j3.json`](configs/paper/j3.json) |
-| **J4** (Exposure Consistency) | From J3 EMA | 30,000 | 192 | $\mathcal{L}_{\mathrm{SSL}} + \lambda_e \mathcal{L}_{\mathrm{exp}}$ (2 → 6 EV noise-calibrated drops) | [`j4.json`](configs/paper/j4.json) |
-| **J5** (Relations & Motion) | From J4 EMA, frozen J3 anchor | 12,818 | 192 | Full $\mathcal{L}_{\mathrm{RAW}}$ ($\mathcal{L}_{\mathrm{exp}} + \mathcal{L}_{\mathrm{rel}} + \mathcal{L}_{\mathrm{var}} + \mathcal{L}_{\mathrm{cov}} + \mathcal{L}_{\mathrm{temp}}$) | [`j5.json`](configs/paper/j5.json) |
+| **Stage 1** (Base RAW SSL) | Random init | 100,000 | 192 | DINO + iBOT + KoLeo ($\mathcal{L}_{\mathrm{SSL}}$) on RAW + response stem | [Stage 1 recipe](configs/paper/j3.json) |
+| **Stage 2** (Exposure Consistency) | From Stage 1 EMA | 30,000 | 192 | $\mathcal{L}_{\mathrm{SSL}} + \lambda_e \mathcal{L}_{\mathrm{exp}}$ (2 → 6 EV noise-calibrated drops) | [Stage 2 recipe](configs/paper/j4.json) |
+| **Stage 3** (Relations & Motion) | From Stage 2 EMA, frozen Stage 1 anchor | 12,818 | 192 | Full $\mathcal{L}_{\mathrm{RAW}}$ ($\mathcal{L}_{\mathrm{exp}} + \mathcal{L}_{\mathrm{rel}} + \mathcal{L}_{\mathrm{var}} + \mathcal{L}_{\mathrm{cov}} + \mathcal{L}_{\mathrm{temp}}$) | [Stage 3 recipe](configs/paper/j5.json) |
 
 ### 4. Joint Policy Adaptation & Decoding Heads
 
 ```mermaid
 flowchart LR
-    R["Two RAW Views<br/>(Overhead + Wrist)"] --> V["J5 RAW Encoder<br/>(Response Stem + ViT-S/16)"]
+    R["Two RAW Views<br/>(Overhead + Wrist)"] --> V["OWAC RAW Encoder<br/>(Response Stem + ViT-S/16)"]
     V --> C["FiLM Cross-Attention Resampler<br/>(48 tokens / view)"]
     L["Task Language"] --> T["T5-Efficient-Tiny<br/>Encoder (32 tokens)"]
     T --> C
@@ -154,7 +154,7 @@ flowchart LR
 | Component | OWAC-Regression | OWAC-Flow |
 | :--- | :--- | :--- |
 | **Visual Input (Sim / Real)** | 2 × `256×256` 3-ch pseudo-RAW / 2 × `640×480` 10-bit BGGR Bayer | Same |
-| **RAW Visual Encoder** | J5 ViT-S/16 (`d=384`, 12 layers, 6 heads, response stem) — **22.19M** | Same (**22.19M**) |
+| **RAW Visual Encoder** | Pretrained OWAC ViT-S/16 (`d=384`, 12 layers, 6 heads, response stem) — **22.19M** | Same (**22.19M**) |
 | **Language Encoder** | Pretrained `google/t5-efficient-tiny` encoder (jointly trained) — **11.37M** | Same (**11.37M**) |
 | **Visual Resampler** | CoRP-style FiLM cross-attention, 48 tokens/view, 8 heads — **2.88M** | Same (**2.88M**) |
 | **Action Decoder** | 1-layer Transformer, 12 learned horizon queries, masked MSE — **7.35M** | 1-layer DiT, conditional velocity flow matching — **12.17M** |
@@ -447,7 +447,7 @@ Evaluated on a 7-DoF right NERO follower arm with overhead and wrist **SmartSens
 | :--- | :--- | ---: | ---: | :--- | :--- |
 | **`owac-regression-10000.safetensors`** | LIBERO 40-task EMA policy (10k updates; 82.00% Fixed / 78.09% Switching) | 199.4 MiB | 44.03M | CC BY-NC 4.0 | [GitHub Release (`paper-v1.0.1`)](https://github.com/PAIR-Z-ZENO-LAB/owac/releases/tag/paper-v1.0.1) |
 | **`owac-flow-20000.safetensors`** | LIBERO 40-task EMA policy (20k updates; 73.82% Fixed / 71.65% Switching) | 217.8 MiB | 48.85M | CC BY-NC 4.0 | [GitHub Release (`paper-v1.0.1`)](https://github.com/PAIR-Z-ZENO-LAB/owac/releases/tag/paper-v1.0.1) |
-| **`owac-j5-raw-encoder` (`encoder.pt`)** | Standalone RAW-only ViT-S/16 encoder (Stage J5 EMA, step 12,818; 212 tensors) | 84.7 MiB | 22.19M | See model card | [Hugging Face (pinned commit)](https://huggingface.co/Jeong-USYD/owac-j5-raw-encoder/tree/b042fdd6cd5066c8871fbaf19dc84a906acc9000) |
+| **OWAC RAW Encoder** (`encoder.pt`) | Standalone RAW-only ViT-S/16 encoder (Stage 3 EMA, step 12,818; 212 tensors) | 84.7 MiB | 22.19M | See model card | [Hugging Face (pinned commit)](https://huggingface.co/Jeong-USYD/owac-j5-raw-encoder/tree/b042fdd6cd5066c8871fbaf19dc84a906acc9000) |
 | **Scored Episode Archives** | 40,000 main rollouts (Fixed + Switching) & 800 paired ablation rollouts | 1.3 MiB | — | PolyForm-NC | [`research/experiments/results/paper-v1.0/`](research/experiments/results/paper-v1.0) |
 | **Simulation Benchmark Data** | RawVLA-Bench (LIBERO & RoboTwin pseudo-RAW trajectories) | External | — | Upstream terms | [Hugging Face (`RawVLA-Bench`)](https://huggingface.co/datasets/ToferFish/RawVLA-Bench/tree/8586c594fff9ce38580e29745f074e82e96e74f7) |
 | **Real-Robot Data & Weights** | Physical MCAP demonstrations, on-robot weights & field profiles | Private | — | Not public | Pipeline code in [`docs/real-robot-reproduction.md`](docs/real-robot-reproduction.md) |
@@ -494,7 +494,7 @@ curl -fL --retry 3 "$dataset/$sample" -o outputs/example.npz
   --output outputs/actions.npy
 ```
 
-To extract standalone `384`-D CLS and `16×16×384` spatial patch descriptors with the public J5 encoder (`owac.paper.encode`), see [`docs/paper-reproduction.md`](docs/paper-reproduction.md#train-the-raw-encoder-and-both-action-policies).
+To extract standalone `384`-D CLS and `16×16×384` spatial patch descriptors with the public RAW encoder (`owac.paper.encode`), see [`docs/paper-reproduction.md`](docs/paper-reproduction.md#train-the-raw-encoder-and-both-action-policies).
 
 ---
 
@@ -524,7 +524,7 @@ done
 | Goal | Guide / Entry Point |
 | :--- | :--- |
 | Run closed-loop native LIBERO evaluation (`--mode fixed` / `--mode switching`) | [`docs/paper-reproduction.md#run-native-libero`](docs/paper-reproduction.md#run-native-libero) |
-| Train the J3 → J4 → J5 RAW encoder from scratch & both LIBERO policies | [`docs/paper-reproduction.md#train-the-raw-encoder-and-both-action-policies`](docs/paper-reproduction.md#train-the-raw-encoder-and-both-action-policies) |
+| Train the three-stage RAW encoder from scratch & both LIBERO policies | [`docs/paper-reproduction.md#train-the-raw-encoder-and-both-action-policies`](docs/paper-reproduction.md#train-the-raw-encoder-and-both-action-policies) |
 | Reproduce the paired 2×2 encoder/objective ablation arms | [`docs/paper-reproduction.md#reproduce-the-paired-ablation`](docs/paper-reproduction.md#reproduce-the-paired-ablation) · [`configs/paper/ablations/`](configs/paper/ablations) |
 | Inspect exact training hyperparameters, splits, and scoring journals | [`configs/paper/`](configs/paper) · [`data/manifests/paper-rawvla.jsonl`](data/manifests/paper-rawvla.jsonl) · [`research/experiments/results/paper-v1.0/`](research/experiments/results/paper-v1.0) |
 
@@ -532,7 +532,7 @@ done
 
 ## Real-Robot Deployment
 
-The physical platform pipeline consumes two synchronized **640×480 packed 10-bit BGGR Bayer** camera streams (`U2` overhead, `U3` wrist) together with 7-DoF follower joint positions (radians) and gripper opening (metres) over ROS 2 Jazzy.
+The physical platform pipeline consumes two synchronized **640×480 packed 10-bit BGGR Bayer** camera streams (overhead and wrist) together with 7-DoF follower joint positions (radians) and gripper opening (metres) over ROS 2 Jazzy.
 
 - **Hardware Capture & ROS 2 Message:** [`hardware/nero/OwacRawFrame.msg`](hardware/nero/OwacRawFrame.msg), [`hardware/nero/owac_raw.py`](hardware/nero/owac_raw.py), and [`hardware/nero/owac_raw_camera_ros2.py`](hardware/nero/owac_raw_camera_ros2.py).
 - **Local MCAP Conversion, Vision Continuation & Policy Training:** End-to-end commands (`owac.raw.teleop_mcap`, `owac.paper.teleop`, `owac.training.raw_ssl_train`, `owac.training.teleop_policy_train`) and live operator consoles (`scripts/fruit-infer`, `scripts/bowl-infer`, `scripts/pouring-infer`) are documented in **[`docs/real-robot-reproduction.md`](docs/real-robot-reproduction.md)**.
@@ -544,7 +544,7 @@ The physical platform pipeline consumes two synchronized **640×480 packed 10-bi
 ```text
 owac/
 ├── configs/
-│   ├── paper/                          # J3, J4, J5 encoder & regression/flow policy recipes
+│   ├── paper/                          # Three-stage RAW encoder & regression/flow policy recipes
 │   │   └── ablations/                  # 2×2 paired ablation configs (encoder × objective)
 │   └── runtime/                        # Real-robot field deployment catalogs
 ├── data/manifests/
@@ -561,7 +561,7 @@ owac/
 └── src/owac/
     ├── paper/                          # Public CLI: infer, encode, evaluate, score, prepare, teleop
     ├── frameworks/raw_compact/         # Multimodal policy modules & vendored CoRP components
-    └── training/                       # RAW SSL (J3–J5), policy trainers & teleop data loaders
+    └── training/                       # Three-stage RAW SSL, policy trainers & teleop data loaders
 ```
 
 ---
