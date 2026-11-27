@@ -8,7 +8,7 @@ import torch
 from openpi.serving.websocket_policy_server import WebsocketPolicyServer
 from transformers import T5TokenizerFast
 
-from owac.frameworks.raw_compact.policy import CompactPolicy
+from owac.paper.model import CompactPolicy
 from owac.training.compact_data import normalize_state, unnormalize_actions
 
 

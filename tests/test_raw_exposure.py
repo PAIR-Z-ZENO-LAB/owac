@@ -29,6 +29,21 @@ def test_consistency_reaches_visible_tokens_but_not_target_or_masked_tokens():
     assert student.grad[~masks].abs().sum() > 0
 
 
+def test_position_retrieval_uses_other_keys_in_the_same_image_and_masks_query_gradients():
+    keys = torch.stack((torch.eye(4), -torch.eye(4))).requires_grad_()
+    queries = keys.detach().clone().requires_grad_()
+    mask = torch.tensor([[False, True, False, True], [True, False, True, False]])
+    aligned = dense_consistency(queries, keys, mask, retrieval_temperature=0.07)
+    expected = 0.07 * torch.log1p(3 * torch.exp(torch.tensor(-1 / 0.07)))
+    torch.testing.assert_close(aligned.detach(), expected, atol=1e-7, rtol=0)
+    swapped = dense_consistency(queries, keys.roll(1, dims=1), mask, retrieval_temperature=0.07)
+    assert swapped > aligned
+    swapped.backward()
+    assert keys.grad is None
+    assert queries.grad[mask].count_nonzero() == 0
+    assert queries.grad[~mask].abs().sum() > 0
+
+
 def test_exposure_views_share_geometry_and_resume_randomness(tmp_path):
     import json
     from pathlib import Path

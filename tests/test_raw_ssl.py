@@ -4,6 +4,7 @@ import torch
 
 from owac.training.raw_ssl import RadiometricResponse, sinkhorn
 from owac.training.raw_ssl_data import ResumeSampler
+from owac.training.raw_ssl_train import scheduled_lr
 
 
 def test_response_preserves_hdr_and_dark_signal_and_learns_pivot():
@@ -24,6 +25,21 @@ def test_resume_sampler_keeps_exact_global_sample_sequence():
     other = set(ResumeSampler(0, 5, 8, 0, 2))
     assert not other.intersection(original)
     assert other.union(original) == set(range(40))
+
+
+def test_extended_lr_keeps_pilot_and_rewarms_from_its_last_rate():
+    pilot = dict(updates=8, warmup=2, lr=1.0, min_lr=0.125)
+    extended = dict(pilot, updates=24, lr_restart=dict(step=8, warmup=2, from_lr=0.125))
+    assert [scheduled_lr(i, extended) for i in range(1, 9)] == [
+        scheduled_lr(i, pilot) for i in range(1, 9)
+    ]
+    assert [scheduled_lr(i, extended) for i in (8, 9, 10, 17, 24)] == [
+        0.125,
+        0.5625,
+        1.0,
+        0.5625,
+        0.125,
+    ]
 
 
 def test_sinkhorn_assignments_are_probabilities_and_ignore_common_offset():

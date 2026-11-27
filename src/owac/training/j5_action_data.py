@@ -11,6 +11,7 @@ from torch.nn import functional as F
 from torch.utils.data import Dataset
 
 from owac.training.j5_proprio import normalize_proprio, tokenize_proprio
+from owac.training.raw_inventory_cache import cache_path
 from owac.training.raw_ssl_data import FrameReader
 
 
@@ -34,7 +35,7 @@ def action_chunk(actions, endpoint, stats, horizon=10):
     return result
 
 
-def geometric_augment(image, rng):
+def geometric_augment(image, rng, *, return_transform=False):
     """Official external-camera 95% crop and +/-5 degree rotation, in RAW space."""
     size = image.shape[-1]
     crop = int(size * 0.95)
@@ -49,7 +50,16 @@ def geometric_augment(image, rng):
     c, s = math.cos(angle), math.sin(angle)
     theta = image.new_tensor([[[c, -s, 0], [s, c, 0]]])
     grid = F.affine_grid(theta, image.shape, align_corners=True)
-    return F.grid_sample(image, grid, align_corners=True)[0]
+    output = F.grid_sample(image, grid, align_corners=True)[0]
+    if not return_transform:
+        return output
+    # Forward mapping in image-edge-normalized coordinates. grid_sample's
+    # rotation maps output to input; the camera projection needs its inverse.
+    crop_transform = image.new_tensor(
+        [[size / crop, 0, -x / crop], [0, size / crop, -y / crop], [0, 0, 1]]
+    )
+    rotation = image.new_tensor([[c, s, (1 - c - s) / 2], [-s, c, (1 + s - c) / 2], [0, 0, 1]])
+    return output, rotation @ crop_transform
 
 
 class RawActionFrames(Dataset):
@@ -88,10 +98,19 @@ class RawActionFrames(Dataset):
             else self.cfg["training"]["updates"] * self.cfg["training"]["batch"]
         )
 
+    def source_path(self, source):
+        private = self.cfg.get("data", {}).get("private_cache")
+        if private:
+            cached = cache_path(source.path, private)
+            if cached.is_file():
+                return cached
+        return source.path
+
     def frame(self, source, camera, endpoint):
-        key = (str(source.path), camera)
+        path = self.source_path(source)
+        key = (str(path), camera)
         if key not in self.readers:
-            self.readers[key] = FrameReader(source.path, camera)
+            self.readers[key] = FrameReader(path, camera)
             if len(self.readers) > 12:
                 self.readers.popitem(last=False)[1].close()
         self.readers.move_to_end(key)
@@ -109,7 +128,7 @@ class RawActionFrames(Dataset):
             endpoint = frame - (int(self.ends[sid - 1]) if sid else 0)
         key = source.group_id
         if key not in self.labels:
-            with np.load(source.path, allow_pickle=False) as archive:
+            with np.load(self.source_path(source), allow_pickle=False) as archive:
                 self.labels[key] = (
                     archive["actions"].copy(),
                     json.loads(str(archive["metadata_json"].item()))["task_description"],

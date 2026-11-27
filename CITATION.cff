@@ -1,13 +1,13 @@
 cff-version: 1.2.0
 message: "If you use OWAC or its released results, please cite this software release."
 type: software
-title: "OWAC: Compact Policies from RAW Observations"
+title: "OWAC: Optimizing RAW Representations for Robot Manipulation Across Lighting Conditions"
 authors:
   - name: "OWAC contributors"
-repository-code: "https://github.com/Jeong-zju/owac"
-url: "https://github.com/Jeong-zju/owac"
-version: "1.0"
-date-released: "2026-11-04"
+repository-code: "https://github.com/PAIR-Z-ZENO-LAB/owac"
+url: "https://github.com/PAIR-Z-ZENO-LAB/owac"
+version: "1.0.0"
+date-released: "2026-11-27"
 keywords:
   - robot learning
   - RAW vision

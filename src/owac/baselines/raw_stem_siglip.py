@@ -44,6 +44,7 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 
+from owac.backends.rawvla import sha256_file as sha256_file
 from owac.core.encoder_contract_n02 import Validity, VisualTokens
 
 __all__ = [

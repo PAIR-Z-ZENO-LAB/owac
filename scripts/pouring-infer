@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -euo pipefail
+field_home="${OWAC_POURING_FIELD_HOME:-$HOME/owac/pouring-policy-field-20261124}"
+export OWAC_FRUIT_HOME="${OWAC_POURING_HOME:-$field_home}"
+if [[ ! -s "$OWAC_FRUIT_HOME/candidates/catalog.json" || ! -f "$OWAC_FRUIT_HOME/source/owac/runtime/fruit_tui.py" ]]; then
+    printf 'Pouring 推理目录不完整：%s\n' "$OWAC_FRUIT_HOME" >&2
+    exit 1
+fi
+if [[ "$OWAC_FRUIT_HOME" == "$field_home" ]]; then
+    for file in reset-pose.json candidates/catalog.json FIELD-READY.json field-config.sha256; do
+        if [[ ! -s "$OWAC_FRUIT_HOME/$file" ]]; then
+            printf 'Pouring 现场配置未就绪：%s/%s\n' "$OWAC_FRUIT_HOME" "$file" >&2
+            exit 1
+        fi
+    done
+    (cd "$OWAC_FRUIT_HOME" && sha256sum --quiet -c field-config.sha256)
+fi
+exec "$(dirname -- "$0")/fruit-infer" --require-reset "$@"

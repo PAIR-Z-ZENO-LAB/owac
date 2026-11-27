@@ -1,0 +1,99 @@
+{
+  "seed": 20261120,
+  "root": "outputs/real/owac-fruit-baselines-20261120",
+  "data": {
+    "inventory": "outputs/real/owac-fruit03-dark-ssl-20261120/data/mixed-inventory.json",
+    "dataset_revision": "45a468d9540c635ef779b3db9f4575f2efb1f7bc",
+    "inventory_sha256": "7a65d60c04e19d98ac559d50a212d3f5756051905bcf9bdba7aa31fac428be1e"
+  },
+  "validation": [
+    "fruit01/episode_005",
+    "fruit01/episode_010",
+    "fruit02/episode_005",
+    "fruit02/episode_010",
+    "fruit03/episode_005",
+    "fruit03/episode_009"
+  ],
+  "observation": {
+    "raw_shape": [
+      480,
+      640
+    ],
+    "frequency_hz": 30,
+    "relative_action_mask": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false
+    ],
+    "joint_order": [
+      "joint1",
+      "joint2",
+      "joint3",
+      "joint4",
+      "joint5",
+      "joint6",
+      "joint7",
+      "gripper"
+    ]
+  },
+  "model": {
+    "action_horizon": 12,
+    "state_dim": 8,
+    "action_dim": 8,
+    "visual": "fixed-isp-dinov3-vitb16",
+    "image_size": 224,
+    "dino_patch_grid": [
+      14,
+      14
+    ],
+    "head": "corp",
+    "flow_steps": 10
+  },
+  "training": {
+    "updates": 6000,
+    "batch": 32,
+    "learning_rate": 0.0001,
+    "warmup": 200,
+    "weight_decay": 0.0001,
+    "eval_every": 500,
+    "balance_pick_and_place": true,
+    "approach_seconds": 1.5,
+    "selection_anchors_per_episode": 48
+  },
+  "pi05": {
+    "updates": 512,
+    "batch": 4,
+    "microbatch": 2,
+    "eval_every": 128,
+    "learning_rate": 0.0001,
+    "frontend_lr": 5e-05,
+    "lora_rank": 16,
+    "linear_shape": [
+      168,
+      224
+    ],
+    "recurrent_stride": 5,
+    "flow_steps": 10,
+    "prompt": "Pick up the banana and place it in the basket.",
+    "selection_anchors_per_episode": 48,
+    "max_token_len": 200
+  },
+  "assets": {
+    "dino": "outputs/real/assets/perception/dinov3-vitb16",
+    "urdf": "outputs/real/owac-fruit-night-20261119/urdf",
+    "pi05": "outputs/real/assets/pi05-base-pytorch/model.safetensors",
+    "isp_run": "outputs/real/owac-isp-six-20261110",
+    "corp": "outputs/real/owac-isp-six-20261110/sources/CoRP/checkpoints/corp_libero.pt"
+  },
+  "selection": "minimum six-episode macro normalized L1 on 48 uniformly spaced anchors per episode; score selected checkpoint on all held-out observations",
+  "swanlab": {
+    "workspace": null,
+    "project": "OWAC",
+    "group": "real-fruit-action"
+  }
+}

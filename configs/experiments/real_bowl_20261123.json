@@ -1,0 +1,20 @@
+{
+  "seed": 20261123,
+  "instruction": "Stack the bowls.",
+  "repository": null,
+  "suites": ["bowl01", "bowl02", "bowl03"],
+  "validation": ["episode_005", "episode_010"],
+  "root": "outputs/real/owac-bowl-20261123",
+  "gpus": {"owac": 3, "rawvla": 4, "rawild": 5},
+  "queued": "dino-corp",
+  "vision_parent": "outputs/real/owac-fruit03-dark-ssl-20261120/training/latest.pt",
+  "vision_updates": 4096,
+  "low_signal_suite": "bowl03",
+  "action_updates": 10000,
+  "owac_frozen_updates": 6000,
+  "pi05_batch": 8,
+  "pi05_microbatch": 4,
+  "selection_anchors_per_episode": 48,
+  "validation_interval": 500,
+  "swanlab_group": "real-bowl-20261123"
+}

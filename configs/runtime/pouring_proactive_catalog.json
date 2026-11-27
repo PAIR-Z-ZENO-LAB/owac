@@ -1,0 +1,19 @@
+{
+  "task": "Pouring 预备试排",
+  "include_originals": false,
+  "candidates": [
+    {
+      "id": "owac-feedback",
+      "label": "OWAC · 倾倒 · 视觉绝对目标与夹爪反馈 · 12,200 步 · 反馈起步",
+      "checkpoint": "checkpoints/anchor/policy-final.pt",
+      "step": 12200,
+      "execution_horizon": 4,
+      "rtc": false
+    }
+  ],
+  "pouring_departures": {"owac-feedback": "pouring-departure.json"},
+  "physical_gripper_width": true,
+  "record_policy_commands": true,
+  "command_frame_interval_s": 0.5,
+  "pouring_grip_profiles": {"owac-feedback": "grip-profile.json"}
+}

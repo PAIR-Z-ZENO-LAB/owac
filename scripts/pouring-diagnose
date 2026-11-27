@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -euo pipefail
+root="${OWAC_POURING_PROACTIVE_HOME:-$HOME/owac/pouring-policy-proactive-20261124}"
+exec python3 "$root/checks/summarize_pouring_pause.py" "$root/logs"

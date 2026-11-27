@@ -1,0 +1,63 @@
+{
+  "seed": 20261029,
+  "model": {
+    "width": 384,
+    "depth": 12,
+    "heads": 6,
+    "patch_size": 16,
+    "image_size": 256,
+    "drop_path": 0.1,
+    "response_pivot": 0.02
+  },
+  "data": {
+    "inventory": "outputs/paper/inventory.json",
+    "domains": [
+      "libero",
+      "robotwin2"
+    ]
+  },
+  "crops": {
+    "global_size": 256,
+    "global_scale": [
+      0.32,
+      1.0
+    ],
+    "local_size": 96,
+    "local_scale": [
+      0.05,
+      0.32
+    ],
+    "local_count": 8
+  },
+  "loss": {
+    "prototypes": 16384,
+    "ibot_weight": 1.0,
+    "koleo_weight": 0.1,
+    "teacher_temp_start": 0.04,
+    "teacher_temp_end": 0.07
+  },
+  "training": {
+    "updates": 100000,
+    "batch": 192,
+    "lr": 0.0002,
+    "min_lr": 2e-06,
+    "warmup": 5000,
+    "weight_decay_start": 0.04,
+    "weight_decay_end": 0.2,
+    "ema_start": 0.994,
+    "workers": 4,
+    "cpu_threads": 8,
+    "log_every": 20,
+    "save_every": 1000,
+    "eval_every": 1000,
+    "freeze_prototypes": 1000,
+    "prefetch_factor": 1
+  },
+  "tracking": {
+    "project": "OWAC",
+    "run_id": "owac-j3-reproduction",
+    "name": "J3｜RAW自主表征｜RawVLA五照明｜随机初始化与辐射响应编码｜100k｜20261029",
+    "group": "J-raw-self-supervised",
+    "job_type": "dino-ibot-raw-only"
+  }
+}

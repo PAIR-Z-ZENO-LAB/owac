@@ -9,16 +9,16 @@ from pathlib import Path
 def init_run(cfg, logdir, *, resume="allow"):
     import swanlab
 
-    swanlab.login(api_key=Path("/root/.config/owac/swanlab-api-key").read_text().strip())
+    swanlab.login()
     swanlab.merge_settings(swanlab.Settings(probe=swanlab.Settings.Probe(monitor=False)))
     swanlab.init(
         project="OWAC",
-        workspace="Jeong",
-        id=cfg["swanlab"]["id"],
+        workspace=cfg["swanlab"].get("workspace"),
+        id=cfg["swanlab"].get("id"),
         resume=resume,
         experiment_name=cfg["swanlab"]["name"],
         group=cfg["swanlab"]["group"],
-        job_type="raw-proprio-language-flow",
+        job_type=cfg["swanlab"].get("job_type", "raw-proprio-language-flow"),
         config=cfg,
         logdir=str(logdir),
     )

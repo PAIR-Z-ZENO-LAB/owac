@@ -1,0 +1,41 @@
+{
+  "task": "叠碗",
+  "include_originals": false,
+  "physical_gripper_width": true,
+  "record_policy_commands": true,
+  "candidates": [
+    {
+      "id": "owac",
+      "label": "OWAC · 叠碗 · 两抓两放",
+      "step": 9500,
+      "execution_horizon": 4,
+      "checkpoint": "checkpoints/20261124-local/motion-history/policy-best.pt",
+      "rtc": false,
+      "postprocess": "checkpoints/20261124-local/complete-flow/flow-policy.json"
+    },
+    {
+      "id": "dino-corp",
+      "label": "DINOv3 + CoRP · 叠碗 · 9,000 步",
+      "backend": "dino-corp",
+      "step": 9000,
+      "checkpoint": "checkpoints/20261123/runs/dino-corp/best.pt",
+      "assets": "../fruit-policy/baselines-20261120"
+    },
+    {
+      "id": "rawvla-pi05",
+      "label": "RawVLA + π0.5 · 叠碗 · 10,000 步",
+      "backend": "rawvla",
+      "step": 10000,
+      "checkpoint": "checkpoints/20261123/runs/rawvla/best.pt",
+      "assets": "../fruit-policy/baselines-20261120"
+    },
+    {
+      "id": "rawild-pi05",
+      "label": "RAWild + π0.5 · 叠碗 · 10,000 步",
+      "backend": "rawild",
+      "step": 10000,
+      "checkpoint": "checkpoints/20261123/runs/rawild/best.pt",
+      "assets": "../fruit-policy/baselines-20261120"
+    }
+  ]
+}

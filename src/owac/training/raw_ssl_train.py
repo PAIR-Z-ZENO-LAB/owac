@@ -24,7 +24,8 @@ from owac.training.raw_relations import (
     temporal_loss,
     temporal_targets,
 )
-from owac.training.raw_ssl import RawEncoder, RawSSL, objective, sinkhorn
+from owac.training.raw_sensel import migrate_owned_rgb_projection
+from owac.training.raw_ssl import RawSSL, build_encoder, objective, sinkhorn
 from owac.training.raw_ssl_data import RawViews, ResumeSampler, block_masks
 from owac.training.raw_ssl_eval import evaluate
 
@@ -44,6 +45,48 @@ def rng_state():
     )
 
 
+def load_pretrained_encoder(encoder, path):
+    checkpoint = torch.load(path, map_location="cpu", weights_only=False, mmap=True)
+    weights = dict(checkpoint["encoder"])
+    if encoder.measurement_config:
+        migrate_owned_rgb_projection(encoder, weights)
+    encoder.load_state_dict(weights)
+    return checkpoint.get("step")
+
+
+def scheduled_lr(step, train):
+    restart = train.get("lr_restart", {})
+    offset, warmup, initial, end = 0, train["warmup"], 0.0, train["updates"]
+    if restart:
+        if step <= restart["step"]:
+            end = restart["step"]
+        else:
+            offset, warmup, initial = restart["step"], restart["warmup"], restart["from_lr"]
+    local = step - offset
+    if local < warmup:
+        return initial + (train["lr"] - initial) * local / warmup
+    progress = (local - warmup) / (end - offset - warmup)
+    cosine = (1 + math.cos(math.pi * progress)) / 2
+    return train["min_lr"] + (train["lr"] - train["min_lr"]) * cosine
+
+
+def host_memory_metrics(root):
+    """Collect optional cgroup v2 counters when the host exposes them."""
+    try:
+        stats = dict(line.split() for line in (root / "memory.stat").read_text().splitlines())
+        events = dict(line.split() for line in (root / "memory.events").read_text().splitlines())
+        current = int((root / "memory.current").read_text())
+        return {
+            "host/anonymous_gib": int(stats["anon"]) / 2**30,
+            "host/shared_memory_gib": int(stats["shmem"]) / 2**30,
+            "host/file_cache_gib": (int(stats["file"]) - int(stats["shmem"])) / 2**30,
+            "host/memory_current_gib": current / 2**30,
+            "host/oom_kills": int(events["oom_kill"]),
+        }
+    except (OSError, KeyError, ValueError):
+        return {}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", type=Path, required=True)
@@ -53,6 +96,9 @@ def main():
         "--steps", type=int, help="Explicit engineering run length; schedule unchanged"
     )
     parser.add_argument("--no-tracking", action="store_true")
+    parser.add_argument(
+        "--tracking-history", type=Path, help="Replay prior JSONL metrics on resume"
+    )
     args = parser.parse_args()
     cfg = json.loads(args.config.read_text())
     rank, world = int(os.environ["RANK"]), int(os.environ["WORLD_SIZE"])
@@ -108,19 +154,32 @@ def main():
         student.load_state_dict(checkpoint["teacher"])
         teacher.load_state_dict(checkpoint["teacher"])
         del checkpoint
+    elif train.get("initialize_encoder_from"):
+        source_step = load_pretrained_encoder(student.encoder, train["initialize_encoder_from"])
+        teacher.encoder.load_state_dict(student.encoder.state_dict())
+        if rank == 0:
+            print(
+                f"Initialized RAW encoder at step {source_step} "
+                f"from {train['initialize_encoder_from']}",
+                flush=True,
+            )
     anchor = None
     if "relations" in cfg:
-        anchor = RawEncoder(cfg["model"]).to(device).eval().requires_grad_(False)
-        reference = torch.load(
-            cfg["relations"]["anchor"], map_location="cpu", weights_only=False, mmap=True
-        )
-        anchor.load_state_dict(reference["encoder"])
-        del reference
+        anchor = build_encoder(cfg["model"]).to(device).eval().requires_grad_(False)
+        load_pretrained_encoder(anchor, cfg["relations"]["anchor"])
     ddp = DDP(student, device_ids=[rank])
     sources, _ = load_inventory(cfg["data"]["inventory"])
     sources = [s for s in sources if s.domain in cfg["data"]["domains"]]
     training = [s for s in sources if s.split == "train"]
     validation = [s for s in sources if s.split == "validation"]
+
+    def evaluate_encoder(step):
+        if cfg.get("evaluation", {}).get("protocol") == "teleop":
+            from owac.training.teleop_probe import evaluate_teleop
+
+            return evaluate_teleop(teacher.encoder, training, validation, cfg, root, step, device)
+        return evaluate(teacher.encoder, validation, cfg, root, step, device)
+
     dataset = RawViews(training, cfg)
     sampler = ResumeSampler(start, train["updates"], train["batch"], rank, world)
     loader = DataLoader(
@@ -137,12 +196,11 @@ def main():
     if rank == 0 and not args.no_tracking:
         import swanlab
 
-        swanlab.login(
-            api_key=Path("/root/.config/owac/swanlab-api-key").read_text().strip(), save=False
-        )
+        swanlab.login()
         tracking = cfg["tracking"]
         tracker = swanlab.init(
             project=tracking["project"],
+            workspace=tracking.get("workspace"),
             name=tracking["name"],
             id=tracking["run_id"],
             group=tracking["group"],
@@ -175,7 +233,45 @@ def main():
                 dict(encoder=teacher.encoder.state_dict(), config=cfg, step=step),
                 root / "encoder.pt",
             )
+            if step in train.get("keep_encoder_steps", []):
+                snapshot = root / f"encoder-step-{step:06d}.pt"
+                if not snapshot.exists():
+                    os.link(root / "encoder.pt", snapshot)
         dist.barrier()
+
+    def track(step, metrics, paths=()):
+        import swanlab
+
+        values = dict(metrics)
+        if paths:
+            values["eval/token-and-query"] = [swanlab.Image(p) for p in paths]
+        if step in cfg.get("evaluation", {}).get("panel_steps", []) and any(
+            key.startswith("visual/") for key in metrics
+        ):
+            from owac.training.teleop_probe import render
+
+            folder = root / "visual-probe"
+            evaluation = cfg["evaluation"]
+            render(
+                folder,
+                step,
+                baseline_step=evaluation.get("baseline_step", 0),
+                dataset_label=evaluation.get("dataset_label", "fruit"),
+                initialization_label=evaluation.get("initialization_label"),
+            )
+            for cam in ("U2", "U3"):
+                image_path = folder / f"{cam.lower()}-before-after.png"
+                values[f"examples/{cam}"] = swanlab.Image(str(image_path))
+        swanlab.log(values, step=step)
+
+    if tracker and args.tracking_history:
+        history = {}
+        for line in args.tracking_history.read_text().splitlines():
+            row = json.loads(line)
+            if row["step"] <= start:
+                history.setdefault(row["step"], {}).update(row["metrics"])
+        for step, values in sorted(history.items()):
+            track(step, values)
 
     def report(step, metrics, paths=()):
         if rank != 0:
@@ -184,17 +280,12 @@ def main():
             f.write(json.dumps({"step": step, "metrics": metrics}) + "\n")
         print(json.dumps({"step": step, **metrics}), flush=True)
         if tracker:
-            import swanlab
+            track(step, metrics, paths)
 
-            values = dict(metrics)
-            if paths:
-                values["eval/token-and-query"] = [swanlab.Image(p) for p in paths]
-            swanlab.log(values, step=step)
-
-    if start == 0 and not args.steps:
+    if start == cfg.get("evaluation", {}).get("baseline_step", 0) and not args.steps:
         if rank == 0:
-            values, paths = evaluate(teacher.encoder, validation, cfg, root, 0, device)
-            report(0, values, paths)
+            values, paths = evaluate_encoder(start)
+            report(start, values, paths)
         dist.barrier()
     timer = time.monotonic()
     last_log_step = start
@@ -213,21 +304,7 @@ def main():
         )
         progress = step / train["updates"]
         cosine = (1 + math.cos(math.pi * progress)) / 2
-        lr = (
-            train["lr"] * min(step / train["warmup"], 1.0)
-            if step < train["warmup"]
-            else (
-                train["min_lr"]
-                + (train["lr"] - train["min_lr"])
-                * (
-                    1
-                    + math.cos(
-                        math.pi * (step - train["warmup"]) / (train["updates"] - train["warmup"])
-                    )
-                )
-                / 2
-            )
-        )
+        lr = scheduled_lr(step, train)
         for group in optimizer.param_groups:
             group["lr"] = lr * group["lr_multiplier"]
             if group["decay"]:
@@ -264,7 +341,12 @@ def main():
                 result, tg, tp, batch, cfg["crops"]["local_count"], cfg["loss"]
             )
             if "exposure" in cfg:
-                paired = dense_consistency(result["patches"], target["patches"], masks)
+                paired = dense_consistency(
+                    result["patches"],
+                    target["patches"],
+                    masks,
+                    retrieval_temperature=cfg["exposure"].get("patch_retrieval_temperature"),
+                )
                 loss = loss + cfg["exposure"]["dense_weight"] * paired
                 metrics["exposure_dense"] = paired.detach()
             if anchor is not None:
@@ -328,26 +410,7 @@ def main():
                 }
             )
             if rank == 0:
-                stat = dict(
-                    line.split()
-                    for line in Path("/sys/fs/cgroup/memory.stat").read_text().splitlines()
-                )
-                events = dict(
-                    line.split()
-                    for line in Path("/sys/fs/cgroup/memory.events").read_text().splitlines()
-                )
-                values.update(
-                    {
-                        "host/anonymous_gib": int(stat["anon"]) / 2**30,
-                        "host/shared_memory_gib": int(stat["shmem"]) / 2**30,
-                        "host/file_cache_gib": (int(stat["file"]) - int(stat["shmem"])) / 2**30,
-                        "host/memory_current_gib": int(
-                            Path("/sys/fs/cgroup/memory.current").read_text()
-                        )
-                        / 2**30,
-                        "host/oom_kills": int(events["oom_kill"]),
-                    }
-                )
+                values.update(host_memory_metrics(Path("/sys/fs/cgroup")))
             report(step, values)
             timer = time.monotonic()
         if step % train["log_every"] == 0:
@@ -359,7 +422,7 @@ def main():
             save(step)
         if (step % train["eval_every"] == 0 or final) and not args.steps:
             if rank == 0:
-                values, paths = evaluate(teacher.encoder, validation, cfg, root, step, device)
+                values, paths = evaluate_encoder(step)
                 report(step, values, paths)
             dist.barrier()
             timer = time.monotonic()

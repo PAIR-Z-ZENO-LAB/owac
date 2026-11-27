@@ -1,0 +1,31 @@
+{
+  "include_originals": false,
+  "candidates": [
+    {
+      "id": "fruit-final",
+      "label": "Fruit Final · 香蕉入篮",
+      "step": 800
+    },
+    {
+      "id": "dino-corp",
+      "backend": "dino-corp",
+      "label": "DINOv3 + CoRP · 5,000 步",
+      "step": 5000,
+      "assets": "baselines-20261120"
+    },
+    {
+      "id": "rawvla-pi05",
+      "backend": "rawvla",
+      "label": "RawVLA + π0.5 · 512 步",
+      "step": 512,
+      "assets": "baselines-20261120"
+    },
+    {
+      "id": "rawild-pi05",
+      "backend": "rawild",
+      "label": "RAWild + π0.5 · 512 步",
+      "step": 512,
+      "assets": "baselines-20261120"
+    }
+  ]
+}

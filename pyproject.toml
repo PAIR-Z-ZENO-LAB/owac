@@ -4,17 +4,22 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "owac"
-version = "0.1.0"
+version = "1.0.0"
 description = "Research infrastructure for general computational frameworks and RAW-native robotics"
 readme = "README.md"
+license = { file = "LICENSE" }
 requires-python = ">=3.11"
 dependencies = []
 
 [project.optional-dependencies]
+paper = ["numpy>=2.3,<3", "torch==2.9.1", "transformers==4.57.0", "safetensors>=0.4.3", "pillow>=11"]
+
 policy-rpc = ["msgpack==1.1.2", "websockets==15.0.1"]
 identity = ["h5py>=3"]
 visualization = ["matplotlib>=3.9", "pillow>=11", "imageio>=2.36", "imageio-ffmpeg>=0.5"]
 simulation-data = ["numpy>=2.3,<3"]
+real-robot = ["opencv-python-headless>=4.12,<5", "pyyaml>=6"]
+teleop-mcap = ["mcap-ros2-support==0.6.0", "numpy>=2.3,<3"]
 # Pure encoder research stack; the core package stays importable without it.
 # The deployed RawVLA runtime is Python 3.10 and is not covered by this extra.
 encoder = ["numpy>=2.3,<3", "torch==2.9.1", "scipy>=1.15,<2"]
@@ -22,6 +27,8 @@ raw-ssl = [
     "swanlab==0.10.3",
     "transformers==4.57.0",
 ]
+raw-diffusion = ["diffusers==0.35.1"]
+raw-vq = ["einops==0.8.1"]
 
 [dependency-groups]
 dev = ["pytest>=8", "ruff>=0.11", "numpy>=2.3,<3"]
@@ -30,6 +37,7 @@ dev = ["pytest>=8", "ruff>=0.11", "numpy>=2.3,<3"]
 where = ["src"]
 
 [tool.setuptools.package-data]
+"owac.paper" = ["tokenizer/*"]
 "owac.runtime" = ["*.html"]
 "owac.baselines._vendor.rkn" = ["LICENSE", "provenance.json"]
 "owac.frameworks.n04._vendor.convnext" = ["LICENSE", "provenance.json"]
@@ -38,6 +46,9 @@ where = ["src"]
 "owac.baselines._vendor.sea_raft" = ["LICENSE", "provenance.json", "*.py"]
 "owac.baselines._vendor.sea_raft.utils" = ["*.py"]
 "owac.frameworks.raw_compact._vendor" = ["LICENSE", "provenance.json"]
+"owac.frameworks.raw_diffusion._vendor" = ["LICENSE", "provenance.json"]
+"owac.frameworks.raw_act._vendor" = ["LICENSE.lerobot", "provenance.json"]
+"owac.frameworks.raw_vq._vendor" = ["LICENSE.*", "provenance.json"]
 
 [tool.ruff]
 target-version = "py311"
@@ -45,6 +56,7 @@ line-length = 100
 extend-exclude = [
     "src/owac/frameworks/n02_full/components/upstream",
     "src/owac/frameworks/n04/_vendor/convnext/convnext.py",
+    "src/owac/frameworks/raw_vq/_vendor",
     "outputs",
 ]
 
@@ -57,6 +69,7 @@ select = ["E", "F", "I", "UP", "B"]
 # Preserve upstream SEA-RAFT definitions: only the declared vendor changes apply.
 "src/owac/baselines/_vendor/sea_raft/*.py" = ["B007", "E501", "E712", "E722", "F401", "F811", "F841", "I001", "UP008", "UP034"]
 "src/owac/baselines/_vendor/sea_raft/utils/*.py" = ["B007", "E501", "E712", "E722", "F401", "F811", "F841", "I001", "UP008", "UP034"]
+"src/owac/frameworks/raw_act/_vendor/*.py" = ["E501"] # Preserve upstream documentation.
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

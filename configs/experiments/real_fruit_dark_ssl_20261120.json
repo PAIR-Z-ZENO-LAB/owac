@@ -1,0 +1,143 @@
+{
+  "seed": 20261119,
+  "model": {
+    "width": 384,
+    "depth": 12,
+    "heads": 6,
+    "patch_size": 16,
+    "image_size": 256,
+    "drop_path": 0.1,
+    "response_pivot": 0.02,
+    "measurement_encoder": {
+      "filter_names": [
+        "R",
+        "G",
+        "B"
+      ],
+      "sensor": {
+        "layout": "bayer",
+        "pattern": "BGGR",
+        "origin": [
+          0,
+          0
+        ],
+        "bit_depth": 10,
+        "units": "dn",
+        "black_level": 64,
+        "white_level": 1023,
+        "shot": 0.0004,
+        "read_var": 1e-05,
+        "noise_units": "normalized"
+      },
+      "scales": [
+        4,
+        8,
+        16
+      ],
+      "response_pivot": 0.02,
+      "evidence": false
+    }
+  },
+  "data": {
+    "inventory": "outputs/real/owac-fruit03-dark-ssl-20261120/data/mixed-inventory.json",
+    "domains": [
+      "real_teleop"
+    ]
+  },
+  "crops": {
+    "global_size": 192,
+    "global_scale": [
+      0.32,
+      1.0
+    ],
+    "local_size": 96,
+    "local_scale": [
+      0.05,
+      0.32
+    ],
+    "local_count": 2
+  },
+  "loss": {
+    "prototypes": 16384,
+    "ibot_weight": 1.0,
+    "koleo_weight": 0.1,
+    "teacher_temp_start": 0.07,
+    "teacher_temp_end": 0.07
+  },
+  "training": {
+    "updates": 12288,
+    "batch": 32,
+    "lr": 2e-05,
+    "min_lr": 2e-06,
+    "warmup": 32,
+    "weight_decay_start": 0.04,
+    "weight_decay_end": 0.2,
+    "ema_start": 0.99,
+    "workers": 4,
+    "cpu_threads": 4,
+    "log_every": 16,
+    "save_every": 256,
+    "eval_every": 256,
+    "freeze_prototypes": 0,
+    "prefetch_factor": 1,
+    "lr_restart": {
+      "step": 8192,
+      "warmup": 128,
+      "from_lr": 2e-06
+    },
+    "keep_encoder_steps": [
+      8448,
+      9216,
+      10240,
+      11264,
+      12288
+    ]
+  },
+  "tracking": {
+    "project": "OWAC",
+    "run_id": "owac-fruit03-dark-raw-ssl-20261120",
+    "name": "真机 RAW 编码器｜暗光 fruit03 补训｜8192 → 12288",
+    "group": "real-raw-vision",
+    "job_type": "raw-visual-adaptation"
+  },
+  "exposure": {
+    "normal_sampling": 0.0,
+    "start_stops": 1.0,
+    "max_stops": 2.0,
+    "curriculum_steps": 128,
+    "dense_weight": 0.5,
+    "reference_lighting": [
+      "recorded"
+    ]
+  },
+  "relations": {
+    "anchor": "outputs/paper/j3/encoder.pt",
+    "spatial_weight": 4.0,
+    "variance_weight": 0.5,
+    "covariance_weight": 0.02,
+    "temporal_weight": 2.0,
+    "temporal_warmup": 64,
+    "max_frame_gap": 4,
+    "match_radius": 3,
+    "match_temperature": 0.07
+  },
+  "evaluation": {
+    "protocol": "teleop",
+    "pairs_per_episode": 8,
+    "panel_steps": [
+      8448,
+      9216,
+      10240,
+      11264,
+      12288
+    ],
+    "baseline_step": 8192,
+    "pca_basis": "outputs/real/owac-fruit03-dark-ssl-20261120/assets/fruit01-02-pca.npz"
+  },
+  "raw_keys": {
+    "real_teleop": [
+      "u2_raw",
+      "u3_raw"
+    ]
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "checkpoint": "outputs/real/owac-fruit-adapt-12288-20261120/paired-head/policy-best.pt",
+  "seed": 20261120,
+  "updates": 1200,
+  "eval_every": 300,
+  "warmup": 60,
+  "learning_rate": 0.00001,
+  "variants": ["pickup-control", "basket-balanced", "carry-release"],
+  "carry_release": {"updates": 2400, "eval_every": 400, "warmup": 120, "learning_rate": 0.00004},
+  "selection": "Mean of transport endpoint 3D error and release-time (3D position, aperture) error in millimeters, equally averaged over the six validation episodes."
+}

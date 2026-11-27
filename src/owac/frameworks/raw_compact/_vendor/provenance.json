@@ -26,6 +26,8 @@
   ],
   "changes": [
     "Representation dataclass moved locally; optional padding mask carried through prefix cache.",
-    "No RGB encoder or policy checkpoint imported."
+    "No RGB encoder or policy checkpoint imported.",
+    "2026-11-04 C2: configurable visual input width and optional zero-initialized 2D sinusoidal coordinate projection in the resampler; disabled for legacy C1.",
+    "2026-11-09 D18: optional task IDs carried in prefix caches; FFN calls accept independently authored task-indexed parameter banks. Default CoRP path and attention equations remain unchanged. No SDP/SMP code or weights imported."
   ]
 }

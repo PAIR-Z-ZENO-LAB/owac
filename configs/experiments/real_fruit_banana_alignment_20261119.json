@@ -1,0 +1,30 @@
+{
+  "base_recipe": "real_fruit_action_regression.json",
+  "continuation": {
+    "checkpoint": "outputs/real/owac-real-fruit-policy-20261119/training/policy-best.pt",
+    "sha256": "2bad92caf1de2b8f99c1f8dd3cf188d02d4355644eebc14c16cfaf4c5a42d0d3",
+    "step": 2500
+  },
+  "seed": 20261120,
+  "training": {
+    "updates": 8000, "frozen_steps": 0, "batch": 16, "learning_rate": 0.000015,
+    "warmup": 300, "log_every": 50, "eval_every": 400, "save_every": 400,
+    "approach_fraction": 0.5, "approach_seconds": 1.5
+  },
+  "grasp_evaluation": {
+    "urdf": "outputs/real/owac-fruit-night-20261119/urdf", "seconds": 1.5,
+    "marker": "first downward crossing of the middle of the episode command-width range (5th to 95th percentile)"
+  },
+  "evaluation": {"exposure_stops": 2, "exposure_seed": 19112026},
+  "group": "real-fruit-overnight-20261119",
+  "run_prefix": "fruit-night19",
+  "banana_labels": "outputs/real/owac-fruit-night-20261119/labels",
+  "variants": [
+    {"id":"approach", "label":"香蕉接近阶段加采样", "stops":2, "motion":0},
+    {"id":"pose", "label":"香蕉接近与夹爪位姿损失", "stops":2, "motion":0, "pose":true},
+    {"id":"pose-xy", "label":"香蕉接近、夹爪位姿与图像坐标", "stops":2, "motion":0, "pose":true, "xy":true},
+    {"id":"banana", "label":"香蕉定位辅助与夹爪位姿", "stops":2, "motion":0, "pose":true, "xy":true, "grounding":true},
+    {"id":"banana-prefit", "label":"先学香蕉定位，再训练对准动作", "stops":2, "motion":0, "pose":true, "xy":true, "grounding":true,
+     "localizer":"outputs/real/owac-fruit-night-20261119/localizer/head.pt"}
+  ]
+}

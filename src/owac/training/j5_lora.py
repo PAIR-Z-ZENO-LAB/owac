@@ -31,6 +31,9 @@ class LoRALinear(nn.Module):
         return self.base.bias
 
     def forward(self, x):
+        # Joint attention slices have gaps between batch rows. Materializing that
+        # view avoids the BF16 small-rank strided-batched cuBLAS path on Blackwell.
+        x = x.contiguous()
         return self.base(x) + self.b(self.a(x)) * self.scale
 
 

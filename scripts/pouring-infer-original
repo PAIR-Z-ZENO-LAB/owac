@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -euo pipefail
+export OWAC_POURING_HOME="${OWAC_POURING_ORIGINAL_HOME:-$HOME/owac/pouring-policy}"
+exec "$(dirname -- "$0")/pouring-infer" "$@"

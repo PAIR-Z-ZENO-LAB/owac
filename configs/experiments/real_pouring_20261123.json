@@ -1,0 +1,21 @@
+{
+  "root": "outputs/real/owac-pouring-20261123",
+  "raw": "outputs/real/datasets/owac-dataset",
+  "repo": null,
+  "seed": 20261123,
+  "episodes": {"pouring01": 9, "pouring02": 10, "pouring03": 10},
+  "validation_indices": {"pouring01": [5, 9], "pouring02": [5, 10], "pouring03": [5, 10]},
+  "instruction": "Pick up the cup, pour its contents into the bowl, and put the cup back on the table.",
+  "source_encoder": "outputs/real/owac-fruit03-dark-ssl-20261120/training/encoder.pt",
+  "source_encoder_sha256": "bd16134802163e370a46a3abb0d174e9f883b00df08e6c2ef98f646518884a6e",
+  "visual_updates": 4096,
+  "visual_batch": 32,
+  "action_updates": 10000,
+  "frozen_action_updates": 6000,
+  "action_batch": 16,
+  "pi_microbatch": 2,
+  "eval_every": 500,
+  "selection_anchors_per_episode": 48,
+  "allocation": {"0": ["vision", "owac"], "1": ["input-cache", "dino-corp", "rawild"], "2": ["rawvla"]},
+  "swanlab": {"workspace": null, "project": "OWAC", "group": "real-pouring-20261123"}
+}

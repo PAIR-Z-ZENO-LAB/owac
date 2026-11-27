@@ -34,11 +34,22 @@ class RawEncoder(nn.Module):
         super().__init__()
         from transformers import DINOv3ViTConfig, DINOv3ViTModel
 
-        self.response = RadiometricResponse(cfg["response_pivot"])
+        self.measurement_config = cfg.get("measurement_encoder")
+        if self.measurement_config:
+            from owac.training.raw_measurements import MeasurementResponse
+
+            response_class = MeasurementResponse
+            if self.measurement_config.get("adc_features"):
+                from owac.training.raw_adc_features import ADCMeasurementResponse
+
+                response_class = ADCMeasurementResponse
+            self.response = response_class(self.measurement_config, cfg["response_pivot"])
+        else:
+            self.response = RadiometricResponse(cfg["response_pivot"])
         architecture = DINOv3ViTConfig(
             image_size=cfg["image_size"],
             patch_size=cfg["patch_size"],
-            num_channels=9,
+            num_channels=5 * len(self.response.filter_names) if self.measurement_config else 9,
             hidden_size=cfg["width"],
             intermediate_size=4 * cfg["width"],
             num_hidden_layers=cfg["depth"],
@@ -50,12 +61,41 @@ class RawEncoder(nn.Module):
         )
         architecture._attn_implementation = "sdpa"
         self.backbone = DINOv3ViTModel(architecture)
+        if self.measurement_config:
+            from owac.training.raw_sensel import SenselPatchEmbedding
 
-    def forward(self, raw, mask=None):
-        tokens = self.backbone(
-            pixel_values=self.response(raw), bool_masked_pos=mask
-        ).last_hidden_state
+            patch_class = SenselPatchEmbedding
+            if self.measurement_config.get("adc_features"):
+                from owac.training.raw_adc_features import ADCPatchEmbedding
+
+                patch_class = ADCPatchEmbedding
+            self.backbone.embeddings.patch_embeddings = patch_class(
+                cfg["width"], cfg["patch_size"], self.measurement_config
+            )
+        elif cfg.get("photon_evidence"):
+            from owac.training.raw_evidence import EvidencePatchEmbedding
+
+            embeddings = self.backbone.embeddings
+            embeddings.patch_embeddings = EvidencePatchEmbedding(
+                embeddings.patch_embeddings, cfg["photon_evidence"]
+            )
+
+    def forward(self, raw, mask=None, *, sensor=None, valid=None):
+        values = (
+            self.response(raw, sensor=sensor, valid=valid)
+            if self.measurement_config
+            else self.response(raw)
+        )
+        tokens = self.backbone(pixel_values=values, bool_masked_pos=mask).last_hidden_state
         return tokens[:, 0], tokens[:, 5:]
+
+
+def build_encoder(cfg):
+    if cfg.get("input_encoding", "owac") == "owac" and not cfg.get("freeze_for_action_readout"):
+        return RawEncoder(cfg)
+    from owac.training.raw_mechanism import encoder_class
+
+    return encoder_class(RawEncoder)(cfg)
 
 
 class PrototypeHead(nn.Module):
@@ -77,7 +117,7 @@ class PrototypeHead(nn.Module):
 class RawSSL(nn.Module):
     def __init__(self, cfg):
         super().__init__()
-        self.encoder = RawEncoder(cfg["model"])
+        self.encoder = build_encoder(cfg["model"])
         width = cfg["model"]["width"]
         self.global_head = PrototypeHead(width, cfg["loss"]["prototypes"])
         self.patch_head = PrototypeHead(width, cfg["loss"]["prototypes"])

@@ -16,6 +16,8 @@ from typing import Any
 
 import numpy as np
 
+from owac.backends.rawvla import sha256_file as sha256_file
+
 SCHEMA = "owac.raw-teacher.sources.v1"
 TASK_SUITE = "libero_goal"
 TASK_ID = 6

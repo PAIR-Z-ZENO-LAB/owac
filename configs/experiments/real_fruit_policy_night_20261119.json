@@ -1,0 +1,24 @@
+{
+  "base_recipe": "real_fruit_action_regression.json",
+  "continuation": {
+    "checkpoint": "outputs/real/owac-real-fruit-policy-20261119/training/policy-best.pt",
+    "sha256": "2bad92caf1de2b8f99c1f8dd3cf188d02d4355644eebc14c16cfaf4c5a42d0d3",
+    "step": 2500
+  },
+  "seed": 20261120,
+  "training": {
+    "updates": 12000, "frozen_steps": 0, "batch": 16, "learning_rate": 0.000015,
+    "warmup": 300, "log_every": 50, "eval_every": 600, "save_every": 600
+  },
+  "evaluation": {"exposure_stops": 2, "exposure_seed": 19112026},
+  "group": "real-fruit-overnight-20261119",
+  "run_prefix": "fruit-night19",
+  "variants": [
+    {"id": "clean", "label": "原始 RAW 续训对照", "stops": 0, "motion": 0},
+    {"id": "ev1", "label": "一档减光", "stops": 1, "motion": 0},
+    {"id": "ev2", "label": "两档减光", "stops": 2, "motion": 0},
+    {"id": "grip", "label": "夹爪开合采样", "stops": 0, "motion": 0.5},
+    {"id": "ev2-grip", "label": "两档减光与夹爪开合", "stops": 2, "motion": 0.5},
+    {"id": "ev2-frozen", "label": "两档减光，固定视觉编码器", "stops": 2, "motion": 0, "freeze": true}
+  ]
+}

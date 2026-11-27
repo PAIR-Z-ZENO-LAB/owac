@@ -1,0 +1,54 @@
+{
+  "checkpoint_sha256": "ebcb2df9f06ef30d6785aa1dcf642d46ab36787eaef8f34c5690026ba2e520ff",
+  "fixed": {
+    "episodes": 10000,
+    "expected": 10000,
+    "complete": true,
+    "successes": 7382,
+    "lighting": {
+      "Normal": {
+        "episodes": 2000,
+        "successes": 1498
+      },
+      "Low": {
+        "episodes": 2000,
+        "successes": 1540
+      },
+      "ExtremeLow": {
+        "episodes": 2000,
+        "successes": 1314
+      },
+      "Over": {
+        "episodes": 2000,
+        "successes": 1534
+      },
+      "ExtremeOver": {
+        "episodes": 2000,
+        "successes": 1496
+      }
+    },
+    "mean_pct": 73.82000000000001,
+    "std_pp": 4.158557442190741,
+    "worst_pct": 65.7,
+    "paired_count": 2000,
+    "all_five_successes": 750
+  },
+  "all_five_pct": 37.5,
+  "switching": {
+    "episodes": 10000,
+    "expected": 10000,
+    "complete": true,
+    "successes": 7165,
+    "success_pct": 71.65,
+    "matched_normal_pct": 74.9,
+    "drop_pp": 3.25,
+    "complete_initial_states": 2000,
+    "all_sequences_successes": 909,
+    "switches": 211258,
+    "confidence_interval": [
+      70.59,
+      72.6405
+    ],
+    "native_successes": 7165
+  }
+}

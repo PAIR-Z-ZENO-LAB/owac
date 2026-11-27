@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -e
+export OWAC_FRUIT_HOME="${OWAC_BOWL_HOME:-$HOME/owac/bowl-policy}"
+exec "$(dirname -- "$0")/fruit-infer" "$@"

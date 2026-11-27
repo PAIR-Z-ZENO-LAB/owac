@@ -4,6 +4,7 @@ import math
 import os
 import random
 from collections import OrderedDict
+from functools import partial
 
 import numpy as np
 import torch
@@ -12,10 +13,18 @@ from torch.utils.data import Dataset, Sampler
 
 from owac.raw.all_bench_distillation import DOMAIN_RAW_KEYS, read_npz_member
 from owac.training.raw_exposure import lower_exposure
+from owac.training.raw_measurements import attenuate_measurement
 
 
-def crop(x, size, scale, rng):
+def crop(x, size, scale, rng, *, sensor=None):
     height, width = x.shape[-2:]
+    if sensor and (sensor["layout"] in ("mono", "bayer") or sensor["units"] == "dn"):
+        period = 2 if sensor["layout"] == "bayer" else 1
+        if size > min(height, width) or size % period:
+            raise ValueError("Native sensor crops must fit the observed sampling grid")
+        y = period * rng.randrange((height - size) // period + 1)
+        z = period * rng.randrange((width - size) // period + 1)
+        return x[:, y : y + size, z : z + size]
     area = rng.uniform(*scale) * height * width
     ratio = math.exp(rng.uniform(math.log(0.75), math.log(4 / 3)))
     h = min(height, round(math.sqrt(area / ratio)))
@@ -85,7 +94,12 @@ class RawViews(Dataset):
                 self.cache.popitem(last=False)[1].close()
         self.cache.move_to_end(key)
         array = self.cache[key].frame(endpoint)
+        if array.ndim == 2:
+            array = array[..., None]
         x = torch.from_numpy(array).permute(2, 0, 1).float()
+        sensor = self.cfg.get("model", {}).get("measurement_encoder", {}).get("sensor")
+        if sensor and sensor["units"] == "dn":
+            return x
         return x / 255 if source.domain == "libero" else x
 
     def close(self):
@@ -101,10 +115,13 @@ class RawViews(Dataset):
         stratum = self.strata[rng.randrange(len(self.strata))]
         exposure = self.cfg.get("exposure")
         if exposure and rng.random() < exposure["normal_sampling"]:
-            stratum = (stratum[0], "Normal")
+            stratum = (stratum[0], exposure.get("sampling_lighting", "Normal"))
         group = self.groups[stratum]
         source = self.sources[rng.choice(group)]
-        camera = rng.choice(DOMAIN_RAW_KEYS[source.domain])
+        keys = self.cfg.get("raw_keys", {}).get(source.domain)
+        if keys is None:
+            keys = DOMAIN_RAW_KEYS[source.domain]
+        camera = rng.choice(keys)
         relations = self.cfg.get("relations")
         endpoint = (
             rng.randrange(1, source.num_frames) if relations else rng.randrange(source.num_frames)
@@ -114,7 +131,10 @@ class RawViews(Dataset):
             gap = rng.randint(1, min(endpoint, relations["max_frame_gap"]))
             previous = self.frame(source, endpoint - gap, camera)
         c = self.cfg["crops"]
+        sensor = self.cfg.get("model", {}).get("measurement_encoder", {}).get("sensor")
+        transform = partial(crop, sensor=sensor)
         if exposure:
+            reference_light = source.lighting in exposure.get("reference_lighting", ["Normal"])
             step = index // self.cfg["training"]["batch"]
             maximum = exposure["start_stops"] + (
                 exposure["max_stops"] - exposure["start_stops"]
@@ -123,22 +143,27 @@ class RawViews(Dataset):
             past_view = None
             generator = torch.Generator().manual_seed(self.cfg["seed"] + index)
             for _ in range(2):
-                stops = rng.uniform(0, maximum) if source.lighting == "Normal" else 0.0
-                dark = (
-                    lower_exposure(x, stops, exposure["noise"][source.domain], generator)
-                    if stops
-                    else x
-                )
+                stops = rng.uniform(0, maximum) if reference_light else 0.0
+                dark = x
+                if stops:
+                    dark = (
+                        attenuate_measurement(x[None], stops, sensor, generator)[0]
+                        if sensor
+                        else lower_exposure(x, stops, exposure["noise"][source.domain], generator)
+                    )
                 # Identical crop, flip, resize, and mild gain; noise is sampled BEFORE resize.
                 geometry = rng.getstate()
                 if relations and not globals_:
-                    past_view = crop(previous, c["global_size"], c["global_scale"], rng)
+                    past_view = transform(previous, c["global_size"], c["global_scale"], rng)
                     rng.setstate(geometry)
-                globals_.append(crop(x, c["global_size"], c["global_scale"], rng))
+                globals_.append(transform(x, c["global_size"], c["global_scale"], rng))
                 rng.setstate(geometry)
-                degraded.append(crop(dark, c["global_size"], c["global_scale"], rng))
+                degraded.append(transform(dark, c["global_size"], c["global_scale"], rng))
             local = torch.stack(
-                [crop(x, c["local_size"], c["local_scale"], rng) for _ in range(c["local_count"])]
+                [
+                    transform(x, c["local_size"], c["local_scale"], rng)
+                    for _ in range(c["local_count"])
+                ]
             )
             if relations:
                 return (
@@ -146,13 +171,16 @@ class RawViews(Dataset):
                     local,
                     torch.stack(degraded),
                     past_view,
-                    source.lighting == "Normal",
+                    reference_light,
                 )
             return torch.stack(globals_), local, torch.stack(degraded)
         return (
-            torch.stack([crop(x, c["global_size"], c["global_scale"], rng) for _ in range(2)]),
+            torch.stack([transform(x, c["global_size"], c["global_scale"], rng) for _ in range(2)]),
             torch.stack(
-                [crop(x, c["local_size"], c["local_scale"], rng) for _ in range(c["local_count"])]
+                [
+                    transform(x, c["local_size"], c["local_scale"], rng)
+                    for _ in range(c["local_count"])
+                ]
             ),
         )
 

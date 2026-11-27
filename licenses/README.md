@@ -1,0 +1,9 @@
+# Licensing and credits
+
+The OWAC contributors license their original software in this release under the PolyForm Noncommercial License 1.0.0. For other uses, contact the rights holder through the repository owner. [License text](../LICENSE)
+
+The OWAC contributors license their contributions to **owac-regression-10000.safetensors** and **owac-flow-20000.safetensors** under Creative Commons Attribution-NonCommercial 4.0 International. Credit the OWAC contributors, link this release and the model license, and identify modifications when redistributing adapted checkpoints. [License text](CC-BY-NC-4.0.txt) · [License deed](https://creativecommons.org/licenses/by-nc/4.0/)
+
+The trained policies include an adapted Google T5-Efficient-Tiny encoder and its shared embeddings. The language initialization and the tokenizer are distributed under Apache License 2.0. The archived tokenization configuration is included for offline inference. The policy architecture adapts code from CoRP, with local changes documented in the vendor provenance file. Those upstream rights and notices continue to apply. [Google T5-Efficient-Tiny](https://huggingface.co/google/t5-efficient-tiny/tree/3441d7e8bf3f89841f366d39452b95200416e4a9) · [Tokenizer license](../src/owac/paper/tokenizer/LICENSE) · [CoRP provenance and license](../src/owac/frameworks/raw_compact/_vendor/)
+
+Other vendored research components carry their respective license or provenance files in the source tree. RawVLA-Bench data, the RawVLA simulator, LIBERO, robot drivers and separately acquired comparison models are provided by their respective publishers under their own terms. [RawVLA-Bench](https://huggingface.co/datasets/ToferFish/RawVLA-Bench) · [RawVLA](https://github.com/ShuhongLL/RawVLA) · [NERO collection software](https://github.com/PAIR-Z-ZENO-LAB/agilx-teleop-collection)

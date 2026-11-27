@@ -74,18 +74,21 @@ def load_inventory(path: str | Path) -> tuple[list[BenchSource], dict[str, Any]]
         domain = str(group["domain"])
         rel = str(group["relpath"])
         # inventory path is relative to the shared raw root
-        candidates = []
-        if group.get("path"):
-            candidates.append(Path(str(group["path"])))
-        candidates.append(Path("/root/autodl-pub/datasets/rawvla") / "data" / domain / "raw" / rel)
-        path_value = candidates[-1]
-        for candidate in candidates:
+        legacy = Path("/root/autodl-pub/datasets/rawvla/data") / domain / "raw" / rel
+        base = Path(path).resolve().parent
+        specified = Path(group.get("path") or rel)
+        explicit = base / specified
+        if payload.get("schema") == "owac.paper-inventory.v1":
+            path_value = explicit
+        elif domain not in DOMAIN_CAMERAS:
+            path_value = explicit if explicit.is_file() else base / rel
+        else:
+            path_value = legacy
             try:
-                if candidate.is_file():
-                    path_value = candidate
-                    break
+                if group.get("path") and explicit.is_file():
+                    path_value = explicit
             except PermissionError:
-                continue
+                pass
         sources.append(
             BenchSource(
                 group_id=str(group["group_id"]),
@@ -96,7 +99,9 @@ def load_inventory(path: str | Path) -> tuple[list[BenchSource], dict[str, Any]]
                 path=path_value,
                 num_frames=int(group["num_frames"]),
                 lighting=str(group["lighting"]),
-                cameras=DOMAIN_CAMERAS[domain],
+                cameras=DOMAIN_CAMERAS[domain]
+                if domain in DOMAIN_CAMERAS
+                else tuple(group["cameras"]),
             )
         )
     return sources, payload

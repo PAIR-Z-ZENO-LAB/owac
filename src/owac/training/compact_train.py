@@ -1,4 +1,4 @@
-"""Resumable joint RAW CoRP training with masked 7D flow matching and EMA."""
+"""Resumable joint RAW CoRP training with masked 7D action objectives and EMA."""
 
 import argparse
 import copy
@@ -17,7 +17,7 @@ import torch.distributed as dist
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.utils.data import DataLoader
 
-from owac.frameworks.raw_compact.policy import CompactPolicy
+from owac.paper.model import CompactPolicy
 from owac.training.compact_data import CompactFrames
 from owac.training.j5_action_metrics import action_metrics, action_sums
 
@@ -30,6 +30,21 @@ def atomic_save(payload, path):
 
 def move(batch, device):
     return {k: v.to(device, non_blocking=True) for k, v in batch.items()}
+
+
+def validate_language_resume(config, saved_config):
+    for section, name in [("model", "language_initialization"), ("provenance", "language_weights")]:
+        if config.get(section, {}).get(name) != saved_config.get(section, {}).get(name):
+            raise ValueError(
+                "Language initialization changed; start a new training run instead of resuming"
+            )
+
+
+def validate_action_head_resume(config, saved_config):
+    current = config.get("model", {}).get("action_head", "flow_matching")
+    saved = saved_config.get("model", {}).get("action_head", "flow_matching")
+    if current not in ("flow_matching", "regression") or current != saved:
+        raise ValueError("Action head changed; regression cannot resume a flow-matching checkpoint")
 
 
 @torch.no_grad()
@@ -121,6 +136,8 @@ def main():
     start = 0
     if args.resume:
         payload = torch.load(args.resume, map_location="cpu", weights_only=False, mmap=True)
+        validate_language_resume(cfg, payload["config"])
+        validate_action_head_resume(cfg, payload["config"])
         model.load_state_dict(payload["model"])
         ema.load_state_dict(payload["ema"])
         optimizer.load_state_dict(payload["optimizer"])
@@ -233,10 +250,10 @@ def main():
             context = wrapped.no_sync() if micro + 1 < accumulation else nullcontext()
             with context:
                 with torch.autocast("cuda", dtype=torch.bfloat16):
-                    loss, flow, task = wrapped(batch)
+                    loss, action_objective, task = wrapped(batch)
                     scaled = loss / accumulation
                 scaled.backward()
-            running[:3] += torch.stack((loss.detach(), flow, task)) / accumulation
+            running[:3] += torch.stack((loss.detach(), action_objective, task)) / accumulation
         grad = torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0, error_if_nonfinite=True)
         optimizer.step()
         with torch.no_grad():
@@ -258,7 +275,9 @@ def main():
                     zip(
                         [
                             "objective/loss",
-                            "objective/flow7",
+                            "objective/regression7"
+                            if model.action_head == "regression"
+                            else "objective/flow7",
                             "objective/task",
                             "optimizer/grad_norm",
                         ],

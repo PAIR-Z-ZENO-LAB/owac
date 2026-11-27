@@ -23,8 +23,20 @@ def lower_exposure(raw, stops, noise, generator):
     return result
 
 
-def dense_consistency(student, target, masks):
+def dense_consistency(student, target, masks, *, retrieval_temperature=None):
     """Align actual output tokens on visible patches; the EMA target has no gradient."""
+    if retrieval_temperature is not None:
+        if retrieval_temperature <= 0:
+            raise ValueError("Patch retrieval temperature must be positive")
+        # Each visible query must identify its own location in the same teacher crop.
+        # Multiplying by temperature cancels the inverse-temperature gradient scale.
+        with torch.autocast(device_type=student.device.type, enabled=False):
+            queries = F.normalize(student.float(), dim=-1)
+            keys = F.normalize(target.detach().float(), dim=-1)
+            logits = (queries @ keys.transpose(1, 2)) / retrieval_temperature
+            positions = torch.arange(keys.shape[1], device=keys.device).expand_as(masks)
+            labels = positions.masked_fill(masks, -100)
+            return retrieval_temperature * F.cross_entropy(logits.flatten(0, 1), labels.flatten())
     similarity = F.cosine_similarity(student.float(), target.detach().float(), dim=-1)
     return ((1 - similarity) * (~masks)).sum() / (~masks).sum()
 

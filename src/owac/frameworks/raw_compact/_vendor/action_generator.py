@@ -87,6 +87,7 @@ class PrefixCache:
     value: torch.Tensor
     adaln: tuple[torch.Tensor, ...]
     mask: torch.Tensor
+    task_ids: torch.Tensor | None = None
 
 
 class DiTBlock(nn.Module):
@@ -102,12 +103,17 @@ class DiTBlock(nn.Module):
         )
         self.adaln = AdaptiveLayerNorm(hidden_dim, adaln_rank)
 
-    def encode_prefix(self, tokens, pooled_language, mask) -> tuple[torch.Tensor, PrefixCache]:
+    def encode_prefix(
+        self, tokens, pooled_language, mask, task_ids=None
+    ) -> tuple[torch.Tensor, PrefixCache]:
         adaln = self.adaln(pooled_language)
         query, key, value = self.attention.project_qkv(self.attention_norm(tokens))
         tokens = tokens + self.attention.attend(query, key, value, mask)
-        tokens = tokens + self.mlp(self.mlp_norm(tokens))
-        return tokens, PrefixCache(key, value, adaln, mask)
+        mlp_input = self.mlp_norm(tokens)
+        tokens = tokens + (
+            self.mlp(mlp_input) if task_ids is None else self.mlp(mlp_input, task_ids)
+        )
+        return tokens, PrefixCache(key, value, adaln, mask, task_ids)
 
     def forward(self, tokens: torch.Tensor, prefix: PrefixCache) -> torch.Tensor:
         scale_attn, shift_attn, scale_mlp, shift_mlp = prefix.adaln
@@ -124,7 +130,9 @@ class DiTBlock(nn.Module):
         )
         tokens = tokens + self.attention.attend(query, key, value, mask)
         mlp_input = self.adaln.modulate(self.mlp_norm(tokens), scale_mlp, shift_mlp)
-        return tokens + self.mlp(mlp_input)
+        return tokens + (
+            self.mlp(mlp_input) if prefix.task_ids is None else self.mlp(mlp_input, prefix.task_ids)
+        )
 
 
 class DiTActionGenerator(nn.Module):
@@ -149,7 +157,7 @@ class DiTActionGenerator(nn.Module):
         self.output_norm = nn.LayerNorm(hidden_dim)
         self.velocity_projection = nn.Linear(hidden_dim, self.action_dim)
 
-    def prepare_prefix(self, representation: Representation) -> list[PrefixCache]:
+    def prepare_prefix(self, representation: Representation, task_ids=None) -> list[PrefixCache]:
         # Prefix tokens see only z_t; action tokens see z_t and the whole chunk.
         # Keeping these paths separate implements the block attention mask.
         tokens = representation.tokens
@@ -159,7 +167,9 @@ class DiTActionGenerator(nn.Module):
         mask = valid[:, None, None, :]
         caches = []
         for block in self.blocks:
-            tokens, cache = block.encode_prefix(tokens, representation.pooled_language, mask)
+            tokens, cache = block.encode_prefix(
+                tokens, representation.pooled_language, mask, task_ids
+            )
             caches.append(cache)
         return caches
 
@@ -176,7 +186,9 @@ class DiTActionGenerator(nn.Module):
         return self.velocity_projection(self.output_norm(tokens))
 
     @torch.no_grad()
-    def sample(self, representation: Representation, num_steps: int | None = None) -> torch.Tensor:
+    def sample(
+        self, representation: Representation, num_steps: int | None = None, *, task_ids=None
+    ) -> torch.Tensor:
         steps = self.num_sample_steps if num_steps is None else num_steps
         if not isinstance(steps, int) or steps <= 0:
             raise ValueError("num_steps must be a positive integer")
@@ -185,7 +197,7 @@ class DiTActionGenerator(nn.Module):
             device=representation.tokens.device,
             dtype=representation.action_dtype,
         )
-        prefix = self.prepare_prefix(representation)
+        prefix = self.prepare_prefix(representation, task_ids)
         for step in range(steps):
             tau = torch.full(
                 (action.shape[0],),

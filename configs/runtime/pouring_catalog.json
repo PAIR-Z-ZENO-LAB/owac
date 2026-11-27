@@ -1,0 +1,33 @@
+{
+  "task": "倾倒（Pouring）",
+  "include_originals": false,
+  "candidates": [
+    {
+      "id": "owac",
+      "label": "OWAC · 倾倒 · 6,000 步",
+      "step": 6000,
+      "rtc": false
+    },
+    {
+      "id": "dino-corp",
+      "label": "DINOv3 + CoRP · 倾倒 · 10,000 步",
+      "backend": "dino-corp",
+      "step": 10000,
+      "assets": "../fruit-policy/baselines-20261120"
+    },
+    {
+      "id": "rawvla-pi05",
+      "label": "RawVLA + π0.5 · 倾倒 · 8,500 步",
+      "backend": "rawvla",
+      "step": 8500,
+      "assets": "../fruit-policy/baselines-20261120"
+    },
+    {
+      "id": "rawild-pi05",
+      "label": "RAWild + π0.5 · 倾倒 · 8,500 步",
+      "backend": "rawild",
+      "step": 8500,
+      "assets": "../fruit-policy/baselines-20261120"
+    }
+  ]
+}

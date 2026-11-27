@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -eo pipefail
+export OWAC_FRUIT_HOME="${OWAC_FRUIT_HOME:-$HOME/owac/fruit-policy}"
+export OWAC_COLLECTION="${OWAC_COLLECTION:-$HOME/owac/agilx-teleop-collection}"
+unset NERO_LOADED_CONFIG
+source "$OWAC_COLLECTION/scripts/env/pure_teleop_env.sh"
+export PYTHONPATH="$OWAC_FRUIT_HOME/source:$OWAC_COLLECTION/scripts:${PYTHONPATH:-}"
+export HF_HUB_OFFLINE=1
+export TOKENIZERS_PARALLELISM=false
+exec "${OWAC_PYTHON:-$HOME/owac/.venv/bin/python}" -m owac.runtime.fruit_tui "$@"
