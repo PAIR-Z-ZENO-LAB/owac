@@ -6,7 +6,7 @@ authors:
   - name: "OWAC contributors"
 repository-code: "https://github.com/PAIR-Z-ZENO-LAB/owac"
 url: "https://github.com/PAIR-Z-ZENO-LAB/owac"
-version: "1.0.0"
+version: "1.0.1"
 date-released: "2026-11-27"
 keywords:
   - robot learning

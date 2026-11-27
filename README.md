@@ -9,11 +9,11 @@ OWAC learns a visual representation directly from RAW sensor measurements. The e
 Start with Linux, Git, curl and [uv](https://docs.astral.sh/uv/). The example runs on CPU and downloads both selected EMA checkpoints. The tokenizer and normalization statistics are included. Inference runs offline after setup.
 
 ```bash
-git clone --branch paper-v1.0 https://github.com/PAIR-Z-ZENO-LAB/owac.git
+git clone --branch paper-v1.0.1 https://github.com/PAIR-Z-ZENO-LAB/owac.git
 cd owac
 uv sync --python 3.12 --locked --extra paper
 mkdir -p outputs/models
-base=https://github.com/PAIR-Z-ZENO-LAB/owac/releases/download/paper-v1.0
+base=https://github.com/PAIR-Z-ZENO-LAB/owac/releases/download/paper-v1.0.1
 for file in owac-regression-10000.safetensors owac-flow-20000.safetensors SHA256SUMS
 do
   curl -fL --retry 3 "$base/$file" -o "outputs/models/$file"
@@ -46,7 +46,7 @@ The release includes the 40,000 scored episode records behind these rows and the
 
 | Reader task | Entry point |
 | --- | --- |
-| Download policies and verify hashes | [GitHub Release](https://github.com/PAIR-Z-ZENO-LAB/owac/releases/tag/paper-v1.0) |
+| Download policies and verify hashes | [GitHub Release](https://github.com/PAIR-Z-ZENO-LAB/owac/releases/tag/paper-v1.0.1) |
 | Recalculate the paper table, train the encoder and policies, run closed-loop LIBERO, reproduce the ablations | [Simulation reproduction guide](docs/paper-reproduction.md) |
 | Train on locally collected MCAP data and deploy fruit, bowl or pouring policies | [Physical robot guide](docs/real-robot-reproduction.md) |
 | Inspect run configurations, scoring data and attribution | [Recipes](configs/paper), [episode records](research/experiments/results/paper-v1.0), [licensing and credits](licenses/README.md) |

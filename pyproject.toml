@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "owac"
-version = "1.0.0"
+version = "1.0.1"
 description = "Research infrastructure for general computational frameworks and RAW-native robotics"
 readme = "README.md"
 license = { file = "LICENSE" }

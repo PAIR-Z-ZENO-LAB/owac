@@ -1,6 +1,6 @@
 # Reproduce the simulation experiments
 
-Run commands from a checkout of `paper-v1.0`. The two selected policies and the training encoder are public. CPU inference requires only the locked `paper` environment and one policy file. [Quick start and checkpoint downloads](../README.md#run-a-released-policy)
+Run commands from a checkout of `paper-v1.0.1`. The two selected policies and the training encoder are public. CPU inference requires only the locked `paper` environment and one policy file. [Quick start and checkpoint downloads](../README.md#run-a-released-policy)
 
 ## Recalculate the paper metrics
 
@@ -65,7 +65,17 @@ data="$PWD/outputs/rawvla-bench"
   --revision 3441d7e8bf3f89841f366d39452b95200416e4a9 --local-dir "$work/assets/t5"
 ```
 
-Use `--domain libero` on the data download for action-only training. The J5 encoder SHA-256 is `fb1fe610daa34e7b38d0ae1c0b712430ab5d8a1979322e034a5cb9de38f4f008`. The T5 weight SHA-256 is `b840cd5afdcc806b8175fed5a8800a5aa8be1beb60aab8ab7f650728b122dac2`. Both selected policies jointly train the inherited RAW encoder and the pretrained Google T5 language encoder. [Dataset revision](https://huggingface.co/datasets/ToferFish/RawVLA-Bench/tree/8586c594fff9ce38580e29745f074e82e96e74f7) · [J5 weights](https://huggingface.co/Jeong-USYD/owac-j5-raw-encoder/tree/b042fdd6cd5066c8871fbaf19dc84a906acc9000) · [T5 weights](https://huggingface.co/google/t5-efficient-tiny/tree/3441d7e8bf3f89841f366d39452b95200416e4a9)
+Use `--domain libero` on the data download for action-only training. Verify the downloaded training assets from the public revisions.
+
+```bash
+(cd "$work/assets" && sha256sum -c <<'SUMS'
+c081b1ea6023c3ef075caa8b457d31e437058371b353b4b5c59c69a641fc0cae  j5/encoder.pt
+b840cd5afdcc806b8175fed5a8800a5aa8be1beb60aab8ab7f650728b122dac2  t5/pytorch_model.bin
+SUMS
+)
+```
+
+The public J5 export keeps only model configuration metadata and all 212 original encoder tensors. Both selected policies jointly train the inherited RAW encoder and the pretrained Google T5 language encoder. [Dataset revision](https://huggingface.co/datasets/ToferFish/RawVLA-Bench/tree/8586c594fff9ce38580e29745f074e82e96e74f7) · [J5 weights](https://huggingface.co/Jeong-USYD/owac-j5-raw-encoder/tree/b042fdd6cd5066c8871fbaf19dc84a906acc9000) · [T5 weights](https://huggingface.co/google/t5-efficient-tiny/tree/3441d7e8bf3f89841f366d39452b95200416e4a9)
 
 To run the visual encoder independently, use the sample from the quick start. J5 returns one 384-dimensional global descriptor and a 16 × 16 grid of 384-dimensional patch descriptors.
 
